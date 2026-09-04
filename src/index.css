@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --ink: #0B1520;
+    --panel: #121F2E;
+    --panel-raised: #17293B;
+    --panel-line: #26394B;
+    --paper: #ECE7D9;
+    --paper-ink: #1C1A12;
+    --brass: #C9A15A;
+    --brass-strong: #E0BE7E;
+    --brass-ink: #241B08;
+    --text-1: #EDEAE1;
+    --text-2: #99AAB8;
+    --text-3: #63768A;
+    --pass: #5AAE83;
+    --fail: #D06A5A;
+    --review: #DA9E4E;
+  }
+
+  body {
+    background-color: #0B1520;
+    color: #EDEAE1;
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+}
+
+@keyframes scanSweep {
+  0% { top: -25%; }
+  100% { top: 105%; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 350ms ease forwards;
+}
+
+/* Custom subtle scrollbar */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #0E1A26;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #26394B;
+  border-radius: 3px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #63768A;
+}
+
+/* Print optimizations */
+@media print {
+  body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  header, footer, nav {
+    display: none !important;
+  }
+}

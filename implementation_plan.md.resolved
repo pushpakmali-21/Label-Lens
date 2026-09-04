@@ -1,0 +1,393 @@
+# LabelLens — Detailed Implementation Plan
+## Smart Compliance Verification System for Packaged Commodities
+**SIH 2026 | PS 26034 | Ministry of Consumer Affairs, Food & Public Distribution**
+
+---
+
+## Background
+
+Two files exist today:
+
+| File | What it is |
+|---|---|
+| [label_lens_framework.md](file:///Users/shvetadeshmukh/Desktop/Rutu/SIH/label_lens_framework.md) | Architecture & framework document — defines five pipeline stages, the tech stack, the LMPC rule-engine JSON schema, and system impact metrics |
+| [Rule6Prototype.jsx](file:///Users/shvetadeshmukh/Desktop/Rutu/SIH/Rule6Prototype.jsx) | A polished 902-line React prototype — demonstrates Rule 6 logic across three scenarios (physical label, QR-assisted electronics label, e-commerce listing) with animated scanning UI, per-field confidence bars, verdict stamps, and IBM Plex typography |
+
+The task is to build the **full production LabelLens system** that operationalises everything described in the framework document, using the prototype as the starting UI for the analytics portal.
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Scope decision needed** — The framework describes a mobile app (React Native / Flutter), a Next.js analytics portal, and a FastAPI backend with three AI microservices. For the SIH hackathon demo, do you want:
+>
+> **Option A — Full monorepo (recommended):** All components built, with mock AI responses where GPU inference isn't possible locally.  
+> **Option B — Portal + API only:** Skip the mobile app; focus on the Next.js dashboard + FastAPI + rule engine.
+>
+> The plan below assumes **Option A**. Please confirm or adjust before execution starts.
+
+> [!WARNING]
+> **AI model weights** — YOLOv8 and PaddleOCR models will be downloaded at setup time (~500 MB combined). An internet connection is required on first run.
+
+---
+
+## Proposed Changes
+
+### Monorepo Root
+
+#### [NEW] Monorepo scaffold
+
+```
+SIH/
+├── apps/
+│   ├── portal/          # Next.js 14 analytics dashboard
+│   ├── mobile/          # React Native (Expo) field scanner
+│   └── api/             # FastAPI orchestration backend
+├── services/
+│   ├── vision/          # YOLOv8 spatial detection microservice
+│   ├── ocr/             # PaddleOCR bilingual extraction microservice
+│   └── nlp/             # Semantic NLP/LLM analysis microservice
+├── packages/
+│   ├── rule-engine/     # Shared Python LMPC rule config + validator
+│   └── shared-ui/       # Shared React component library (LogoMark, ConfidenceBar, etc.)
+├── data/
+│   └── lmpc_rules_v1.json   # Already specified in framework doc
+├── docker-compose.yml   # Orchestrates all services locally
+└── README.md
+```
+
+---
+
+### Component 1 — Rule Engine (`packages/rule-engine/`)
+
+The heart of the system. Every other component calls into this.
+
+#### [NEW] `lmpc_rules_v1.json`
+
+Expanded from the schema in the framework doc to cover all LMPC 2011 rules relevant to the hackathon:
+
+```json
+{
+  "rule_engine_version": "1.0.4",
+  "last_updated": "2026-09-04",
+  "applicable_legislation": "Legal Metrology (Packaged Commodities) Rules, 2011",
+  "weight_slabs_font_mapping": [
+    { "slab_id": "SLAB_A", "net_quantity_range": {"min_inclusive_g_ml": 0,   "max_inclusive_g_ml": 50},   "mandatory_min_font_height_mm": 1.0 },
+    { "slab_id": "SLAB_B", "net_quantity_range": {"min_exclusive_g_ml": 50,  "max_inclusive_g_ml": 200},  "mandatory_min_font_height_mm": 2.0 },
+    { "slab_id": "SLAB_C", "net_quantity_range": {"min_exclusive_g_ml": 200, "max_inclusive_g_ml": 1000}, "mandatory_min_font_height_mm": 4.0 },
+    { "slab_id": "SLAB_D", "net_quantity_range": {"min_exclusive_g_ml": 1000,"max_inclusive_g_ml": 99999},"mandatory_min_font_height_mm": 6.0 }
+  ],
+  "mandatory_fields_physical": ["manufacturer_name_address","generic_name","net_quantity","manufacture_date","mrp","consumer_care"],
+  "mandatory_fields_ecommerce": ["manufacturer_name_address","generic_name","net_quantity","manufacture_date","mrp","consumer_care","country_of_origin"],
+  "qr_offloadable_fields_electronics": ["manufacturer_address","generic_name","dimensions"],
+  "prohibited_expressions": ["net weight when packed","approximate weight","approx","gms","kilos","net wt when packed"],
+  "mandatory_consumer_care_fields": ["telephone","email","address","name"],
+  "confidence_thresholds": { "auto_pass": 85, "auto_fail": 40, "human_review": 75 }
+}
+```
+
+#### [NEW] `validator.py`
+
+Core Python class that:
+1. Loads `lmpc_rules_v1.json`
+2. Accepts a structured `ScanResult` dict (fields extracted by OCR/NLP)
+3. Resolves the correct font-size slab from net-quantity value
+4. Checks field presence, font size compliance, confidence thresholds, prohibited expressions
+5. Returns a `ComplianceReport` with per-field verdicts and an overall `pass | review | fail`
+
+---
+
+### Component 2 — Vision Microservice (`services/vision/`)
+
+**Tech:** Python + Ultralytics YOLOv8 + OpenCV + FastAPI
+
+#### [NEW] `main.py` — Vision service entrypoint
+
+Exposes `POST /detect` accepting a multipart image upload. Returns a JSON payload:
+
+```json
+{
+  "package_type": "physical | ecommerce",
+  "is_electronic": true,
+  "qr_detected": true,
+  "bounding_boxes": {
+    "principal_display_panel": [x1, y1, x2, y2],
+    "mrp_block": [...],
+    "net_quantity_area": [...],
+    "consumer_care_block": [...]
+  },
+  "placement_violations": ["net_quantity_on_secondary_face"],
+  "flattened_image_b64": "..."
+}
+```
+
+#### [NEW] `model.py` — YOLOv8 wrapper
+
+- Downloads `yolov8n.pt` on first load (or a fine-tuned checkpoint if available)
+- Fine-tuning note: for the hackathon demo, we use zero-shot detection on the standard YOLOv8 model and supplement with rule-based heuristics. A fine-tuning script on a labelled packaging dataset will be included as a future-state artefact.
+
+#### [NEW] `flattener.py` — 3D-to-2D label flattener
+
+- Uses OpenCV `getPerspectiveTransform` + `warpPerspective` for flat labels
+- For cylindrical containers: stitches overlapping keyframe images using `cv2.Stitcher`
+- Outputs a flat 2D canvas image as Base64
+
+---
+
+### Component 3 — OCR Microservice (`services/ocr/`)
+
+**Tech:** Python + PaddleOCR + FastAPI
+
+#### [NEW] `main.py` — OCR service entrypoint
+
+Exposes `POST /extract`, accepts Base64 image. Returns:
+
+```json
+{
+  "fields": [
+    {
+      "label": "net_quantity",
+      "raw_text": "200 g",
+      "confidence": 96.4,
+      "bounding_box": [x1, y1, x2, y2],
+      "font_height_px": 28.5,
+      "font_height_mm": 3.9,
+      "script": "latin"
+    }
+  ],
+  "pixel_per_mm_ratio": 7.31,
+  "calibration_method": "reference_coin | user_supplied_dimension | estimated"
+}
+```
+
+#### [NEW] `calibrator.py` — Pixel-to-mm ratio calculator
+
+- Strategy 1: detects an Indian 5-rupee coin (known diameter = 23 mm) using shape matching
+- Strategy 2: accepts a single user-supplied physical dimension at scan time
+- Strategy 3: falls back to heuristic estimation from standard label sizes
+
+#### [NEW] `extractor.py` — PaddleOCR wrapper
+
+- Uses `paddleocr.PaddleOCR(lang='en')` (also loads Hindi/Devanagari model)
+- Maps raw OCR text to semantic field labels via regex + heuristics (e.g., `₹` prefix → MRP field)
+- Calculates bounding-box height in pixels → converts to mm via calibration ratio
+
+---
+
+### Component 4 — NLP Microservice (`services/nlp/`)
+
+**Tech:** Python + `transformers` (DistilBERT or GPT-4o-mini via API) + FastAPI
+
+#### [NEW] `main.py` — NLP service entrypoint
+
+Exposes `POST /analyze`. Accepts structured field text. Returns:
+
+```json
+{
+  "prohibited_expressions_found": ["gms"],
+  "semantic_contradictions": [
+    {"headline": "MRP inclusive of all taxes", "footnote": "*local taxes extra", "severity": "high"}
+  ],
+  "missing_consumer_care_fields": ["email"],
+  "overall_semantic_verdict": "fail"
+}
+```
+
+#### [NEW] `classifier.py`
+
+- Regex-first pass for prohibited expressions from `lmpc_rules_v1.json`
+- LLM pass (GPT-4o-mini or local DistilBERT) for contradiction detection
+- Fields checked against `mandatory_consumer_care_fields` list from rule config
+
+---
+
+### Component 5 — FastAPI Orchestration Backend (`apps/api/`)
+
+**Tech:** Python + FastAPI + PostgreSQL (via SQLAlchemy) + AWS S3 / MinIO (via `boto3`)
+
+#### [NEW] `main.py`
+
+Top-level FastAPI app. Key endpoints:
+
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/scan` | Orchestrates Vision → OCR → NLP → Rule Engine. Returns `ComplianceReport`. |
+| `GET` | `/reports/{id}` | Fetch a stored compliance report |
+| `GET` | `/reports` | List reports (with filters: date, product, verdict) |
+| `POST` | `/reports/{id}/notice` | Generate a Show-Cause Notice PDF |
+| `GET` | `/heatmap` | Returns geo-aggregated violation data for dashboard |
+| `POST` | `/ecommerce/scrape` | Trigger e-commerce listing scrape by URL |
+| `GET` | `/rules` | Returns current lmpc_rules_v1.json (admin) |
+| `PUT` | `/rules` | Update rule config without redeploy (admin) |
+
+#### [NEW] `models.py` — SQLAlchemy ORM models
+
+```python
+class ScanRecord:
+    id: UUID
+    product_name: str
+    scan_timestamp: datetime
+    gps_lat: float
+    gps_lng: float
+    image_hash_sha256: str  # Chain of custody
+    device_id: str
+    verdict: Literal["pass", "review", "fail"]
+    confidence_composite: float
+    report_json: JSON
+
+class ViolationField:
+    scan_id: UUID
+    field_label: str
+    rule_citation: str
+    status: Literal["ok", "review", "fail"]
+    extracted_value: str
+    confidence: float
+```
+
+#### [NEW] `evidence_sealer.py` — Chain-of-Custody module
+
+- At image capture: computes `SHA-256` hash of raw bytes
+- Appends GPS coordinates, network timestamp (NTP), device hardware ID
+- Writes sealed metadata to an immutable log table (append-only via SQL trigger)
+
+#### [NEW] `notice_generator.py` — Show-Cause Notice PDF
+
+- Uses **WeasyPrint** to render an HTML template → PDF
+- Template includes: product photo (embedded), violation table, rule citations, inspector signature block, SHA-256 hash watermark
+- Output stored in S3/MinIO; presigned URL returned to caller
+
+#### [NEW] `scraper.py` — E-Commerce Compliance Scraper
+
+- Uses `playwright` (headless Chromium) to scrape product listing pages
+- Flattens dynamic dropdowns and carousels to extract Rule 6(10) fields
+- Checks Rule 6(10A) — country-of-origin filter presence
+- Feeds extracted data directly into the rule engine (no OCR stage needed)
+
+---
+
+### Component 6 — Next.js Analytics Portal (`apps/portal/`)
+
+**Tech:** Next.js 14 (App Router) + TypeScript + Vanilla CSS + Lucide React
+
+This is the main analytical dashboard for Legal Metrology inspectors and administrators.
+
+#### [MODIFY] Migrate [Rule6Prototype.jsx](file:///Users/shvetadeshmukh/Desktop/Rutu/SIH/Rule6Prototype.jsx)
+
+The existing prototype is an excellent starting point. It will be broken into proper Next.js page/component structure:
+
+| Source (prototype) | Destination (portal) |
+|---|---|
+| `SCENARIOS`, `MODE_ORDER`, `VERDICT_META`, `STATUS_META` data | `apps/portal/lib/ruleData.ts` |
+| CSS custom properties + `<style>` tag | `apps/portal/app/globals.css` |
+| [LogoMark](file:///Users/shvetadeshmukh/Desktop/Rutu/SIH/Rule6Prototype.jsx#321-332) component | `packages/shared-ui/LogoMark.tsx` |
+| [ConfidenceBar](file:///Users/shvetadeshmukh/Desktop/Rutu/SIH/Rule6Prototype.jsx#333-340) component | `packages/shared-ui/ConfidenceBar.tsx` |
+| [EvidencePanel](file:///Users/shvetadeshmukh/Desktop/Rutu/SIH/Rule6Prototype.jsx#341-414) component | `apps/portal/components/EvidencePanel.tsx` |
+| Main [App()](file:///Users/shvetadeshmukh/Desktop/Rutu/SIH/Rule6Prototype.jsx#419-902) export | `apps/portal/app/page.tsx` |
+
+#### [NEW] Portal pages
+
+| Page | Route | Description |
+|---|---|---|
+| **Home / Demo** | `/` | Migrated Rule6Prototype — three scenario tabs, animated scanning UI |
+| **Reports** | `/reports` | Paginated list of all compliance scans with filters |
+| **Report Detail** | `/reports/[id]` | Full field-by-field breakdown, evidence image, notice download |
+| **Heatmap** | `/heatmap` | Leaflet.js geo heatmap of violations by district |
+| **E-Commerce Monitor** | `/ecommerce` | Trigger scrapes, view listing compliance status |
+| **Rule Config** | `/admin/rules` | Admin UI to update `lmpc_rules_v1.json` without redeploy |
+
+#### [NEW] Key components
+
+- `ScanResultCard` — per-field verdict rows with confidence bars (extracted from prototype)
+- `VerdictStamp` — animated Pass / Review / Fail stamp (extracted from prototype)
+- `HeatmapView` — Leaflet map with clustered violation markers
+- `NoticeDownloadButton` — hits `POST /reports/{id}/notice`, streams PDF
+
+---
+
+### Component 7 — React Native Mobile App (`apps/mobile/`)
+
+**Tech:** Expo (React Native) + SQLite (offline cache) + Camera API
+
+#### [NEW] Key screens
+
+| Screen | Description |
+|---|---|
+| **Capture** | Camera viewfinder with overlay guides for reference coin placement |
+| **Processing** | Animated pipeline progress (Vision → OCR → NLP → Rule Engine) |
+| **Result** | Mobile-optimised version of `ScanResultCard` + verdict stamp |
+| **History** | Locally cached past scans (SQLite) for offline warehouse use |
+| **Citizen Report** | Simplified scan flow for public users; submits to heatmap |
+
+#### [NEW] `offlineCache.ts`
+
+- Uses `expo-sqlite` to store `ScanRecord` structs locally
+- Batches uploads when connectivity is restored (via `NetInfo` listener)
+
+---
+
+### Component 8 — Docker Orchestration
+
+#### [NEW] `docker-compose.yml`
+
+```yaml
+services:
+  api:       { build: apps/api,      ports: ["8000:8000"] }
+  vision:    { build: services/vision, ports: ["8001:8001"] }
+  ocr:       { build: services/ocr,    ports: ["8002:8002"] }
+  nlp:       { build: services/nlp,    ports: ["8003:8003"] }
+  portal:    { build: apps/portal,   ports: ["3000:3000"] }
+  postgres:  { image: postgres:15,   ports: ["5432:5432"] }
+  minio:     { image: minio/minio,   ports: ["9000:9000"] }
+```
+
+---
+
+## Verification Plan
+
+### Automated Tests
+
+#### 1. Rule Engine Unit Tests
+
+```bash
+cd packages/rule-engine
+pytest tests/ -v
+```
+
+Tests will cover:
+- All four font-size slabs (0-50g → 1mm, 51-200g → 2mm, 201-1000g → 4mm, 1001g+ → 6mm)
+- Physical / QR-assisted / e-commerce field presence checks
+- Prohibited expression detection (all 6 entries in the config)
+- Confidence threshold routing (>85 = pass, 40–85 = review, <40 = fail)
+
+#### 2. FastAPI Integration Tests
+
+```bash
+cd apps/api
+pytest tests/test_api.py -v
+```
+
+Tests will POST mock `ScanResult` payloads to `/scan` and assert correct verdict + rule citations in response.
+
+#### 3. Browser Automation (Portal UI)
+
+Using the built-in browser tool to verify all three prototype scenarios:
+
+1. Navigate to `http://localhost:3000`
+2. Click **"Printed label"** tab → click **"Run compliance check"** → assert verdict stamp = `Needs human review` (consumer-care confidence 61%)
+3. Click **"QR-assisted label"** tab → run → assert verdict = `Pass` (all fields present, QR fields decoded)
+4. Click **"Marketplace listing"** tab → run → assert verdict = `Fail` (2 missing fields)
+5. Verify confidence bars render for each field
+6. Verify animated sweep runs during scanning phase
+7. Verify rule citation tags (e.g., `Rule 6(1)(a)`) appear per field
+
+### Manual Verification
+
+1. **Start all services:**
+   ```bash
+   docker-compose up --build
+   ```
+2. **Upload a real product image** via the portal's Capture page and confirm a compliance report is generated with correct verdict.
+3. **Download a Show-Cause Notice PDF** from `/reports/{id}` and confirm it contains: product image, violation table, rule citations, and SHA-256 hash.
+4. **Test offline mode:** Put the mobile device in airplane mode, perform a scan, confirm it's cached locally, then restore connectivity and confirm the record syncs to PostgreSQL.
+5. **Test rule config update:** Navigate to `/admin/rules`, change the SLAB_B font threshold, save, and re-run a 100g product scan — confirm the new threshold is applied without any service restart.
