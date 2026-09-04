@@ -294,7 +294,7 @@ export const SCENARIOS = {
 export const MODE_ORDER = ["physical", "qr", "ecommerce"];
 
 export const VERDICT_META = {
-  pass: { word: "Pass", color: "#5AAE83", bg: "rgba(90, 174, 131, 0.14)" },
-  review: { word: "Needs human review", color: "#DA9E4E", bg: "rgba(218, 158, 78, 0.16)" },
-  fail: { word: "Fail", color: "#D06A5A", bg: "rgba(208, 106, 90, 0.16)" },
+  pass: { word: "Compliant (Pass)", color: "#10B981", bg: "rgba(16, 185, 129, 0.16)", border: "#10B981" },
+  review: { word: "Needs Review", color: "#F59E0B", bg: "rgba(245, 158, 11, 0.16)", border: "#F59E0B" },
+  fail: { word: "Non-Compliant (Fail)", color: "#EF4444", bg: "rgba(239, 68, 68, 0.16)", border: "#EF4444" },
 };
