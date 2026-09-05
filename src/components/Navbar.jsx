@@ -1,8 +1,8 @@
 import React from "react";
 import LogoMark from "./LogoMark";
-import { Shield, Sparkles, Sliders, FileText, MapPin, CheckCircle2 } from "lucide-react";
+import { Shield, Sparkles, Sliders, FileText, MapPin, CheckCircle2, Scan } from "lucide-react";
 
-export default function Navbar({ activeTab, setActiveTab }) {
+export default function Navbar({ activeTab, setActiveTab, onOpenScanner }) {
   const tabs = [
     { id: "rule6", label: "Rule 6 Engine", icon: Shield, badge: "3 Scenarios" },
     { id: "vision", label: "Vision & Coin Calibrator", icon: Sparkles, badge: "₹5 Coin" },
@@ -12,11 +12,14 @@ export default function Navbar({ activeTab, setActiveTab }) {
   ];
 
   return (
-    <header className="border-b border-[#26394B] bg-[#0E1A26]/90 backdrop-blur sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
+    <header className="border-b border-[#26394B] bg-[#0E1A26]/95 backdrop-blur sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex flex-col md:flex-row items-center justify-between gap-3">
         {/* Brand */}
         <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
-          <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => setActiveTab("rule6")}>
+          <div 
+            className="flex items-center gap-2.5 cursor-pointer select-none active:opacity-85 transition-opacity" 
+            onClick={() => setActiveTab("rule6")}
+          >
             <LogoMark size={28} />
             <div>
               <div className="flex items-center gap-1.5 font-serif text-lg tracking-tight leading-none text-[#EDEAE1]">
@@ -32,14 +35,28 @@ export default function Navbar({ activeTab, setActiveTab }) {
             </div>
           </div>
 
-          <div className="md:hidden flex items-center gap-1.5 text-[11px] font-mono text-[#5AAE83] bg-[#5AAE83]/10 px-2 py-1 rounded border border-[#5AAE83]/30">
-            <CheckCircle2 size={12} />
-            <span>LMPC Engine Ready</span>
+          {/* Mobile Right Action Bar: Scan Trigger & Ready Badge */}
+          <div className="md:hidden flex items-center gap-2">
+            {onOpenScanner && (
+              <button
+                onClick={onOpenScanner}
+                className="flex items-center gap-1.5 bg-[#C9A15A] active:bg-[#E0BE7E] text-[#241B08] px-2.5 py-1 rounded-md text-xs font-semibold shadow-sm transition-all"
+                title="Instant Scanner"
+              >
+                <Scan size={13} className="text-[#241B08]" />
+                <span className="text-[11px]">Scan</span>
+              </button>
+            )}
+
+            <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#5AAE83] bg-[#5AAE83]/10 px-2 py-1 rounded border border-[#5AAE83]/30">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#5AAE83] animate-pulse" />
+              <span>Ready</span>
+            </div>
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <nav className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-thin">
+        {/* Desktop & Tablet Navigation Tabs */}
+        <nav className="hidden md:flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-0.5 md:pb-0 scrollbar-thin">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;

@@ -15,18 +15,15 @@ import {
   Play,
   ExternalLink,
   ChevronRight,
-  Scan,
-  Sparkles,
-  Layers,
-  ChevronDown
+  Scan
 } from "lucide-react";
 import { SCENARIOS, MODE_ORDER, VERDICT_META } from "../data/scenarios";
 import ConfidenceBar from "./ConfidenceBar";
 
 const STATUS_META = {
-  ok: { Icon: Check, color: "#10B981", bg: "rgba(16, 185, 129, 0.14)" },
-  review: { Icon: AlertTriangle, color: "#F59E0B", bg: "rgba(245, 158, 11, 0.16)" },
-  fail: { Icon: X, color: "#EF4444", bg: "rgba(239, 68, 68, 0.16)" },
+  ok: { Icon: Check, color: "#5AAE83" },
+  review: { Icon: AlertTriangle, color: "#DA9E4E" },
+  fail: { Icon: X, color: "#D06A5A" },
 };
 
 const QR_PATTERN = [
@@ -41,90 +38,84 @@ const QR_PATTERN = [
 
 function EvidencePanel({ scenario, phase }) {
   return (
-    <div className="bg-[#111625] border border-[#232D45] rounded-2xl p-3.5 shadow-md">
-      <div className="relative overflow-hidden rounded-xl min-h-[260px] flex items-center justify-center bg-[#07090F] border border-[#232D45]/60">
+    <div className="bg-[#121F2E] border border-[#26394B] rounded-lg p-3 sm:p-4">
+      <div className="relative overflow-hidden rounded min-h-[280px] sm:min-h-[310px] flex items-center justify-center bg-[#0E1A26]">
         {scenario.id !== "ecommerce" ? (
-          <div className="bg-[#F5F3EF] text-[#1C1A12] w-[94%] my-3 p-3.5 rounded-xl shadow-lg border border-purple-500/20">
-            <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-[#1C1A12]/10">
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 bg-purple-700/20 rounded flex items-center justify-center text-purple-800 font-bold text-[10px]">
-                  ✓
-                </div>
-                <div className="text-xs font-bold tracking-tight text-[#1C1A12] font-sans truncate max-w-[170px]">
-                  {scenario.product}
-                </div>
+          <div className="bg-[#ECE7D9] text-[#1C1A12] w-[94%] sm:w-[92%] my-4 sm:my-5 mx-auto p-4 rounded shadow-md border border-[#C9A15A]/20">
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="w-6 h-6 bg-[#1C1A12]/15 rounded flex items-center justify-center text-[#1C1A12] font-bold text-xs">
+                ✓
               </div>
-              <span className="text-[9px] font-mono font-semibold bg-[#1C1A12]/10 text-[#1C1A12] px-1.5 py-0.5 rounded">
-                LMPC 2011
-              </span>
+              <div className="text-xs font-semibold tracking-wide text-[#1C1A12] font-sans truncate">
+                {scenario.product}
+              </div>
             </div>
-
-            <div className="space-y-1.5 my-2">
-              <div className="h-1.5 bg-[#1C1A12]/15 rounded w-[88%]" />
-              <div className="h-1.5 bg-[#1C1A12]/15 rounded w-[72%]" />
-              <div className="h-1.5 bg-[#1C1A12]/15 rounded w-[80%]" />
-            </div>
+            <div className="h-1.5 bg-[#1C1A12]/15 rounded mb-2 w-[88%]" />
+            <div className="h-1.5 bg-[#1C1A12]/15 rounded mb-2 w-[72%]" />
+            <div className="h-1.5 bg-[#1C1A12]/15 rounded mb-2 w-[81%]" />
+            <div className="h-1.5 bg-[#1C1A12]/15 rounded mb-2 w-[58%]" />
 
             {scenario.id === "qr" && (
-              <div className="flex items-center gap-2.5 my-2.5 p-2 bg-[#1C1A12]/05 rounded-lg border border-[#1C1A12]/10">
+              <div className="flex items-center gap-3 my-3 p-2.5 bg-[#1C1A12]/05 rounded border border-[#1C1A12]/10">
                 <div className="flex flex-col gap-0.5 flex-none" aria-hidden="true">
                   {QR_PATTERN.map((row, r) => (
                     <div key={r} className="flex gap-0.5">
                       {row.map((cell, c) => (
                         <span
                           key={c}
-                          className={`w-1.5 h-1.5 block rounded-[0.5px] ${cell ? "bg-[#1C1A12]" : "bg-transparent"}`}
+                          className={`w-1.5 h-1.5 block ${cell ? "bg-[#1C1A12]" : "bg-transparent"}`}
                         />
                       ))}
                     </div>
                   ))}
                 </div>
-                <div className="text-[10.5px] text-[#1C1A12]/80 leading-snug font-sans">
-                  <span className="font-bold block text-purple-900">Electronics QR Proviso:</span>
-                  Discloses mfg address, generic name &amp; size
+                <div className="text-[11px] text-[#1C1A12]/80 leading-snug font-sans">
+                  <span className="font-semibold block text-[#1C1A12]">Statutory Electronics QR:</span>
+                  Scan for manufacturer address, generic name &amp; physical dimensions
                 </div>
               </div>
             )}
 
-            <div className="flex items-end justify-between mt-2.5 pt-2 border-t border-dashed border-[#1C1A12]/20">
-              <div className="font-mono font-bold text-base text-[#1C1A12] leading-tight">
+            <div className="flex items-end justify-between mt-3.5 pt-3 border-t border-dashed border-[#1C1A12]/25">
+              <div className="font-mono font-semibold text-base sm:text-lg text-[#1C1A12] leading-tight">
                 {scenario.id === "qr" ? "₹899" : "₹40"}
-                <span className="block font-sans font-medium text-[8.5px] text-[#1C1A12]/60 uppercase tracking-wider">
-                  MRP, incl. all taxes
+                <span className="block font-sans font-normal text-[9px] text-[#1C1A12]/60 uppercase tracking-wider">
+                  MRP, incl. of all taxes
                 </span>
               </div>
-              <div className="font-mono font-bold text-xs text-[#1C1A12] bg-[#1C1A12]/10 px-2 py-0.5 rounded">
+              <div className="font-mono font-semibold text-xs sm:text-sm text-[#1C1A12]">
                 {scenario.id === "qr" ? "1 N" : "200 g"}
               </div>
             </div>
           </div>
         ) : (
-          <div className="w-[94%] my-3 bg-[#111625] border border-[#232D45] rounded-xl overflow-hidden shadow-lg">
-            <div className="font-mono text-[10px] text-[#94A3B8] py-1.5 px-3 border-b border-[#232D45] bg-[#0A0D15] flex items-center justify-between">
-              <span className="truncate max-w-[180px]">quickcommerce.in/sku-48213</span>
-              <span className="text-[9px] text-[#10B981] bg-[#10B981]/15 px-1.5 py-0.5 rounded font-semibold">Live App</span>
+          <div className="w-[94%] my-4 bg-[#12202E] border border-[#26394B] rounded-lg overflow-hidden shadow-md">
+            <div className="font-mono text-[10.5px] text-[#63768A] py-2 px-3 border-b border-[#26394B] bg-[#0B1520]/80 flex items-center justify-between">
+              <span className="truncate max-w-[200px] sm:max-w-none">quickcommerce.in/product/48213-juice</span>
+              <span className="text-[9px] text-[#5AAE83] bg-[#5AAE83]/10 px-1.5 py-0.5 rounded flex-none">Live Listing</span>
             </div>
-            <div className="flex gap-3 p-3">
-              <div className="w-16 h-20 flex-none bg-[#07090F] rounded-lg flex items-center justify-center border border-[#232D45]" aria-hidden="true">
-                <div className="w-6 h-12 rounded-t-sm rounded-b-md bg-gradient-to-b from-amber-500 to-amber-700 shadow-inner" />
+            <div className="flex gap-3.5 p-3.5">
+              <div className="w-18 sm:w-20 h-22 sm:h-24 flex-none bg-[#0E1A26] rounded-md flex items-center justify-center border border-[#26394B]" aria-hidden="true">
+                <div className="w-7 h-14 rounded-t-sm rounded-b-md bg-gradient-to-b from-[#DA9E4E] to-[#B97B33] shadow-inner" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-sans font-bold text-xs text-[#F8FAFC] truncate">
-                  Cold-Pressed Orange Juice
+                <div className="h-2 bg-[#26394B] rounded w-[75%] mb-2" />
+                <div className="font-mono text-sm sm:text-base font-semibold text-[#EDEAE1] my-1">
+                  ₹120 <span className="font-sans font-normal text-xs text-[#63768A]">/ 500 ml</span>
                 </div>
-                <div className="font-mono text-sm font-bold text-[#F8FAFC] my-1">
-                  ₹120 <span className="font-sans font-normal text-[10px] text-[#94A3B8]">/ 500 ml</span>
-                </div>
-                <div className="flex gap-1 flex-wrap my-1.5">
-                  <span className="text-[9px] font-mono text-[#94A3B8] border border-[#232D45] rounded px-1.5 py-0.5 bg-[#182032]">
+                <div className="flex gap-1.5 flex-wrap my-2">
+                  <span className="text-[10px] font-mono text-[#99AAB8] border border-[#26394B] rounded-full px-2 py-0.5 bg-[#17293B]">
                     Origin: India
                   </span>
-                  <span className="text-[9px] font-mono text-[#10B981] border border-[#10B981]/30 rounded px-1.5 py-0.5 bg-[#10B981]/10 font-semibold">
+                  <span className="text-[10px] font-mono text-[#5AAE83] border border-[#5AAE83]/30 rounded-full px-2 py-0.5 bg-[#5AAE83]/10">
                     Rule 6(10A) Filter
                   </span>
                 </div>
-                <div className="text-[10px] text-[#EF4444] font-mono mt-1">
-                  ⚠ Missing Mfd &amp; Redressal Data
+                <div className="inline-block bg-[#C9A15A] text-[#241B08] text-[11px] font-semibold px-3 py-1 rounded">
+                  Add to Cart
+                </div>
+                <div className="text-[11px] text-[#63768A] mt-1.5 truncate">
+                  Product disclosures ▾ (Fold closed)
                 </div>
               </div>
             </div>
@@ -135,23 +126,23 @@ function EvidencePanel({ scenario, phase }) {
           <div
             className="absolute left-0 right-0 h-1/4 pointer-events-none"
             style={{
-              background: "linear-gradient(to bottom, transparent, rgba(139, 92, 246, 0.45), transparent)",
-              animation: "scanSweep 1.6s ease-in-out infinite",
+              background: "linear-gradient(to bottom, transparent, rgba(201, 161, 90, 0.35), transparent)",
+              animation: "scanSweep 1.8s ease-in-out infinite",
             }}
             aria-hidden="true"
           />
         )}
       </div>
 
-      <div className="flex items-center gap-2 mt-2.5 text-[11px] text-[#94A3B8]">
-        <FileText size={13} className="text-[#A855F7] flex-none" />
+      <div className="flex items-center gap-2 mt-3 text-xs text-[#63768A]">
+        <FileText size={14} className="text-[#63768A] flex-none" />
         <span className="truncate">{scenario.context}</span>
       </div>
     </div>
   );
 }
 
-export default function Rule6Engine({ onGenerateNotice, onNavigateToVision }) {
+export default function Rule6Engine({ onGenerateNotice, onOpenScanner }) {
   const [mode, setMode] = useState("qr");
   const [phase, setPhase] = useState("idle");
   const [runId, setRunId] = useState(0);
@@ -190,62 +181,50 @@ export default function Rule6Engine({ onGenerateNotice, onNavigateToVision }) {
   };
 
   return (
-    <div className="space-y-4">
-      {/* Compact Mobile Hero */}
-      <div className="bg-gradient-to-br from-[#182032] to-[#111625] border border-[#232D45] rounded-2xl p-4 shadow-lg relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-28 h-28 bg-purple-600/10 rounded-full blur-2xl pointer-events-none" />
-        
-        <div className="flex items-center gap-2 mb-2">
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-purple-950/90 border border-purple-600/40 text-[#C084FC] text-[10.5px] font-mono font-semibold">
-            <ShieldCheck size={12} className="text-[#A855F7]" />
-            <span>Rule 6 Compliance Engine</span>
-          </span>
-          <span className="text-[10px] font-mono text-[#10B981] bg-[#10B981]/15 px-2 py-0.5 rounded-full border border-[#10B981]/30">
-            2022 Proviso Ready
-          </span>
-        </div>
-
-        <h1 className="text-lg font-bold text-[#F8FAFC] leading-snug font-sans">
-          Statutory Label &amp; QR Proviso Verification
-        </h1>
-        <p className="text-xs text-[#94A3B8] leading-relaxed mt-1">
-          Checks what amended Rule 6 still requires on physical packs, validates electronic QR disclosures, and audits digital e-commerce listings.
-        </p>
-
-        {/* Quick Launch Action Bar */}
-        <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[#232D45]">
-          <button
-            onClick={handleRun}
-            disabled={phase === "scanning"}
-            className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 active:scale-95 text-white font-semibold text-xs py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-purple-glow disabled:opacity-50"
-          >
-            {phase === "done" ? <RotateCcw size={14} /> : <Play size={14} />}
-            <span>{phase === "idle" ? "Run Compliance Scan" : phase === "scanning" ? "Scanning Fields..." : "Re-Scan Pack"}</span>
-          </button>
-
-          {onNavigateToVision && (
+    <div className="space-y-6 sm:space-y-8">
+      {/* Hero Intro Section */}
+      <section className="pt-1 pb-4 sm:pb-6 border-b border-[#26394B]">
+        <div className="max-w-4xl">
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-[#C9A15A]/10 border border-[#C9A15A]/30 text-[#C9A15A] text-xs font-mono mb-2.5 sm:mb-3">
+            <ShieldCheck size={14} />
+            <span>LM (Packaged Commodities) Rules, 2011 — Section 6 Enforcement</span>
+          </div>
+          <h1 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal leading-tight text-[#EDEAE1] mb-2 sm:mb-3">
+            Half a label just moved into a QR code. <br className="hidden sm:inline" />
+            <span className="text-[#C9A15A]">Most checkers haven't caught up.</span>
+          </h1>
+          <p className="text-xs sm:text-sm lg:text-base text-[#99AAB8] leading-relaxed mb-4 max-w-3xl">
+            Rule 6 reads a package the way Legal Metrology actually reads it: checking
+            what the amended Rule 6 still requires on the pack, decoding what it now
+            allows in a QR code, and checking digital marketplace displays against the
+            Rule 6(10) &amp; Rule 6(10A) digital duty.
+          </p>
+          <div className="flex items-center gap-3 flex-wrap">
             <button
-              onClick={onNavigateToVision}
-              className="bg-[#111625] hover:bg-[#182032] border border-purple-500/30 text-[#C084FC] text-xs font-semibold py-2.5 px-3 rounded-xl flex items-center gap-1 active:scale-95 transition-all"
-              title="Open Optical ₹5 Coin Calibrator"
+              onClick={handleRun}
+              disabled={phase === "scanning"}
+              className="bg-[#C9A15A] hover:bg-[#E0BE7E] active:scale-95 text-[#241B08] font-semibold text-xs sm:text-sm px-4 py-2.5 rounded flex items-center gap-2 transition-all shadow-sm disabled:opacity-60"
             >
-              <Sparkles size={13} />
-              <span>Coin Calibrator</span>
+              <Play size={15} />
+              <span>Run Rule 6 Compliance Scan</span>
             </button>
-          )}
+            <span className="text-xs font-mono text-[#63768A]">
+              Active Scenario: <strong className="text-[#EDEAE1]">{scenario.tabTitle}</strong>
+            </span>
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Horizontally Scrollable Scenario Selector Cards */}
-      <div>
-        <div className="flex items-center justify-between px-1 mb-2">
-          <h2 className="text-xs font-mono uppercase tracking-wider text-[#94A3B8]">
-            Select Regulatory Scenario
+      {/* Scenario Selection Tabs (Responsive: Scrollable on mobile, Grid on desktop/tablet) */}
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-serif text-lg sm:text-xl text-[#EDEAE1] font-normal">
+            Select Regulatory Scenario Branch
           </h2>
-          <span className="text-[10px] font-mono text-purple-400">Swipe cards →</span>
+          <span className="text-xs font-mono text-[#63768A] hidden sm:inline">LMPC 2011 + 2022 Amendment</span>
         </div>
 
-        <div className="flex items-center gap-2.5 overflow-x-auto no-scrollbar snap-x-mandatory pb-1">
+        <div className="flex sm:grid sm:grid-cols-3 gap-3 overflow-x-auto no-scrollbar snap-x-mandatory pb-1 sm:pb-0" role="tablist">
           {MODE_ORDER.map((key) => {
             const s = SCENARIOS[key];
             const Icon = getScenarioIcon(s.iconName);
@@ -253,171 +232,185 @@ export default function Rule6Engine({ onGenerateNotice, onNavigateToVision }) {
             return (
               <button
                 key={key}
+                role="tab"
+                aria-selected={isSelected}
                 onClick={() => setMode(key)}
-                className={`snap-start flex-none w-[220px] text-left p-3.5 rounded-2xl border transition-all active:scale-[0.98] ${
+                className={`snap-start flex-none w-[240px] sm:w-auto text-left p-3.5 sm:p-4 rounded-lg border transition-all active:scale-[0.98] ${
                   isSelected
-                    ? "bg-gradient-to-br from-[#1c1a35] to-[#121626] border-[#8B5CF6] shadow-purple-glow ring-1 ring-[#8B5CF6]/50"
-                    : "bg-[#111625] border-[#232D45] text-[#94A3B8]"
+                    ? "bg-[#17293B] border-[#C9A15A] shadow-md ring-1 ring-[#C9A15A]/40"
+                    : "bg-[#121F2E] border-[#26394B] hover:border-[#63768A] text-[#EDEAE1]"
                 }`}
               >
-                <div className="flex items-center justify-between mb-1.5">
-                  <div className="flex items-center gap-1.5">
-                    <Icon size={15} className={isSelected ? "text-[#C084FC]" : "text-[#94A3B8]"} />
-                    <span className="text-[10px] font-mono text-[#64748B]">{s.tag}</span>
-                  </div>
-                  {isSelected && (
-                    <span className="w-2 h-2 rounded-full bg-[#8B5CF6] animate-pulse" />
-                  )}
+                <div className="flex items-center gap-2 mb-2">
+                  <Icon size={16} className={isSelected ? "text-[#C9A15A]" : "text-[#99AAB8]"} />
+                  <span className="text-[11px] font-mono text-[#63768A]">{s.tag}</span>
                 </div>
-                <div className={`text-xs font-bold truncate ${isSelected ? "text-[#F8FAFC]" : "text-[#94A3B8]"}`}>
-                  {s.tabTitle}
-                </div>
-                <div className="text-[10.5px] text-[#94A3B8] mt-1 line-clamp-2 leading-tight">
-                  {s.nuance}
-                </div>
+                <div className="text-sm font-semibold text-[#EDEAE1] mb-1">{s.tabTitle}</div>
+                <div className="text-xs text-[#99AAB8] leading-relaxed line-clamp-2">{s.nuance}</div>
               </button>
             );
           })}
         </div>
-      </div>
+      </section>
 
-      {/* Visual Evidence Card */}
-      <EvidencePanel scenario={scenario} phase={phase} />
+      {/* Interactive Scan Demo Arena (Responsive 12-column grid on desktop, single-column on mobile) */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column: Visual Evidence & Execution */}
+        <div className="lg:col-span-5 space-y-3">
+          <EvidencePanel scenario={scenario} phase={phase} />
 
-      {/* Rule Engine Output & Field Results */}
-      <div className="bg-[#111625] border border-[#232D45] rounded-2xl p-4 space-y-3.5 shadow-md">
-        {phase === "idle" && (
-          <div className="py-6 text-center text-[#94A3B8] space-y-2">
-            <div className="w-12 h-12 rounded-full bg-purple-950/60 border border-purple-500/30 flex items-center justify-center text-[#C084FC] mx-auto">
-              <Gauge size={24} />
-            </div>
-            <p className="text-xs font-sans max-w-xs mx-auto text-[#94A3B8]">
-              Tap <strong className="text-[#F8FAFC]">"Run Compliance Scan"</strong> to evaluate this {scenario.tag} against LMPC 2011 mandates.
-            </p>
-          </div>
-        )}
-
-        {phase === "scanning" && (
-          <div className="py-4 space-y-2.5" key={`log-${mode}-${runId}`}>
-            <div className="text-xs font-mono text-[#C084FC] flex items-center gap-2 mb-1">
-              <span className="inline-block w-2 h-2 rounded-full bg-[#8B5CF6] animate-ping" />
-              <span>Running Stage 1 YOLOv8 + Stage 2 PaddleOCR</span>
-            </div>
-            {scenario.logLines.map((line, i) => (
-              <div
-                key={i}
-                className="font-mono text-[11px] text-[#94A3B8] flex items-center gap-2 animate-fadeIn"
-                style={{ animationDelay: `${i * 300}ms` }}
-              >
-                <span className="text-[#8B5CF6] font-bold">›</span>
-                <span className="truncate">{line}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {phase === "done" && (
-          <div className="space-y-3 animate-fadeIn" key={`done-${mode}-${runId}`}>
-            {/* AI Classification Tag */}
-            <div className="text-[11.5px] text-[#94A3B8] border-l-2 border-purple-500 pl-2.5 py-1 bg-purple-950/20 rounded-r-lg">
-              <span className="font-semibold text-[#F8FAFC]">Classification: </span>
-              {scenario.detection}
-            </div>
-
-            {/* Verdict Header Row */}
-            <div className="p-3 rounded-xl border flex items-center justify-between flex-wrap gap-2"
-              style={{
-                backgroundColor: verdict.bg,
-                borderColor: verdict.border,
-              }}
+          <div className="flex items-center justify-between gap-3 pt-1">
+            <button
+              onClick={handleRun}
+              disabled={phase === "scanning"}
+              className="flex-1 bg-[#C9A15A] hover:bg-[#E0BE7E] active:scale-95 text-[#241B08] font-semibold text-xs sm:text-sm py-2.5 px-4 rounded flex items-center justify-center gap-2 transition-all shadow-sm disabled:opacity-60"
             >
-              <div className="flex items-center gap-2">
-                <span
-                  className="font-mono font-bold text-xs uppercase px-2 py-0.5 rounded-md"
-                  style={{ color: verdict.color }}
-                >
-                  {verdict.word}
-                </span>
-              </div>
+              {phase === "done" ? <RotateCcw size={15} /> : <Play size={15} />}
+              {phase === "idle" && "Run compliance check"}
+              {phase === "scanning" && "Reading statutory fields…"}
+              {phase === "done" && "Re-run compliance check"}
+            </button>
 
-              <div className="flex items-center gap-1.5 font-mono text-xs">
-                <span className="text-[#94A3B8] text-[10.5px]">OCR Score:</span>
-                <ConfidenceBar value={avgConfidence} color="#8B5CF6" width={50} />
-                <strong className="text-[#F8FAFC]">{avgConfidence}%</strong>
-              </div>
-            </div>
-
-            {/* Fields List */}
-            <div className="space-y-2 max-h-[340px] overflow-y-auto no-scrollbar pr-0.5">
-              {scenario.fields.map((f, i) => {
-                const st = STATUS_META[f.status];
-                return (
-                  <div
-                    key={f.label}
-                    className="p-3 rounded-xl bg-[#0B0E17] border border-[#232D45] text-xs space-y-1"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 rounded-full flex items-center justify-center flex-none" style={{ backgroundColor: st.bg }}>
-                          <st.Icon size={12} style={{ color: st.color }} className="stroke-[2.5]" />
-                        </div>
-                        <span className="font-semibold text-[#F8FAFC]">{f.label}</span>
-                      </div>
-
-                      <div className="flex items-center gap-1.5 font-mono text-[10.5px]">
-                        <span className="text-[#64748B]">{f.confidence}%</span>
-                        <ConfidenceBar value={f.confidence} color={st.color} width={30} height={4} />
-                      </div>
-                    </div>
-
-                    <div className="text-[11.5px] text-[#94A3B8] pl-7 break-words">
-                      {f.value}
-                    </div>
-
-                    <div className="flex items-center justify-between pl-7 pt-1 text-[10px] font-mono text-[#64748B]">
-                      <span>{f.rule}</span>
-                      {f.source !== "pack" && (
-                        <span className="text-purple-400 bg-purple-950/70 border border-purple-800/40 px-1.5 py-0.2 rounded">
-                          {f.source === "qr" ? "QR Proviso" : "Digital Listing"}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* AI Callout comparison */}
-            {scenario.callout && (
-              <div className="p-3 bg-purple-950/30 border border-purple-600/30 rounded-xl text-xs space-y-1">
-                <div className="text-[#64748B] line-through text-[11px]">
-                  {scenario.callout.naive}
-                </div>
-                <div className="text-[#F8FAFC] text-[11.5px] leading-relaxed">
-                  <strong className="text-[#C084FC]">LabelLens Intelligence: </strong>
-                  {scenario.callout.rule6}
-                </div>
-              </div>
-            )}
-
-            {/* Verdict Note */}
-            <p className="text-[11px] text-[#94A3B8] bg-[#182032]/40 p-2.5 rounded-xl border border-[#232D45] leading-relaxed">
-              {scenario.verdictNote}
-            </p>
-
-            {/* Direct Show-Cause Notice Button if Fail */}
-            {scenario.verdict === "fail" && onGenerateNotice && (
+            {scenario.verdict === "fail" && phase === "done" && onGenerateNotice && (
               <button
                 onClick={() => onGenerateNotice(scenario)}
-                className="w-full bg-[#EF4444]/20 hover:bg-[#EF4444]/30 active:scale-[0.98] text-[#EF4444] border border-[#EF4444]/40 text-xs font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg"
+                className="bg-[#D06A5A]/20 hover:bg-[#D06A5A]/30 text-[#D06A5A] border border-[#D06A5A]/40 text-xs font-semibold py-2.5 px-3.5 rounded flex items-center gap-1.5 transition-all shadow-sm"
+                title="Generate Statutory Show-Cause Notice under Sec 39"
               >
-                <FileText size={15} />
-                <span>Issue Show-Cause Notice (Sec 39)</span>
+                <FileText size={14} />
+                <span>Issue Notice</span>
               </button>
             )}
           </div>
-        )}
-      </div>
+
+          <div className="text-[11px] font-mono text-[#63768A] bg-[#0E1A26] p-2.5 rounded border border-[#26394B] leading-relaxed">
+            <strong className="text-[#99AAB8]">Automated Verdict Logic:</strong> Missing mandatory field → FAIL · OCR confidence &lt;85% → NEEDS REVIEW · All present &amp; confident → PASS
+          </div>
+        </div>
+
+        {/* Right Column: Rule Engine Output */}
+        <div className="lg:col-span-7 bg-[#121F2E] border border-[#26394B] rounded-lg p-4 sm:p-5 flex flex-col min-h-[360px]">
+          {phase === "idle" && (
+            <div className="m-auto text-center text-[#63768A] max-w-xs py-8">
+              <Gauge size={36} className="mx-auto mb-3 opacity-60 text-[#C9A15A]" />
+              <p className="text-sm text-[#99AAB8] font-sans">
+                Press <strong className="text-[#EDEAE1]">"Run compliance check"</strong> to evaluate this {scenario.tag} against LMPC 2011 clauses.
+              </p>
+            </div>
+          )}
+
+          {phase === "scanning" && (
+            <div className="my-auto space-y-3 py-6" key={`log-${mode}-${runId}`}>
+              <div className="text-xs font-mono text-[#C9A15A] flex items-center gap-2 mb-2">
+                <span className="inline-block w-2 h-2 rounded-full bg-[#C9A15A] animate-ping" />
+                <span>Executing Two-Stage YOLOv8 + PaddleOCR Pipeline</span>
+              </div>
+              {scenario.logLines.map((line, i) => (
+                <div
+                  key={i}
+                  className="font-mono text-xs text-[#99AAB8] flex items-center gap-2 animate-fadeIn"
+                  style={{ animationDelay: `${i * 300}ms` }}
+                >
+                  <span className="text-[#C9A15A] font-bold">›</span>
+                  <span className="truncate">{line}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {phase === "done" && (
+            <div className="space-y-4 animate-fadeIn" key={`done-${mode}-${runId}`}>
+              {/* Detection banner */}
+              <div className="text-xs text-[#99AAB8] border-l-2 border-[#C9A15A] pl-3 py-1 bg-[#17293B]/40 rounded-r">
+                <span className="font-semibold text-[#EDEAE1]">AI Pipeline Classification: </span>
+                {scenario.detection}
+              </div>
+
+              {/* Verdict row */}
+              <div className="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-[#26394B]">
+                <div className="flex items-center gap-3">
+                  <span
+                    className="font-mono font-bold text-xs uppercase tracking-wider px-3 py-1.5 rounded border"
+                    style={{
+                      color: verdict.color,
+                      backgroundColor: verdict.bg,
+                      borderColor: verdict.color,
+                    }}
+                  >
+                    {verdict.word}
+                  </span>
+                  <span className="text-xs font-mono text-[#99AAB8] flex items-center gap-2">
+                    <span>Composite OCR Score:</span>
+                    <ConfidenceBar value={avgConfidence} color="#C9A15A" width={60} />
+                    <strong className="text-[#EDEAE1]">{avgConfidence}%</strong>
+                  </span>
+                </div>
+
+                <span className="text-[11px] font-mono text-[#63768A]">
+                  Product: {scenario.product}
+                </span>
+              </div>
+
+              {/* Fields Table */}
+              <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1 scrollbar-thin">
+                {scenario.fields.map((f, i) => {
+                  const st = STATUS_META[f.status];
+                  return (
+                    <div
+                      key={f.label}
+                      className="grid grid-cols-12 gap-2 items-start py-2 px-2.5 rounded bg-[#0E1A26]/60 border border-[#26394B]/60 text-xs"
+                    >
+                      <div className="col-span-1 pt-0.5">
+                        <st.Icon size={14} style={{ color: st.color }} />
+                      </div>
+                      <div className="col-span-7">
+                        <div className="font-medium text-[#EDEAE1] flex items-center gap-1.5 flex-wrap">
+                          <span>{f.label}</span>
+                          {f.source !== "pack" && (
+                            <span className="font-mono text-[9.5px] text-[#C9A15A] bg-[#C9A15A]/10 border border-[#C9A15A]/30 rounded px-1.5 py-0.2">
+                              {f.source === "qr" ? "via 2022 QR Proviso" : "on digital listing"}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[11.5px] text-[#99AAB8] mt-0.5 break-words">
+                          {f.value}
+                        </div>
+                      </div>
+                      <div className="col-span-4 text-right">
+                        <div className="font-mono text-[10px] text-[#63768A] truncate">
+                          {f.rule}
+                        </div>
+                        <div className="font-mono text-[10.5px] flex items-center justify-end gap-1.5 mt-0.5" style={{ color: st.color }}>
+                          <ConfidenceBar value={f.confidence} color={st.color} width={40} />
+                          <span>{f.confidence}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Callout comparing naive checker vs Rule 6 */}
+              {scenario.callout && (
+                <div className="p-3 bg-[#C9A15A]/10 border border-[#C9A15A]/30 rounded text-xs space-y-1.5">
+                  <div className="text-[#63768A] line-through decoration-[#D06A5A]">
+                    {scenario.callout.naive}
+                  </div>
+                  <div className="text-[#EDEAE1] leading-relaxed">
+                    <strong className="text-[#C9A15A]">LabelLens Rule 6 Intelligence: </strong>
+                    {scenario.callout.rule6}
+                  </div>
+                </div>
+              )}
+
+              {/* Legal verdict note */}
+              <p className="text-xs text-[#99AAB8] bg-[#17293B]/30 p-2.5 rounded border border-[#26394B] leading-relaxed">
+                {scenario.verdictNote}
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

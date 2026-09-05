@@ -4,63 +4,49 @@
 
 @layer base {
   :root {
-    --ink: #0B0E17;
-    --panel: #111625;
-    --panel-raised: #182032;
-    --panel-line: #232D45;
-    --paper: #F5F3EF;
+    --ink: #0B1520;
+    --panel: #121F2E;
+    --panel-raised: #17293B;
+    --panel-line: #26394B;
+    --paper: #ECE7D9;
     --paper-ink: #1C1A12;
-    --purple-accent: #8B5CF6;
-    --purple-vibrant: #7C3AED;
-    --text-1: #F8FAFC;
-    --text-2: #94A3B8;
-    --text-3: #64748B;
-    --pass: #10B981;
-    --fail: #EF4444;
-    --review: #F59E0B;
+    --brass: #C9A15A;
+    --brass-strong: #E0BE7E;
+    --brass-ink: #241B08;
+    --text-1: #EDEAE1;
+    --text-2: #99AAB8;
+    --text-3: #63768A;
+    --pass: #5AAE83;
+    --fail: #D06A5A;
+    --review: #DA9E4E;
   }
 
   body {
-    background-color: #07090F;
-    color: #F8FAFC;
+    background-color: #0B1520;
+    color: #EDEAE1;
     font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
   }
 }
 
 @keyframes scanSweep {
-  0% { top: -20%; opacity: 0.8; }
+  0% { top: -25%; opacity: 0.8; }
   50% { opacity: 1; }
   100% { top: 105%; opacity: 0.8; }
 }
 
-@keyframes laserSweep {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(400%); }
-}
-
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 15px rgba(124, 58, 237, 0.4); transform: scale(1); }
-  50% { box-shadow: 0 0 28px rgba(124, 58, 237, 0.75); transform: scale(1.03); }
+  0%, 100% { box-shadow: 0 0 15px rgba(201, 161, 90, 0.35); transform: scale(1); }
+  50% { box-shadow: 0 0 25px rgba(201, 161, 90, 0.65); transform: scale(1.03); }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fadeIn {
   animation: fadeIn 300ms ease forwards;
-}
-
-.animate-slideUp {
-  animation: slideUp 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-pulseGlow {
@@ -86,18 +72,18 @@
 
 /* Custom subtle scrollbar */
 .scrollbar-thin::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
 }
 .scrollbar-thin::-webkit-scrollbar-track {
-  background: #0B0E17;
+  background: #0E1A26;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #232D45;
-  border-radius: 2px;
+  background: #26394B;
+  border-radius: 3px;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #8B5CF6;
+  background: #63768A;
 }
 
 /* Print optimizations */

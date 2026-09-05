@@ -7,48 +7,35 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#0B0E17",
+        ink: "#0B1520",
         panel: {
-          DEFAULT: "#111625",
-          raised: "#182032",
-          line: "#232D45",
-          darker: "#0A0D15",
-        },
-        purple: {
-          50: "#FAF5FF",
-          100: "#F3E8FF",
-          200: "#E9D5FF",
-          300: "#D8B4FE",
-          400: "#C084FC",
-          500: "#A855F7",
-          600: "#9333EA",
-          700: "#7E22CE",
-          800: "#6B21A8",
-          900: "#581C87",
-          950: "#3B0764",
-          accent: "#8B5CF6",
-          vibrant: "#7C3AED",
-        },
-        green: {
-          compliant: "#10B981",
-          'compliant-bg': "rgba(16, 185, 129, 0.12)",
+          DEFAULT: "#121F2E",
+          raised: "#17293B",
+          line: "#26394B",
+          darker: "#0E1A26",
         },
         paper: {
-          DEFAULT: "#F5F3EF",
+          DEFAULT: "#ECE7D9",
           ink: "#1C1A12",
         },
+        brass: {
+          DEFAULT: "#C9A15A",
+          strong: "#E0BE7E",
+          ink: "#241B08",
+          glow: "rgba(201, 161, 90, 0.35)",
+        },
         text: {
-          1: "#F8FAFC",
-          2: "#94A3B8",
-          3: "#64748B",
+          1: "#EDEAE1",
+          2: "#99AAB8",
+          3: "#63768A",
         },
         status: {
-          pass: "#10B981",
-          'pass-bg': "rgba(16, 185, 129, 0.14)",
-          fail: "#EF4444",
-          'fail-bg': "rgba(239, 68, 68, 0.16)",
-          review: "#F59E0B",
-          'review-bg': "rgba(245, 158, 11, 0.16)",
+          pass: "#5AAE83",
+          'pass-bg': "rgba(90, 174, 131, 0.14)",
+          fail: "#D06A5A",
+          'fail-bg': "rgba(208, 106, 90, 0.16)",
+          review: "#DA9E4E",
+          'review-bg': "rgba(218, 158, 78, 0.16)",
         }
       },
       fontFamily: {
@@ -57,8 +44,8 @@ export default {
         mono: ["'IBM Plex Mono'", "'SFMono-Regular'", "Menlo", "monospace"],
       },
       boxShadow: {
-        'purple-glow': '0 0 25px -5px rgba(124, 58, 237, 0.45)',
-        'green-glow': '0 0 25px -5px rgba(16, 185, 129, 0.40)',
+        'brass-glow': '0 0 25px -5px rgba(201, 161, 90, 0.45)',
+        'pass-glow': '0 0 25px -5px rgba(90, 174, 131, 0.40)',
       }
     },
   },

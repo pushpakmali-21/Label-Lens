@@ -18,7 +18,7 @@ export default function MobileScannerModal({ isOpen, onClose, onSelectScenarioAn
       setIsCapturing(false);
       onSelectScenarioAndScan(activeMode);
       onClose();
-    }, 1200);
+    }, 1100);
   };
 
   const handleFileUpload = (e) => {
@@ -29,30 +29,30 @@ export default function MobileScannerModal({ isOpen, onClose, onSelectScenarioAn
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col justify-between animate-fadeIn">
+    <div className="fixed inset-0 z-50 bg-[#0B1520]/95 backdrop-blur-md flex flex-col justify-between animate-fadeIn">
       {/* Top Controls Bar */}
-      <div className="p-4 flex items-center justify-between z-10">
+      <div className="p-4 flex items-center justify-between z-10 border-b border-[#26394B] bg-[#0E1A26]">
         <button
           onClick={onClose}
-          className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all"
+          className="w-10 h-10 rounded-lg bg-[#17293B] hover:bg-[#26394B] active:scale-95 text-[#EDEAE1] flex items-center justify-center transition-all border border-[#26394B]"
           aria-label="Close Scanner"
         >
-          <X size={20} />
+          <X size={19} />
         </button>
 
         <div className="text-center">
-          <div className="text-xs font-semibold uppercase tracking-wider text-[#A855F7]">
-            LMPC Optical Scanner
+          <div className="text-xs font-serif font-semibold tracking-wide text-[#C9A15A]">
+            LMPC Optical Inspection Scanner
           </div>
-          <div className="text-[11px] text-[#94A3B8] font-mono">
+          <div className="text-[11px] text-[#99AAB8] font-mono">
             {currentScenario.tabTitle}
           </div>
         </div>
 
         <button
           onClick={() => setFlashlightOn(!flashlightOn)}
-          className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-            flashlightOn ? "bg-amber-400 text-black shadow-lg" : "bg-white/10 text-white"
+          className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all border ${
+            flashlightOn ? "bg-[#C9A15A] text-[#241B08] border-[#C9A15A]" : "bg-[#17293B] text-[#EDEAE1] border-[#26394B]"
           }`}
           aria-label="Toggle Torch"
         >
@@ -61,31 +61,31 @@ export default function MobileScannerModal({ isOpen, onClose, onSelectScenarioAn
       </div>
 
       {/* Main Viewfinder Stage */}
-      <div className="relative flex-1 flex flex-col items-center justify-center px-4">
+      <div className="relative flex-1 flex flex-col items-center justify-center px-4 py-3">
         {/* Viewfinder Target Frame */}
-        <div className="relative w-full max-w-[320px] aspect-[4/5] rounded-2xl border-2 border-dashed border-purple-500/60 overflow-hidden bg-black/40 flex items-center justify-center shadow-2xl">
-          {/* Corner Guides */}
-          <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-[#8B5CF6] rounded-tl-md" />
-          <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-[#8B5CF6] rounded-tr-md" />
-          <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-[#8B5CF6] rounded-bl-md" />
-          <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-[#8B5CF6] rounded-br-md" />
+        <div className="relative w-full max-w-[320px] aspect-[4/5] rounded-xl border-2 border-dashed border-[#C9A15A]/60 overflow-hidden bg-[#0E1A26] flex items-center justify-center shadow-2xl">
+          {/* Corner Crosshair Brackets */}
+          <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-[#C9A15A] rounded-tl" />
+          <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-[#C9A15A] rounded-tr" />
+          <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-[#C9A15A] rounded-bl" />
+          <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-[#C9A15A] rounded-br" />
 
           {/* Simulated Product inside Viewfinder */}
-          <div className="p-4 text-center select-none opacity-85 scale-95">
-            <div className="w-16 h-16 mx-auto mb-3 rounded-xl bg-purple-950/60 border border-purple-500/30 flex items-center justify-center text-purple-300">
+          <div className="p-4 text-center select-none opacity-90 scale-95">
+            <div className="w-16 h-16 mx-auto mb-3 rounded-xl bg-[#17293B] border border-[#C9A15A]/40 flex items-center justify-center text-[#C9A15A]">
               <Scan size={32} className="animate-pulse" />
             </div>
-            <div className="text-sm font-semibold text-white font-sans">
+            <div className="text-sm font-serif font-bold text-[#EDEAE1]">
               {currentScenario.product}
             </div>
-            <div className="text-[11px] text-purple-300 font-mono mt-0.5">
+            <div className="text-[11px] text-[#C9A15A] font-mono mt-0.5">
               {currentScenario.tag}
             </div>
           </div>
 
           {/* Laser Scanning Line */}
           <div 
-            className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#8B5CF6] to-transparent shadow-[0_0_15px_#8B5CF6] pointer-events-none"
+            className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#C9A15A] to-transparent shadow-[0_0_15px_#C9A15A] pointer-events-none"
             style={{
               animation: "scanSweep 1.8s ease-in-out infinite"
             }}
@@ -93,13 +93,13 @@ export default function MobileScannerModal({ isOpen, onClose, onSelectScenarioAn
 
           {/* Capturing flash overlay */}
           {isCapturing && (
-            <div className="absolute inset-0 bg-white/80 animate-ping pointer-events-none" />
+            <div className="absolute inset-0 bg-[#ECE7D9]/80 animate-ping pointer-events-none" />
           )}
 
-          {/* Optical Target Indicator */}
+          {/* Target Alignment Helper */}
           <div className="absolute bottom-3 left-0 right-0 text-center">
-            <span className="text-[10px] font-mono text-white/80 bg-black/60 px-2.5 py-1 rounded-full border border-white/10">
-              Align mandatory declarations or QR within frame
+            <span className="text-[10px] font-mono text-[#EDEAE1] bg-[#0B1520]/80 px-2.5 py-1 rounded border border-[#26394B]">
+              Align package panel, QR code, or ₹5 coin
             </span>
           </div>
         </div>
@@ -114,10 +114,10 @@ export default function MobileScannerModal({ isOpen, onClose, onSelectScenarioAn
                 <button
                   key={key}
                   onClick={() => setActiveMode(key)}
-                  className={`flex-none px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  className={`flex-none px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
                     isSelected
-                      ? "bg-purple-600 text-white font-semibold shadow-purple-glow"
-                      : "bg-[#182032] text-[#94A3B8] border border-[#232D45]"
+                      ? "bg-[#C9A15A] text-[#241B08] font-semibold shadow-sm"
+                      : "bg-[#17293B] text-[#99AAB8] border border-[#26394B]"
                   }`}
                 >
                   {sc.tabTitle}
@@ -129,14 +129,14 @@ export default function MobileScannerModal({ isOpen, onClose, onSelectScenarioAn
       </div>
 
       {/* Bottom Shutter Controls */}
-      <div className="p-6 bg-gradient-to-t from-black via-black/80 to-transparent flex items-center justify-around z-10 pb-10">
+      <div className="p-5 bg-[#0E1A26] border-t border-[#26394B] flex items-center justify-around z-10 pb-8">
         {/* Upload Button */}
         <button
           onClick={() => fileInputRef.current?.click()}
-          className="w-12 h-12 rounded-full bg-[#182032] border border-[#232D45] text-white flex items-center justify-center active:scale-95 transition-all"
+          className="w-12 h-12 rounded-xl bg-[#17293B] border border-[#26394B] text-[#EDEAE1] flex items-center justify-center active:scale-95 transition-all"
           title="Upload Packaging Photo"
         >
-          <Upload size={18} className="text-[#A855F7]" />
+          <Upload size={18} className="text-[#C9A15A]" />
           <input
             type="file"
             ref={fileInputRef}
@@ -146,25 +146,26 @@ export default function MobileScannerModal({ isOpen, onClose, onSelectScenarioAn
           />
         </button>
 
-        {/* Large Shutter Button */}
+        {/* Large Brass Shutter Button */}
         <button
           onClick={handleTriggerCapture}
           disabled={isCapturing}
-          className="w-20 h-20 rounded-full border-4 border-white/30 p-1 flex items-center justify-center active:scale-90 transition-transform shadow-purple-glow"
+          className="w-18 h-18 rounded-full border-4 border-[#C9A15A]/40 p-1 flex items-center justify-center active:scale-90 transition-transform shadow-brass-glow bg-[#0B1520]"
           aria-label="Capture and Audit"
         >
-          <div className="w-full h-full rounded-full bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-white">
+          <div className="w-14 h-14 rounded-full bg-[#C9A15A] hover:bg-[#E0BE7E] flex items-center justify-center text-[#241B08] font-bold">
             {isCapturing ? (
-              <RefreshCw size={24} className="animate-spin" />
+              <RefreshCw size={22} className="animate-spin text-[#241B08]" />
             ) : (
-              <Camera size={26} />
+              <Camera size={24} className="text-[#241B08]" />
             )}
           </div>
         </button>
 
-        {/* Quick Help / Info */}
-        <div className="w-12 h-12 rounded-full bg-[#182032] border border-[#232D45] text-white flex items-center justify-center text-xs font-mono text-[#10B981]">
-          ₹5 Coin
+        {/* Optical reference marker */}
+        <div className="w-12 h-12 rounded-xl bg-[#17293B] border border-[#26394B] text-[#EDEAE1] flex flex-col items-center justify-center text-[10px] font-mono text-[#5AAE83]">
+          <span>₹5 Coin</span>
+          <span className="text-[8px] text-[#99AAB8]">23mm</span>
         </div>
       </div>
     </div>

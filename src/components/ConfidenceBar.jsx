@@ -1,10 +1,10 @@
 import React from "react";
 
-export default function ConfidenceBar({ value, color = "#8B5CF6", width = 60, height = 6 }) {
+export default function ConfidenceBar({ value, color = "#C9A15A", width = 60 }) {
   return (
     <span
-      className="inline-block bg-[#182032] rounded-full overflow-hidden align-middle border border-[#232D45]"
-      style={{ width: `${width}px`, height: `${height}px` }}
+      className="inline-block h-1.5 bg-[#26394B] rounded-full overflow-hidden align-middle"
+      style={{ width: `${width}px` }}
       aria-hidden="true"
     >
       <span

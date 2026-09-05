@@ -1,55 +1,52 @@
 import React, { useState } from "react";
-import { Sparkles, Coins, Ruler, Eye, CheckCircle2, AlertTriangle, XCircle, Upload, RotateCcw, ArrowLeft } from "lucide-react";
+import { Sparkles, Coins, Ruler, Eye, CheckCircle2, AlertTriangle, XCircle, Info, Upload } from "lucide-react";
 import { resolveFontSlab, calculatePixelPerMm, convertPxToMm } from "../utils/lmpcValidator";
 
 const SAMPLE_PACKAGES = [
   {
     id: "namkeen",
     name: "Namkeen Pouch (200 g)",
-    tag: "Rule 7 Compliant",
     netQtyGrams: 200,
     fontPx: 22,
     coinPixelDiameter: 161, // 161 / 23 = 7.0 px/mm -> font is 22 / 7.0 = 3.14 mm
     boxes: [
-      { id: "pdp", name: "PDP Panel", x: 8, y: 10, w: 84, h: 80, color: "#3B82F6", status: "ok", rule: "Rule 8" },
-      { id: "brand", name: "Brand Name", x: 14, y: 18, w: 72, h: 18, color: "#10B981", status: "ok", rule: "Rule 6(1)(b)" },
-      { id: "qty", name: "Net Qty Block", x: 55, y: 64, w: 32, h: 18, color: "#10B981", status: "ok", rule: "Rule 6(1)(c)" },
+      { id: "pdp", name: "Principal Display Panel (PDP)", x: 8, y: 10, w: 84, h: 80, color: "#3B82F6", status: "ok", rule: "Rule 8" },
+      { id: "brand", name: "Brand & Generic Declaration", x: 14, y: 18, w: 72, h: 18, color: "#10B981", status: "ok", rule: "Rule 6(1)(b)" },
+      { id: "qty", name: "Net Quantity Block", x: 55, y: 64, w: 32, h: 18, color: "#10B981", status: "ok", rule: "Rule 6(1)(c)" },
       { id: "mrp", name: "MRP Block", x: 14, y: 64, w: 36, h: 18, color: "#8B5CF6", status: "ok", rule: "Rule 6(1)(e)" },
-      { id: "coin", name: "₹5 Coin (23mm)", x: 74, y: 16, w: 18, h: 22, color: "#A855F7", status: "ok", rule: "Calibration" },
+      { id: "coin", name: "₹5 Reference Coin (23mm)", x: 74, y: 16, w: 18, h: 22, color: "#C9A15A", status: "ok", rule: "Calibration" },
     ],
   },
   {
     id: "biscuit",
     name: "Digestive Biscuits (100 g)",
-    tag: "Font Violation (1.48mm)",
     netQtyGrams: 100,
     fontPx: 10, // low font
     coinPixelDiameter: 155, // 155 / 23 = 6.74 px/mm -> font is 10 / 6.74 = 1.48 mm vs 2.0 mm required (VIOLATION)
     boxes: [
-      { id: "pdp", name: "PDP Panel", x: 10, y: 12, w: 80, h: 76, color: "#3B82F6", status: "ok", rule: "Rule 8" },
-      { id: "qty", name: "Net Qty (Tiny Font)", x: 60, y: 66, w: 26, h: 12, color: "#EF4444", status: "fail", rule: "Rule 7 Violation" },
+      { id: "pdp", name: "Principal Display Panel (PDP)", x: 10, y: 12, w: 80, h: 76, color: "#3B82F6", status: "ok", rule: "Rule 8" },
+      { id: "qty", name: "Net Quantity Block (Tiny Font)", x: 60, y: 66, w: 26, h: 12, color: "#D06A5A", status: "fail", rule: "Rule 7 Font Violation" },
       { id: "mrp", name: "MRP Block", x: 14, y: 64, w: 38, h: 16, color: "#8B5CF6", status: "ok", rule: "Rule 6(1)(e)" },
-      { id: "coin", name: "₹5 Coin (23mm)", x: 72, y: 16, w: 18, h: 22, color: "#A855F7", status: "ok", rule: "Calibration" },
+      { id: "coin", name: "₹5 Reference Coin (23mm)", x: 72, y: 16, w: 18, h: 22, color: "#C9A15A", status: "ok", rule: "Calibration" },
     ],
   },
   {
     id: "detergent",
-    name: "Washing Powder (2 kg)",
-    tag: "Slab D (6.4mm)",
+    name: "Washing Powder (2 kg / 2000 g)",
     netQtyGrams: 2000,
     fontPx: 48,
     coinPixelDiameter: 172, // 172 / 23 = 7.48 px/mm -> font is 48 / 7.48 = 6.42 mm vs 6.0 mm required
     boxes: [
-      { id: "pdp", name: "PDP Panel", x: 6, y: 8, w: 88, h: 84, color: "#3B82F6", status: "ok", rule: "Rule 8" },
-      { id: "brand", name: "Brand Name", x: 12, y: 16, w: 76, h: 22, color: "#10B981", status: "ok", rule: "Rule 6(1)(b)" },
-      { id: "qty", name: "Net Qty (6.4mm)", x: 50, y: 62, w: 38, h: 20, color: "#10B981", status: "ok", rule: "Rule 7 (SLAB_D)" },
+      { id: "pdp", name: "Principal Display Panel (PDP)", x: 6, y: 8, w: 88, h: 84, color: "#3B82F6", status: "ok", rule: "Rule 8" },
+      { id: "brand", name: "Brand & Generic Declaration", x: 12, y: 16, w: 76, h: 22, color: "#10B981", status: "ok", rule: "Rule 6(1)(b)" },
+      { id: "qty", name: "Net Quantity Block (6.4mm)", x: 50, y: 62, w: 38, h: 20, color: "#10B981", status: "ok", rule: "Rule 7 (SLAB_D)" },
       { id: "mrp", name: "MRP Block", x: 12, y: 62, w: 34, h: 20, color: "#8B5CF6", status: "ok", rule: "Rule 6(1)(e)" },
-      { id: "coin", name: "₹5 Coin (23mm)", x: 74, y: 14, w: 18, h: 22, color: "#A855F7", status: "ok", rule: "Calibration" },
+      { id: "coin", name: "₹5 Reference Coin (23mm)", x: 74, y: 14, w: 18, h: 22, color: "#C9A15A", status: "ok", rule: "Calibration" },
     ],
   },
 ];
 
-export default function VisionInspector({ onBack }) {
+export default function VisionInspector() {
   const [selectedPack, setSelectedPack] = useState(SAMPLE_PACKAGES[0]);
   const [showBoxes, setShowBoxes] = useState(true);
   const [activeBoxId, setActiveBoxId] = useState(null);
@@ -79,275 +76,287 @@ export default function VisionInspector({ onBack }) {
   const isFontCompliant = measuredFontMm >= fontSlab.mandatory_min_font_height_mm;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-br from-[#182032] to-[#111625] border border-[#232D45] rounded-2xl p-4 shadow-lg">
-        <div className="flex items-center justify-between mb-2">
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-purple-950/80 border border-purple-600/40 text-[#C084FC] text-[10.5px] font-mono font-semibold">
-            <Sparkles size={12} className="text-[#A855F7]" />
-            <span>Optical ₹5 Coin Calibrator</span>
-          </span>
-
-          {onBack && (
-            <button
-              onClick={onBack}
-              className="text-xs text-[#94A3B8] hover:text-white flex items-center gap-1 active:scale-95"
-            >
-              <ArrowLeft size={13} />
-              <span>Back</span>
-            </button>
-          )}
+      <div className="border-b border-[#26394B] pb-4 sm:pb-5">
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-[#C9A15A]/10 border border-[#C9A15A]/30 text-[#C9A15A] text-xs font-mono mb-2">
+          <Sparkles size={14} />
+          <span>Stage 1 (YOLOv8 Spatial Detection) + Stage 3 (PaddleOCR &amp; Geometry)</span>
         </div>
-
-        <h1 className="text-base font-bold text-[#F8FAFC]">
-          Millimeter Font Calibration (Rule 7)
+        <h1 className="font-serif text-2xl sm:text-3xl font-normal text-[#EDEAE1]">
+          Spatial Layout Localization &amp; Pixel-to-mm Coin Calibration
         </h1>
-        <p className="text-xs text-[#94A3B8] leading-relaxed mt-1">
-          Converts image pixels into courtroom-grade millimeter metrics using a standard Indian 5-Rupee coin (diameter: 23.0 mm) as a fiducial reference.
+        <p className="text-xs sm:text-sm text-[#99AAB8] mt-1 max-w-3xl leading-relaxed">
+          Solves the <strong>Millimeter Heuristic Deficit</strong>: standard packaging rules require exact minimum font heights (1mm, 2mm, 4mm, 6mm). LabelLens uses a standard Indian 5-Rupee coin (diameter: exactly 23 mm) as an optical fiducial reference to convert pixel measurements into courtroom-grade millimeter metrics.
         </p>
       </div>
 
-      {/* Swipeable Package Preset Selector */}
-      <div>
-        <div className="flex items-center justify-between px-1 mb-2">
-          <h2 className="text-xs font-mono uppercase tracking-wider text-[#94A3B8]">
-            Packaging Presets
-          </h2>
-          <span className="text-[10px] font-mono text-purple-400">Swipe →</span>
-        </div>
-
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar snap-x-mandatory pb-1">
-          {SAMPLE_PACKAGES.map((pkg) => {
-            const isSelected = selectedPack.id === pkg.id;
-            return (
-              <button
-                key={pkg.id}
-                onClick={() => handleSelectPackage(pkg)}
-                className={`snap-start flex-none w-[170px] text-left p-3 rounded-2xl border transition-all active:scale-[0.98] ${
-                  isSelected
-                    ? "bg-purple-950/40 border-[#8B5CF6] text-white ring-1 ring-[#8B5CF6]/50 shadow-purple-glow"
-                    : "bg-[#111625] border-[#232D45] text-[#94A3B8]"
-                }`}
-              >
-                <div className={`text-xs font-bold truncate ${isSelected ? "text-[#F8FAFC]" : "text-[#94A3B8]"}`}>
-                  {pkg.name}
-                </div>
-                <div className={`text-[10px] font-mono mt-0.5 truncate ${pkg.id === "biscuit" ? "text-[#EF4444]" : "text-[#10B981]"}`}>
-                  {pkg.tag}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Interactive Spatial Detection Canvas */}
-      <div className="bg-[#111625] border border-[#232D45] rounded-2xl p-3.5 space-y-3">
-        <div className="flex items-center justify-between text-xs font-mono">
-          <span className="text-[#94A3B8]">YOLOv8 Detection Canvas</span>
-          <div className="flex items-center gap-2">
-            <label className="flex items-center gap-1.5 text-[11px] text-[#94A3B8] cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showBoxes}
-                onChange={(e) => setShowBoxes(e.target.checked)}
-                className="rounded border-[#232D45] text-[#8B5CF6] focus:ring-[#8B5CF6]"
-              />
-              <span>Boxes</span>
-            </label>
-
-            <label className="cursor-pointer bg-[#182032] border border-[#232D45] text-[11px] text-[#F8FAFC] px-2 py-1 rounded-lg flex items-center gap-1">
-              <Upload size={11} className="text-[#A855F7]" />
-              <span>Upload</span>
-              <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-            </label>
-          </div>
-        </div>
-
-        {/* Canvas Surface */}
-        <div className="relative aspect-[4/3] bg-[#07090F] rounded-xl border border-[#232D45] overflow-hidden flex items-center justify-center p-3">
-          {customImage ? (
-            <img src={customImage} alt="Uploaded packaging" className="w-full h-full object-contain" />
-          ) : (
-            <div className="relative w-full h-full max-w-[360px] max-h-[260px] bg-[#F5F3EF] text-[#1C1A12] rounded-xl p-3 shadow-lg border border-purple-500/20 flex flex-col justify-between">
-              {/* Header */}
-              <div className="flex items-center justify-between border-b border-[#1C1A12]/15 pb-1.5">
-                <div>
-                  <div className="font-bold text-xs text-[#1C1A12] leading-tight">
-                    {selectedPack.name}
-                  </div>
-                  <div className="text-[9px] text-[#1C1A12]/70 font-mono">
-                    LMPC Rule 6 Packaged Commodity
-                  </div>
-                </div>
-
-                {/* Coin Visual */}
-                <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#A855F7] via-purple-600 to-indigo-600 border border-purple-900 shadow flex flex-col items-center justify-center text-white font-bold text-[8.5px] leading-tight select-none">
-                  <span>₹5</span>
-                  <span className="text-[6.5px] tracking-tighter">23mm</span>
-                </div>
-              </div>
-
-              {/* Body lines */}
-              <div className="space-y-1 my-1.5">
-                <div className="h-1.5 bg-[#1C1A12]/15 rounded w-[85%]" />
-                <div className="h-1.5 bg-[#1C1A12]/15 rounded w-[68%]" />
-              </div>
-
-              {/* Declarations */}
-              <div className="flex items-end justify-between border-t border-dashed border-[#1C1A12]/20 pt-1.5">
-                <div>
-                  <div className="text-[8px] font-sans text-[#1C1A12]/60 uppercase">MRP Block</div>
-                  <div className="font-mono font-bold text-xs text-[#1C1A12]">
-                    ₹{selectedPack.netQtyGrams > 500 ? "199.00" : "40.00"}
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  <div className="text-[8px] font-sans text-[#1C1A12]/60 uppercase">Net Qty</div>
-                  <div
-                    className="font-mono font-bold text-[#1C1A12] transition-all"
-                    style={{ fontSize: `${Math.max(10, fontPixels)}px` }}
-                  >
-                    {selectedPack.netQtyGrams >= 1000 ? `${selectedPack.netQtyGrams / 1000} kg` : `${selectedPack.netQtyGrams} g`}
-                  </div>
-                </div>
-              </div>
-
-              {/* Bounding Boxes */}
-              {showBoxes &&
-                selectedPack.boxes.map((box) => {
-                  const isActive = activeBoxId === box.id;
-                  return (
-                    <div
-                      key={box.id}
-                      onClick={() => setActiveBoxId(box.id === activeBoxId ? null : box.id)}
-                      className={`absolute border-2 rounded transition-all cursor-pointer ${
-                        isActive ? "ring-2 ring-white shadow-lg z-20" : "z-10"
-                      }`}
-                      style={{
-                        left: `${box.x}%`,
-                        top: `${box.y}%`,
-                        width: `${box.w}%`,
-                        height: `${box.h}%`,
-                        borderColor: box.color,
-                        backgroundColor: `${box.color}18`,
-                      }}
-                    >
-                      <span
-                        className="absolute -top-3.5 left-0 font-mono text-[8px] text-white px-1 py-0.2 rounded truncate max-w-[110px]"
-                        style={{ backgroundColor: box.color }}
-                      >
-                        {box.name}
-                      </span>
-                    </div>
-                  );
-                })}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Optical Coin Calibration & Millimeter Heuristic Calculator */}
-      <div className="space-y-3">
-        {/* Fiducial Reference Slider */}
-        <div className="bg-[#111625] border border-[#232D45] rounded-2xl p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-semibold text-[#F8FAFC]">
-              <Coins size={15} className="text-[#A855F7]" />
-              <span>₹5 Coin Calibration</span>
-            </div>
-            <span className="text-[10px] font-mono bg-purple-950/80 text-[#C084FC] px-2 py-0.5 rounded-full border border-purple-800/40">
-              Ratio: {pixelPerMm.toFixed(2)} px/mm
-            </span>
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs text-[#94A3B8]">
-              <span>Coin Diameter in Pixels:</span>
-              <strong className="text-[#F8FAFC] font-mono">{coinPixels} px</strong>
-            </div>
-            <input
-              type="range"
-              min="90"
-              max="250"
-              value={coinPixels}
-              onChange={(e) => setCoinPixels(Number(e.target.value))}
-              className="w-full accent-[#8B5CF6] h-2 bg-[#07090F] rounded-lg cursor-pointer"
-            />
-          </div>
-        </div>
-
-        {/* Font Measurement & Compliance Verdict */}
-        <div className="bg-[#111625] border border-[#232D45] rounded-2xl p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-semibold text-[#F8FAFC]">
-              <Ruler size={15} className="text-[#A855F7]" />
-              <span>Font Height Measurement</span>
-            </div>
-            <span
-              className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold uppercase ${
-                isFontCompliant
-                  ? "bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30"
-                  : "bg-[#EF4444]/15 text-[#EF4444] border border-[#EF4444]/30"
+      {/* Preset Selector & Controls (Responsive: Scrollable on mobile, flex on desktop) */}
+      <div className="flex items-center justify-between flex-wrap gap-3 bg-[#121F2E] p-3 rounded-lg border border-[#26394B]">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full sm:w-auto pb-1 sm:pb-0">
+          <span className="text-xs font-mono text-[#63768A] flex-none">Presets:</span>
+          {SAMPLE_PACKAGES.map((pkg) => (
+            <button
+              key={pkg.id}
+              onClick={() => handleSelectPackage(pkg)}
+              className={`text-xs px-3 py-1.5 rounded transition-all flex-none ${
+                selectedPack.id === pkg.id
+                  ? "bg-[#C9A15A] text-[#241B08] font-semibold shadow"
+                  : "bg-[#17293B] text-[#EDEAE1] hover:border-[#63768A] border border-transparent"
               }`}
             >
-              {isFontCompliant ? "Compliant" : "Violation"}
-            </span>
-          </div>
+              {pkg.name}
+            </button>
+          ))}
+        </div>
 
-          <div className="space-y-1.5">
-            <div className="flex justify-between text-xs text-[#94A3B8]">
-              <span>Detected Font Pixel Height:</span>
-              <strong className="text-[#F8FAFC] font-mono">{fontPixels} px</strong>
-            </div>
+        <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end pt-1 sm:pt-0 border-t sm:border-t-0 border-[#26394B]/60">
+          <label className="flex items-center gap-1.5 text-xs text-[#99AAB8] cursor-pointer">
             <input
-              type="range"
-              min="8"
-              max="60"
-              value={fontPixels}
-              onChange={(e) => setFontPixels(Number(e.target.value))}
-              className="w-full accent-[#8B5CF6] h-2 bg-[#07090F] rounded-lg cursor-pointer"
+              type="checkbox"
+              checked={showBoxes}
+              onChange={(e) => setShowBoxes(e.target.checked)}
+              className="rounded border-[#26394B] text-[#C9A15A] focus:ring-[#C9A15A]"
             />
+            <span>YOLOv8 Boxes</span>
+          </label>
+
+          <label className="cursor-pointer bg-[#17293B] hover:bg-[#26394B] border border-[#26394B] text-xs text-[#EDEAE1] px-2.5 py-1.5 rounded flex items-center gap-1.5 transition-all">
+            <Upload size={13} className="text-[#C9A15A]" />
+            <span>Upload Image</span>
+            <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+          </label>
+        </div>
+      </div>
+
+      {/* Main Interactive Stage (Responsive 12-column grid on desktop, single-column on mobile) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column: Interactive Canvas Simulator */}
+        <div className="lg:col-span-7 bg-[#121F2E] border border-[#26394B] rounded-lg p-3.5 sm:p-4">
+          <div className="flex items-center justify-between text-xs text-[#63768A] font-mono mb-2">
+            <span>Spatial Detection Canvas</span>
+            <span>Ratio: {pixelPerMm.toFixed(2)} px/mm</span>
           </div>
 
-          {/* Metrics comparison */}
-          <div className="grid grid-cols-2 gap-2 text-xs font-mono pt-1">
-            <div className="p-2.5 bg-[#07090F] rounded-xl border border-[#232D45]">
-              <div className="text-[#64748B] text-[10px]">Measured Height</div>
-              <div className="text-base font-bold text-[#F8FAFC] mt-0.5">
-                {measuredFontMm.toFixed(2)} mm
-              </div>
-            </div>
-
-            <div className="p-2.5 bg-[#07090F] rounded-xl border border-[#232D45]">
-              <div className="text-[#64748B] text-[10px]">Mandatory Min</div>
-              <div className="text-base font-bold text-[#A855F7] mt-0.5">
-                {fontSlab.mandatory_min_font_height_mm.toFixed(1)} mm
-              </div>
-            </div>
-          </div>
-
-          {/* Rule 7 verdict card */}
-          <div
-            className={`p-3 rounded-xl border text-xs leading-relaxed flex items-start gap-2.5 ${
-              isFontCompliant
-                ? "bg-[#10B981]/10 border-[#10B981]/30 text-[#F8FAFC]"
-                : "bg-[#EF4444]/10 border-[#EF4444]/30 text-[#F8FAFC]"
-            }`}
-          >
-            {isFontCompliant ? (
-              <CheckCircle2 size={16} className="text-[#10B981] flex-none mt-0.5" />
+          {/* Visual Container */}
+          <div className="relative aspect-[4/3] bg-[#0E1A26] rounded border border-[#26394B] overflow-hidden flex items-center justify-center p-3 sm:p-4">
+            {customImage ? (
+              <img src={customImage} alt="Uploaded packaging" className="w-full h-full object-contain" />
             ) : (
-              <XCircle size={16} className="text-[#EF4444] flex-none mt-0.5" />
+              /* Simulated Package Face */
+              <div className="relative w-full h-full max-w-[420px] max-h-[320px] bg-[#ECE7D9] text-[#1C1A12] rounded p-3 sm:p-4 shadow-lg border border-[#C9A15A]/30 flex flex-col justify-between">
+                {/* Brand row */}
+                <div className="flex items-center justify-between border-b border-[#1C1A12]/15 pb-2 mb-2 sm:mb-3">
+                  <div>
+                    <div className="font-serif font-bold text-sm sm:text-base text-[#1C1A12] leading-tight truncate max-w-[200px] sm:max-w-none">
+                      {selectedPack.name}
+                    </div>
+                    <div className="text-[9.5px] sm:text-[10px] text-[#1C1A12]/70 font-mono">
+                      Packaged Commodity • LMPC Rule 6 Design
+                    </div>
+                  </div>
+                  {/* Visual Brass Coin Graphic */}
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-[#C9A15A] via-[#E0BE7E] to-[#B97B33] border-2 border-[#241B08]/40 shadow flex flex-col items-center justify-center text-[#241B08] font-bold text-[8.5px] sm:text-[9px] leading-tight select-none flex-none">
+                    <span>₹5</span>
+                    <span className="text-[6.5px] sm:text-[7px] tracking-tighter">23 mm</span>
+                  </div>
+                </div>
+
+                {/* Decorative product lines */}
+                <div className="space-y-1.5 my-2 sm:my-3">
+                  <div className="h-1.5 sm:h-2 bg-[#1C1A12]/15 rounded w-[85%]" />
+                  <div className="h-1.5 sm:h-2 bg-[#1C1A12]/15 rounded w-[70%]" />
+                  <div className="h-1.5 sm:h-2 bg-[#1C1A12]/15 rounded w-[60%]" />
+                </div>
+
+                {/* Simulated Mandatory Declarations */}
+                <div className="flex items-end justify-between border-t border-dashed border-[#1C1A12]/20 pt-2">
+                  <div>
+                    <div className="text-[8.5px] sm:text-[9px] font-sans text-[#1C1A12]/60 uppercase">Max Retail Price</div>
+                    <div className="font-mono font-bold text-xs sm:text-sm text-[#1C1A12]">
+                      ₹{selectedPack.netQtyGrams > 500 ? "199.00" : "40.00"}
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <div className="text-[8.5px] sm:text-[9px] font-sans text-[#1C1A12]/60 uppercase">Net Quantity</div>
+                    <div
+                      className="font-mono font-bold text-[#1C1A12] transition-all"
+                      style={{ fontSize: `${Math.max(10, fontPixels)}px` }}
+                    >
+                      {selectedPack.netQtyGrams >= 1000 ? `${selectedPack.netQtyGrams / 1000} kg` : `${selectedPack.netQtyGrams} g`}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bounding Box Overlays */}
+                {showBoxes &&
+                  selectedPack.boxes.map((box) => {
+                    const isActive = activeBoxId === box.id;
+                    return (
+                      <div
+                        key={box.id}
+                        onMouseEnter={() => setActiveBoxId(box.id)}
+                        onMouseLeave={() => setActiveBoxId(null)}
+                        onClick={() => setActiveBoxId(box.id === activeBoxId ? null : box.id)}
+                        className={`absolute border-2 rounded transition-all cursor-pointer ${
+                          isActive ? "ring-2 ring-white shadow-lg z-20" : "z-10"
+                        }`}
+                        style={{
+                          left: `${box.x}%`,
+                          top: `${box.y}%`,
+                          width: `${box.w}%`,
+                          height: `${box.h}%`,
+                          borderColor: box.color,
+                          backgroundColor: `${box.color}15`,
+                        }}
+                      >
+                        <span
+                          className="absolute -top-3.5 sm:-top-4 left-0 font-mono text-[8px] sm:text-[9px] text-white px-1.5 py-0.2 rounded truncate max-w-[130px]"
+                          style={{ backgroundColor: box.color }}
+                        >
+                          {box.name}
+                        </span>
+                      </div>
+                    );
+                  })}
+              </div>
             )}
-            <div>
-              <strong className={isFontCompliant ? "text-[#10B981]" : "text-[#EF4444]"}>
-                {isFontCompliant ? "Rule 7 Compliant: " : "Rule 7 Violation: "}
-              </strong>
-              {isFontCompliant
-                ? `Measured ${measuredFontMm.toFixed(2)} mm meets or exceeds the required statutory minimum of ${fontSlab.mandatory_min_font_height_mm.toFixed(1)} mm.`
-                : `Measured ${measuredFontMm.toFixed(2)} mm is below the mandatory legal threshold of ${fontSlab.mandatory_min_font_height_mm.toFixed(1)} mm for ${fontSlab.name}.`}
+          </div>
+
+          {/* Bounding Box Legend */}
+          <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {selectedPack.boxes.map((box) => (
+              <div
+                key={box.id}
+                onMouseEnter={() => setActiveBoxId(box.id)}
+                onMouseLeave={() => setActiveBoxId(null)}
+                onClick={() => setActiveBoxId(box.id === activeBoxId ? null : box.id)}
+                className={`flex items-center gap-2 p-1.5 rounded text-[11px] font-mono cursor-pointer transition-all border ${
+                  activeBoxId === box.id
+                    ? "bg-[#17293B] border-[#C9A15A]"
+                    : "bg-[#0E1A26] border-[#26394B] text-[#99AAB8]"
+                }`}
+              >
+                <span className="w-2.5 h-2.5 rounded-full flex-none" style={{ backgroundColor: box.color }} />
+                <span className="truncate text-[#EDEAE1]">{box.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right Column: Optical Coin Calibration & Millimeter Heuristic Calculator */}
+        <div className="lg:col-span-5 space-y-4">
+          {/* Fiducial Reference Calibration */}
+          <div className="bg-[#121F2E] border border-[#26394B] rounded-lg p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm font-semibold text-[#EDEAE1]">
+                <Coins size={16} className="text-[#C9A15A]" />
+                <span>₹5 Coin Reference Calibration</span>
+              </div>
+              <span className="text-[10px] font-mono bg-[#C9A15A]/10 text-[#C9A15A] px-2 py-0.5 rounded border border-[#C9A15A]/30">
+                Known: 23.0 mm
+              </span>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between text-[#99AAB8]">
+                <span>Detected Coin Diameter:</span>
+                <span className="font-mono font-bold text-[#EDEAE1]">{coinPixels} px</span>
+              </div>
+              <input
+                type="range"
+                min="90"
+                max="250"
+                value={coinPixels}
+                onChange={(e) => setCoinPixels(Number(e.target.value))}
+                className="w-full accent-[#C9A15A] cursor-pointer"
+              />
+              <div className="flex justify-between text-[10px] font-mono text-[#63768A]">
+                <span>90 px (Distant)</span>
+                <span>{pixelPerMm.toFixed(2)} px/mm</span>
+                <span>250 px (Close)</span>
+              </div>
+            </div>
+
+            <div className="p-2.5 bg-[#0E1A26] rounded border border-[#26394B] text-[11px] font-mono text-[#99AAB8]">
+              Calibration Formula: <code className="text-[#C9A15A]">Ratio = {coinPixels}px ÷ 23mm = {pixelPerMm.toFixed(2)} px/mm</code>
+            </div>
+          </div>
+
+          {/* Measured Font vs Mandatory Slab */}
+          <div className="bg-[#121F2E] border border-[#26394B] rounded-lg p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm font-semibold text-[#EDEAE1]">
+                <Ruler size={16} className="text-[#C9A15A]" />
+                <span>Millimeter Font Measurement</span>
+              </div>
+              <span
+                className={`text-[10px] font-mono px-2 py-0.5 rounded border font-bold uppercase ${
+                  isFontCompliant
+                    ? "bg-[#5AAE83]/10 text-[#5AAE83] border-[#5AAE83]/30"
+                    : "bg-[#D06A5A]/10 text-[#D06A5A] border-[#D06A5A]/30"
+                }`}
+              >
+                {isFontCompliant ? "Compliant" : "Violation"}
+              </span>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between text-[#99AAB8]">
+                <span>Detected Font Pixel Height:</span>
+                <span className="font-mono font-bold text-[#EDEAE1]">{fontPixels} px</span>
+              </div>
+              <input
+                type="range"
+                min="8"
+                max="60"
+                value={fontPixels}
+                onChange={(e) => setFontPixels(Number(e.target.value))}
+                className="w-full accent-[#C9A15A] cursor-pointer"
+              />
+            </div>
+
+            {/* Metrics Breakdown */}
+            <div className="grid grid-cols-2 gap-2 text-xs font-mono pt-1">
+              <div className="p-2.5 bg-[#0E1A26] rounded border border-[#26394B]">
+                <div className="text-[#63768A] text-[10px]">Measured Height</div>
+                <div className="text-base font-bold text-[#EDEAE1] mt-0.5">
+                  {measuredFontMm.toFixed(2)} mm
+                </div>
+                <div className="text-[10px] text-[#99AAB8]">({fontPixels}px ÷ {pixelPerMm.toFixed(1)})</div>
+              </div>
+
+              <div className="p-2.5 bg-[#0E1A26] rounded border border-[#26394B]">
+                <div className="text-[#63768A] text-[10px]">Mandatory Min</div>
+                <div className="text-base font-bold text-[#C9A15A] mt-0.5">
+                  {fontSlab.mandatory_min_font_height_mm.toFixed(1)} mm
+                </div>
+                <div className="text-[10px] text-[#99AAB8] truncate">{fontSlab.name}</div>
+              </div>
+            </div>
+
+            {/* Rule 7 verdict explanation */}
+            <div
+              className={`p-3 rounded border text-xs leading-relaxed flex items-start gap-2.5 ${
+                isFontCompliant
+                  ? "bg-[#5AAE83]/10 border-[#5AAE83]/30 text-[#EDEAE1]"
+                  : "bg-[#D06A5A]/10 border-[#D06A5A]/30 text-[#EDEAE1]"
+              }`}
+            >
+              {isFontCompliant ? (
+                <CheckCircle2 size={16} className="text-[#5AAE83] flex-none mt-0.5" />
+              ) : (
+                <XCircle size={16} className="text-[#D06A5A] flex-none mt-0.5" />
+              )}
+              <div>
+                <strong className={isFontCompliant ? "text-[#5AAE83]" : "text-[#D06A5A]"}>
+                  {isFontCompliant ? "LMPC Rule 7 Compliant: " : "LMPC Rule 7 Violation: "}
+                </strong>
+                {isFontCompliant
+                  ? `Measured font height of ${measuredFontMm.toFixed(2)} mm meets or exceeds the required statutory minimum of ${fontSlab.mandatory_min_font_height_mm.toFixed(1)} mm for packages under ${fontSlab.name}.`
+                  : `Measured font height of ${measuredFontMm.toFixed(2)} mm is below the mandatory legal threshold of ${fontSlab.mandatory_min_font_height_mm.toFixed(1)} mm for ${fontSlab.name}. Subject to statutory show-cause notice.`}
+              </div>
             </div>
           </div>
         </div>
