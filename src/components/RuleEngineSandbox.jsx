@@ -79,11 +79,10 @@ export default function RuleEngineSandbox() {
                     <button
                       key={quick}
                       onClick={() => setTestWeight(quick)}
-                      className={`text-[11px] font-mono px-2.5 py-1 rounded border transition-all ${
-                        testWeight === quick
+                      className={`text-[11px] font-mono px-2.5 py-1 rounded border transition-all ${testWeight === quick
                           ? "bg-[#C9A15A] text-[#241B08] border-[#C9A15A] font-bold"
                           : "bg-[#17293B] border-[#26394B] text-[#99AAB8] hover:text-[#EDEAE1]"
-                      }`}
+                        }`}
                     >
                       {quick >= 1000 ? `${quick / 1000}kg` : `${quick}g`}
                     </button>
@@ -139,9 +138,8 @@ export default function RuleEngineSandbox() {
                       return (
                         <tr
                           key={slab.slab_id}
-                          className={`font-mono text-[11px] ${
-                            isCurrent ? "bg-[#C9A15A]/15 text-[#EDEAE1] font-semibold" : "text-[#99AAB8]"
-                          }`}
+                          className={`font-mono text-[11px] ${isCurrent ? "bg-[#C9A15A]/15 text-[#EDEAE1] font-semibold" : "text-[#99AAB8]"
+                            }`}
                         >
                           <td className="py-1.5 px-2.5">{slab.slab_id}</td>
                           <td className="py-1.5 px-2.5">{slab.name}</td>
@@ -192,7 +190,7 @@ export default function RuleEngineSandbox() {
                   onClick={() => setTestText(preset)}
                   className="text-[10.5px] font-mono bg-[#17293B] hover:bg-[#26394B] text-[#99AAB8] hover:text-[#EDEAE1] px-2 py-0.5 rounded border border-[#26394B] transition-all truncate max-w-[200px]"
                 >
-                  "{preset.length > 25 ? preset.substring(0, 22) + "..." : preset}"
+                  {preset.length > 25 ? preset.substring(0, 22) + "..." : preset}
                 </button>
               ))}
             </div>
@@ -231,11 +229,10 @@ export default function RuleEngineSandbox() {
                 <span>Consumer Care Verification (Rule 6(1)(f))</span>
               </div>
               <span
-                className={`text-[10px] font-mono px-2 py-0.5 rounded border font-semibold ${
-                  careValidation.isComplete
+                className={`text-[10px] font-mono px-2 py-0.5 rounded border font-semibold ${careValidation.isComplete
                     ? "bg-[#5AAE83]/10 text-[#5AAE83] border-[#5AAE83]/30"
                     : "bg-[#DA9E4E]/10 text-[#DA9E4E] border-[#DA9E4E]/30"
-                }`}
+                  }`}
               >
                 {careValidation.score}% Complete
               </span>
@@ -269,9 +266,8 @@ export default function RuleEngineSandbox() {
                   placeholder="e.g. support@brand.com"
                   value={consumerCare.email}
                   onChange={(e) => setConsumerCare({ ...consumerCare, email: e.target.value })}
-                  className={`w-full bg-[#0E1A26] border rounded px-2.5 py-1.5 text-xs text-[#EDEAE1] focus:outline-none ${
-                    !consumerCare.email ? "border-[#DA9E4E]/60 focus:border-[#DA9E4E]" : "border-[#26394B] focus:border-[#C9A15A]"
-                  }`}
+                  className={`w-full bg-[#0E1A26] border rounded px-2.5 py-1.5 text-xs text-[#EDEAE1] focus:outline-none ${!consumerCare.email ? "border-[#DA9E4E]/60 focus:border-[#DA9E4E]" : "border-[#26394B] focus:border-[#C9A15A]"
+                    }`}
                 />
               </div>
 

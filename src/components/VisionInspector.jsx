@@ -99,11 +99,10 @@ export default function VisionInspector() {
             <button
               key={pkg.id}
               onClick={() => handleSelectPackage(pkg)}
-              className={`text-xs px-3 py-1.5 rounded transition-all flex-none ${
-                selectedPack.id === pkg.id
+              className={`text-xs px-3 py-1.5 rounded transition-all flex-none ${selectedPack.id === pkg.id
                   ? "bg-[#C9A15A] text-[#241B08] font-semibold shadow"
                   : "bg-[#17293B] text-[#EDEAE1] hover:border-[#63768A] border border-transparent"
-              }`}
+                }`}
             >
               {pkg.name}
             </button>
@@ -140,88 +139,90 @@ export default function VisionInspector() {
 
           {/* Visual Container */}
           <div className="relative aspect-[4/3] bg-[#0E1A26] rounded border border-[#26394B] overflow-hidden flex items-center justify-center p-3 sm:p-4">
-            {customImage ? (
-              <img src={customImage} alt="Uploaded packaging" className="w-full h-full object-contain" />
-            ) : (
-              /* Simulated Package Face */
-              <div className="relative w-full h-full max-w-[420px] max-h-[320px] bg-[#ECE7D9] text-[#1C1A12] rounded p-3 sm:p-4 shadow-lg border border-[#C9A15A]/30 flex flex-col justify-between">
-                {/* Brand row */}
-                <div className="flex items-center justify-between border-b border-[#1C1A12]/15 pb-2 mb-2 sm:mb-3">
-                  <div>
-                    <div className="font-serif font-bold text-sm sm:text-base text-[#1C1A12] leading-tight truncate max-w-[200px] sm:max-w-none">
-                      {selectedPack.name}
-                    </div>
-                    <div className="text-[9.5px] sm:text-[10px] text-[#1C1A12]/70 font-mono">
-                      Packaged Commodity • LMPC Rule 6 Design
-                    </div>
-                  </div>
-                  {/* Visual Brass Coin Graphic */}
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-[#C9A15A] via-[#E0BE7E] to-[#B97B33] border-2 border-[#241B08]/40 shadow flex flex-col items-center justify-center text-[#241B08] font-bold text-[8.5px] sm:text-[9px] leading-tight select-none flex-none">
-                    <span>₹5</span>
-                    <span className="text-[6.5px] sm:text-[7px] tracking-tighter">23 mm</span>
-                  </div>
-                </div>
-
-                {/* Decorative product lines */}
-                <div className="space-y-1.5 my-2 sm:my-3">
-                  <div className="h-1.5 sm:h-2 bg-[#1C1A12]/15 rounded w-[85%]" />
-                  <div className="h-1.5 sm:h-2 bg-[#1C1A12]/15 rounded w-[70%]" />
-                  <div className="h-1.5 sm:h-2 bg-[#1C1A12]/15 rounded w-[60%]" />
-                </div>
-
-                {/* Simulated Mandatory Declarations */}
-                <div className="flex items-end justify-between border-t border-dashed border-[#1C1A12]/20 pt-2">
-                  <div>
-                    <div className="text-[8.5px] sm:text-[9px] font-sans text-[#1C1A12]/60 uppercase">Max Retail Price</div>
-                    <div className="font-mono font-bold text-xs sm:text-sm text-[#1C1A12]">
-                      ₹{selectedPack.netQtyGrams > 500 ? "199.00" : "40.00"}
-                    </div>
-                  </div>
-
-                  <div className="text-right">
-                    <div className="text-[8.5px] sm:text-[9px] font-sans text-[#1C1A12]/60 uppercase">Net Quantity</div>
-                    <div
-                      className="font-mono font-bold text-[#1C1A12] transition-all"
-                      style={{ fontSize: `${Math.max(10, fontPixels)}px` }}
-                    >
-                      {selectedPack.netQtyGrams >= 1000 ? `${selectedPack.netQtyGrams / 1000} kg` : `${selectedPack.netQtyGrams} g`}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Bounding Box Overlays */}
-                {showBoxes &&
-                  selectedPack.boxes.map((box) => {
-                    const isActive = activeBoxId === box.id;
-                    return (
-                      <div
-                        key={box.id}
-                        onMouseEnter={() => setActiveBoxId(box.id)}
-                        onMouseLeave={() => setActiveBoxId(null)}
-                        onClick={() => setActiveBoxId(box.id === activeBoxId ? null : box.id)}
-                        className={`absolute border-2 rounded transition-all cursor-pointer ${
-                          isActive ? "ring-2 ring-white shadow-lg z-20" : "z-10"
-                        }`}
-                        style={{
-                          left: `${box.x}%`,
-                          top: `${box.y}%`,
-                          width: `${box.w}%`,
-                          height: `${box.h}%`,
-                          borderColor: box.color,
-                          backgroundColor: `${box.color}15`,
-                        }}
-                      >
-                        <span
-                          className="absolute -top-3.5 sm:-top-4 left-0 font-mono text-[8px] sm:text-[9px] text-white px-1.5 py-0.2 rounded truncate max-w-[130px]"
-                          style={{ backgroundColor: box.color }}
-                        >
-                          {box.name}
-                        </span>
+            <div className="relative w-full h-full max-w-[420px] max-h-[320px] flex items-center justify-center">
+              {customImage ? (
+                <img src={customImage} alt="Uploaded packaging" className="w-full h-full object-contain" />
+              ) : (
+                /* Simulated Package Face */
+                <div className="relative w-full h-full bg-[#ECE7D9] text-[#1C1A12] rounded p-3 sm:p-4 shadow-lg border border-[#C9A15A]/30 flex flex-col justify-between">
+                  {/* Brand row */}
+                  <div className="flex items-center justify-between border-b border-[#1C1A12]/15 pb-2 mb-2 sm:mb-3">
+                    <div>
+                      <div className="font-serif font-bold text-sm sm:text-base text-[#1C1A12] leading-tight truncate max-w-[200px] sm:max-w-none">
+                        {selectedPack.name}
                       </div>
-                    );
-                  })}
-              </div>
-            )}
+                      <div className="text-[9.5px] sm:text-[10px] text-[#1C1A12]/70 font-mono">
+                        Packaged Commodity • LMPC Rule 6 Design
+                      </div>
+                    </div>
+                    {/* Visual Brass Coin Graphic */}
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-[#C9A15A] via-[#E0BE7E] to-[#B97B33] border-2 border-[#241B08]/40 shadow flex flex-col items-center justify-center text-[#241B08] font-bold text-[8.5px] sm:text-[9px] leading-tight select-none flex-none">
+                      <span>₹5</span>
+                      <span className="text-[6.5px] sm:text-[7px] tracking-tighter">23 mm</span>
+                    </div>
+                  </div>
+
+                  {/* Decorative product lines */}
+                  <div className="space-y-1.5 my-2 sm:my-3">
+                    <div className="h-1.5 sm:h-2 bg-[#1C1A12]/15 rounded w-[85%]" />
+                    <div className="h-1.5 sm:h-2 bg-[#1C1A12]/15 rounded w-[70%]" />
+                    <div className="h-1.5 sm:h-2 bg-[#1C1A12]/15 rounded w-[60%]" />
+                  </div>
+
+                  {/* Simulated Mandatory Declarations */}
+                  <div className="flex items-end justify-between border-t border-dashed border-[#1C1A12]/20 pt-2">
+                    <div>
+                      <div className="text-[8.5px] sm:text-[9px] font-sans text-[#1C1A12]/60 uppercase">Max Retail Price</div>
+                      <div className="font-mono font-bold text-xs sm:text-sm text-[#1C1A12]">
+                        ₹{selectedPack.netQtyGrams > 500 ? "199.00" : "40.00"}
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <div className="text-[8.5px] sm:text-[9px] font-sans text-[#1C1A12]/60 uppercase">Net Quantity</div>
+                      <div
+                        className="font-mono font-bold text-[#1C1A12] transition-all"
+                        style={{ fontSize: `${Math.max(10, fontPixels)}px` }}
+                      >
+                        {selectedPack.netQtyGrams >= 1000 ? `${selectedPack.netQtyGrams / 1000} kg` : `${selectedPack.netQtyGrams} g`}
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              )}
+
+              {/* Bounding Box Overlays */}
+              {showBoxes &&
+                selectedPack.boxes.map((box) => {
+                  const isActive = activeBoxId === box.id;
+                  return (
+                    <div
+                      key={box.id}
+                      onMouseEnter={() => setActiveBoxId(box.id)}
+                      onMouseLeave={() => setActiveBoxId(null)}
+                      onClick={() => setActiveBoxId(box.id === activeBoxId ? null : box.id)}
+                      className={`absolute border-2 rounded transition-all cursor-pointer ${isActive ? "ring-2 ring-white shadow-lg z-20" : "z-10"
+                        }`}
+                      style={{
+                        left: `${box.x}%`,
+                        top: `${box.y}%`,
+                        width: `${box.w}%`,
+                        height: `${box.h}%`,
+                        borderColor: box.color,
+                        backgroundColor: `${box.color}15`,
+                      }}
+                    >
+                      <span
+                        className="absolute -top-3.5 sm:-top-4 left-0 font-mono text-[8px] sm:text-[9px] text-white px-1.5 py-0.2 rounded truncate max-w-[130px]"
+                        style={{ backgroundColor: box.color }}
+                      >
+                        {box.name}
+                      </span>
+                    </div>
+                  );
+                })}
+            </div>
           </div>
 
           {/* Bounding Box Legend */}
@@ -232,11 +233,10 @@ export default function VisionInspector() {
                 onMouseEnter={() => setActiveBoxId(box.id)}
                 onMouseLeave={() => setActiveBoxId(null)}
                 onClick={() => setActiveBoxId(box.id === activeBoxId ? null : box.id)}
-                className={`flex items-center gap-2 p-1.5 rounded text-[11px] font-mono cursor-pointer transition-all border ${
-                  activeBoxId === box.id
+                className={`flex items-center gap-2 p-1.5 rounded text-[11px] font-mono cursor-pointer transition-all border ${activeBoxId === box.id
                     ? "bg-[#17293B] border-[#C9A15A]"
                     : "bg-[#0E1A26] border-[#26394B] text-[#99AAB8]"
-                }`}
+                  }`}
               >
                 <span className="w-2.5 h-2.5 rounded-full flex-none" style={{ backgroundColor: box.color }} />
                 <span className="truncate text-[#EDEAE1]">{box.name}</span>
@@ -292,11 +292,10 @@ export default function VisionInspector() {
                 <span>Millimeter Font Measurement</span>
               </div>
               <span
-                className={`text-[10px] font-mono px-2 py-0.5 rounded border font-bold uppercase ${
-                  isFontCompliant
+                className={`text-[10px] font-mono px-2 py-0.5 rounded border font-bold uppercase ${isFontCompliant
                     ? "bg-[#5AAE83]/10 text-[#5AAE83] border-[#5AAE83]/30"
                     : "bg-[#D06A5A]/10 text-[#D06A5A] border-[#D06A5A]/30"
-                }`}
+                  }`}
               >
                 {isFontCompliant ? "Compliant" : "Violation"}
               </span>
@@ -338,11 +337,10 @@ export default function VisionInspector() {
 
             {/* Rule 7 verdict explanation */}
             <div
-              className={`p-3 rounded border text-xs leading-relaxed flex items-start gap-2.5 ${
-                isFontCompliant
+              className={`p-3 rounded border text-xs leading-relaxed flex items-start gap-2.5 ${isFontCompliant
                   ? "bg-[#5AAE83]/10 border-[#5AAE83]/30 text-[#EDEAE1]"
                   : "bg-[#D06A5A]/10 border-[#D06A5A]/30 text-[#EDEAE1]"
-              }`}
+                }`}
             >
               {isFontCompliant ? (
                 <CheckCircle2 size={16} className="text-[#5AAE83] flex-none mt-0.5" />

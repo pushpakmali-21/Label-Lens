@@ -142,8 +142,7 @@ function EvidencePanel({ scenario, phase }) {
   );
 }
 
-export default function Rule6Engine({ onGenerateNotice, onOpenScanner }) {
-  const [mode, setMode] = useState("qr");
+export default function Rule6Engine({ mode = "qr", setMode, onGenerateNotice, onOpenScanner }) {
   const [phase, setPhase] = useState("idle");
   const [runId, setRunId] = useState(0);
   const timeoutRef = useRef(null);
@@ -235,11 +234,10 @@ export default function Rule6Engine({ onGenerateNotice, onOpenScanner }) {
                 role="tab"
                 aria-selected={isSelected}
                 onClick={() => setMode(key)}
-                className={`snap-start flex-none w-[240px] sm:w-auto text-left p-3.5 sm:p-4 rounded-lg border transition-all active:scale-[0.98] ${
-                  isSelected
+                className={`snap-start flex-none w-[240px] sm:w-auto text-left p-3.5 sm:p-4 rounded-lg border transition-all active:scale-[0.98] ${isSelected
                     ? "bg-[#17293B] border-[#C9A15A] shadow-md ring-1 ring-[#C9A15A]/40"
                     : "bg-[#121F2E] border-[#26394B] hover:border-[#63768A] text-[#EDEAE1]"
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-2 mb-2">
                   <Icon size={16} className={isSelected ? "text-[#C9A15A]" : "text-[#99AAB8]"} />

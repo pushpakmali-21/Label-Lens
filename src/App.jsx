@@ -18,23 +18,28 @@ export default function App() {
     setActiveTab("notices");
   };
 
+  const [rule6Mode, setRule6Mode] = useState("qr");
+
   const handleSelectScenarioAndScan = (mode) => {
+    setRule6Mode(mode);
     setActiveTab("rule6");
   };
 
   return (
     <div className="min-h-screen bg-[#0B1520] text-[#EDEAE1] flex flex-col font-sans selection:bg-[#C9A15A] selection:text-[#241B08]">
       {/* Navigation Header (Responsive: Full tabs on desktop/tablet, compact header on mobile) */}
-      <Navbar 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
+      <Navbar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
         onOpenScanner={() => setIsScannerOpen(true)}
       />
 
       {/* Main Content Area (Responsive width: Full on mobile, max-w-7xl multi-column on desktop) */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-24 md:pb-8">
         {activeTab === "rule6" && (
-          <Rule6Engine 
+          <Rule6Engine
+            mode={rule6Mode}
+            setMode={setRule6Mode}
             onGenerateNotice={handleGenerateNotice}
             onOpenScanner={() => setIsScannerOpen(true)}
           />

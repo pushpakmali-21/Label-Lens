@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { X, Camera, Upload, Flashlight, RefreshCw, CheckCircle2, AlertTriangle, ArrowRight, Scan, Sparkles } from "lucide-react";
+import { X, Camera, Upload, Zap as Flashlight, RefreshCw, CheckCircle2, AlertTriangle, ArrowRight, Scan, Sparkles } from "lucide-react";
 import { SCENARIOS, MODE_ORDER } from "../data/scenarios";
 
 export default function MobileScannerModal({ isOpen, onClose, onSelectScenarioAndScan }) {
