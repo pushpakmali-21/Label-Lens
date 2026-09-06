@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { MapPin, Activity, ShieldAlert, CheckCircle2, TrendingDown, Eye, Filter, RefreshCw } from "lucide-react";
-import { DISTRICT_METRICS, LIVE_AUDIT_FEED } from "../data/districtData";
+import { DISTRICT_METRICS, LIVE_AUDIT_FEED, getLiveAuditFeed } from "../data/districtData";
 
-export default function HeatmapMonitor() {
+export default function HeatmapMonitor({ refreshKey }) {
   const [selectedDistrict, setSelectedDistrict] = useState(DISTRICT_METRICS[0]);
   const [feedFilter, setFeedFilter] = useState("all");
 
-  const filteredFeed = LIVE_AUDIT_FEED.filter((item) => {
+  const feed = getLiveAuditFeed();
+
+  const filteredFeed = feed.filter((item) => {
     if (feedFilter === "violation") return item.status === "violation";
     if (feedFilter === "pass") return item.status === "pass";
     return true;
@@ -79,11 +81,10 @@ export default function HeatmapMonitor() {
                 <div
                   key={dist.id}
                   onClick={() => setSelectedDistrict(dist)}
-                  className={`p-3.5 rounded-lg border cursor-pointer transition-all ${
-                    isSelected
+                  className={`p-3.5 rounded-lg border cursor-pointer transition-all ${isSelected
                       ? "bg-[#17293B] border-[#C9A15A] ring-1 ring-[#C9A15A]/30"
                       : "bg-[#121F2E] border-[#26394B] hover:border-[#63768A]"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div>
@@ -95,13 +96,12 @@ export default function HeatmapMonitor() {
                         {dist.complianceRate}%
                       </div>
                       <span
-                        className={`text-[9.5px] font-mono uppercase px-1.5 py-0.5 rounded border ${
-                          isHighRisk
+                        className={`text-[9.5px] font-mono uppercase px-1.5 py-0.5 rounded border ${isHighRisk
                             ? "bg-[#D06A5A]/10 text-[#D06A5A] border-[#D06A5A]/30"
                             : isLowRisk
-                            ? "bg-[#5AAE83]/10 text-[#5AAE83] border-[#5AAE83]/30"
-                            : "bg-[#DA9E4E]/10 text-[#DA9E4E] border-[#DA9E4E]/30"
-                        }`}
+                              ? "bg-[#5AAE83]/10 text-[#5AAE83] border-[#5AAE83]/30"
+                              : "bg-[#DA9E4E]/10 text-[#DA9E4E] border-[#DA9E4E]/30"
+                          }`}
                       >
                         {dist.riskLevel} Risk
                       </span>
@@ -149,11 +149,10 @@ export default function HeatmapMonitor() {
                 <button
                   key={f}
                   onClick={() => setFeedFilter(f)}
-                  className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded border transition-all ${
-                    feedFilter === f
+                  className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded border transition-all ${feedFilter === f
                       ? "bg-[#C9A15A] text-[#241B08] font-bold border-[#C9A15A]"
                       : "bg-[#0E1A26] text-[#99AAB8] border-[#26394B] hover:text-[#EDEAE1]"
-                  }`}
+                    }`}
                 >
                   {f}
                 </button>
@@ -168,25 +167,30 @@ export default function HeatmapMonitor() {
               return (
                 <div
                   key={item.id}
-                  className={`p-3 rounded border text-xs space-y-1.5 ${
-                    isViol
+                  className={`p-3 rounded border text-xs space-y-1.5 ${isViol
                       ? "bg-[#0E1A26] border-[#D06A5A]/40"
                       : "bg-[#0E1A26] border-[#5AAE83]/30"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-[10.5px] text-[#63768A]">
                       {item.id} • {item.platform}
                     </span>
-                    <span className="font-mono text-[10px] text-[#99AAB8]">{item.timestamp}</span>
+                    <div className="flex items-center gap-2">
+                      {item.isCitizenReport && (
+                        <span className="text-[9px] font-mono bg-[#3B82F6]/20 text-[#3B82F6] px-1.5 py-0.5 rounded border border-[#3B82F6]/40 uppercase">
+                          Citizen Report
+                        </span>
+                      )}
+                      <span className="font-mono text-[10px] text-[#99AAB8]">{item.timestamp}</span>
+                    </div>
                   </div>
 
                   <div className="font-medium text-[#EDEAE1] flex items-center justify-between">
                     <span className="truncate max-w-[200px] sm:max-w-none">{item.product}</span>
                     <span
-                      className={`font-mono text-[10px] uppercase font-bold px-1.5 py-0.2 rounded flex-none ${
-                        isViol ? "bg-[#D06A5A]/20 text-[#D06A5A]" : "bg-[#5AAE83]/20 text-[#5AAE83]"
-                      }`}
+                      className={`font-mono text-[10px] uppercase font-bold px-1.5 py-0.2 rounded flex-none ${isViol ? "bg-[#D06A5A]/20 text-[#D06A5A]" : "bg-[#5AAE83]/20 text-[#5AAE83]"
+                        }`}
                     >
                       {item.status}
                     </span>

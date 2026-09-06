@@ -7,11 +7,32 @@ import RuleEngineSandbox from "./components/RuleEngineSandbox";
 import NoticeGenerator from "./components/NoticeGenerator";
 import HeatmapMonitor from "./components/HeatmapMonitor";
 import MobileScannerModal from "./components/MobileScannerModal";
+import CitizenScanner from "./components/CitizenScanner";
+import { pushCitizenReport } from "./data/districtData";
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState("rule6");
+  const [userRole, setUserRole] = useState("citizen");
+  const [activeTab, setActiveTab] = useState("citizen");
   const [selectedNoticeScenario, setSelectedNoticeScenario] = useState(null);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [feedRefreshKey, setFeedRefreshKey] = useState(0);
+
+  const handleRoleChange = (role) => {
+    setUserRole(role);
+    setActiveTab(role === "citizen" ? "citizen" : "rule6");
+  };
+
+  const handleCitizenReport = (report) => {
+    pushCitizenReport(report);
+    setFeedRefreshKey((prev) => prev + 1);
+  };
+
+  React.useEffect(() => {
+    const officialOnlyTabs = ["rule6", "vision", "rulesandbox", "notices"];
+    if (userRole === "citizen" && officialOnlyTabs.includes(activeTab)) {
+      setActiveTab("citizen");
+    }
+  }, [userRole, activeTab]);
 
   const handleGenerateNotice = (scenario) => {
     setSelectedNoticeScenario(scenario);
@@ -32,6 +53,8 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenScanner={() => setIsScannerOpen(true)}
+        userRole={userRole}
+        onRoleChange={handleRoleChange}
       />
 
       {/* Main Content Area (Responsive width: Full on mobile, max-w-7xl multi-column on desktop) */}
@@ -60,8 +83,12 @@ export default function App() {
           />
         )}
 
+        {activeTab === "citizen" && (
+          <CitizenScanner onReportSubmitted={handleCitizenReport} />
+        )}
+
         {activeTab === "heatmap" && (
-          <HeatmapMonitor />
+          <HeatmapMonitor refreshKey={feedRefreshKey} />
         )}
       </main>
 
@@ -90,6 +117,7 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenScanner={() => setIsScannerOpen(true)}
+        userRole={userRole}
       />
 
       {/* Interactive Mobile Camera Scanner Modal */}

@@ -1,8 +1,8 @@
 import React from "react";
 import { Shield, Sparkles, Scan, FileText, Sliders, MapPin } from "lucide-react";
 
-export default function BottomNav({ activeTab, setActiveTab, onOpenScanner }) {
-  const navItems = [
+export default function BottomNav({ activeTab, setActiveTab, onOpenScanner, userRole }) {
+  const officialItems = [
     { id: "rule6", label: "Rule 6", icon: Shield },
     { id: "vision", label: "Vision", icon: Sparkles },
     // Center is the prominent Scan Button
@@ -10,25 +10,35 @@ export default function BottomNav({ activeTab, setActiveTab, onOpenScanner }) {
     { id: "heatmap", label: "Vigilance", icon: MapPin },
   ];
 
+  const citizenItems = [
+    { id: "empty1", hidden: true },
+    { id: "empty2", hidden: true },
+    // Center is the prominent Scan Button
+    { id: "heatmap", label: "Vigilance", icon: MapPin },
+    { id: "empty4", hidden: true },
+  ];
+
+  const navItems = userRole === "official" ? officialItems : citizenItems;
+
   return (
-    <nav 
+    <nav
       className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0E1A26]/95 backdrop-blur-xl border-t border-[#26394B] pb-safe shadow-2xl transition-all"
       aria-label="Mobile Navigation"
     >
       <div className="max-w-md mx-auto px-4 py-1.5 flex items-center justify-around relative">
         {/* Left 2 items */}
         {navItems.slice(0, 2).map((item) => {
+          if (item.hidden) return <div key={item.id} className="min-w-[58px]" />;
           const Icon = item.icon;
           const isActive = activeTab === item.id;
           return (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-lg transition-all duration-200 min-w-[58px] active:scale-95 ${
-                isActive
+              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-lg transition-all duration-200 min-w-[58px] active:scale-95 ${isActive
                   ? "text-[#C9A15A]"
                   : "text-[#99AAB8] hover:text-[#EDEAE1]"
-              }`}
+                }`}
             >
               <div className="relative">
                 <Icon size={19} className={isActive ? "text-[#C9A15A] stroke-[2.2]" : "stroke-[1.8]"} />
@@ -46,7 +56,7 @@ export default function BottomNav({ activeTab, setActiveTab, onOpenScanner }) {
         {/* Center Prominent Brass Scan Action Button */}
         <div className="flex flex-col items-center -mt-5">
           <button
-            onClick={onOpenScanner}
+            onClick={userRole === "citizen" ? () => setActiveTab("citizen") : onOpenScanner}
             className="w-13 h-13 rounded-full bg-[#C9A15A] hover:bg-[#E0BE7E] active:scale-90 transition-transform duration-150 flex items-center justify-center border-2 border-[#0B1520] shadow-brass-glow animate-pulseGlow p-3 text-[#241B08]"
             title="Scan Product"
             aria-label="Scan Product"
@@ -60,17 +70,17 @@ export default function BottomNav({ activeTab, setActiveTab, onOpenScanner }) {
 
         {/* Right 2 items */}
         {navItems.slice(2, 4).map((item) => {
+          if (item.hidden) return <div key={item.id} className="min-w-[58px]" />;
           const Icon = item.icon;
           const isActive = activeTab === item.id;
           return (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-lg transition-all duration-200 min-w-[58px] active:scale-95 ${
-                isActive
+              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-lg transition-all duration-200 min-w-[58px] active:scale-95 ${isActive
                   ? "text-[#C9A15A]"
                   : "text-[#99AAB8] hover:text-[#EDEAE1]"
-              }`}
+                }`}
             >
               <div className="relative">
                 <Icon size={19} className={isActive ? "text-[#C9A15A] stroke-[2.2]" : "stroke-[1.8]"} />

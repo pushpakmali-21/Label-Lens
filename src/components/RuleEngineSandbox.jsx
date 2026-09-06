@@ -40,7 +40,11 @@ export default function RuleEngineSandbox() {
         <h1 className="font-serif text-2xl sm:text-3xl font-normal text-[#EDEAE1]">
           Config-Driven LMPC Rule Engine &amp; Prohibited Expression Sandbox
         </h1>
-        <p className="text-xs sm:text-sm text-[#99AAB8] mt-1 max-w-3xl leading-relaxed">
+        <div className="mt-2.5 inline-flex flex-wrap items-center gap-1.5 px-3 py-1.5 bg-[#17293B] border border-[#26394B] text-xs text-[#99AAB8] rounded-md font-mono">
+          <AlertTriangle size={13} className="text-[#DA9E4E]" />
+          <span><strong className="text-[#DA9E4E]">Official Mode:</strong> Client-side evaluation is for instant UI feedback. Final validation and persistence happen strictly on the secure backend.</span>
+        </div>
+        <p className="text-xs sm:text-sm text-[#99AAB8] mt-3 max-w-3xl leading-relaxed">
           The Legal Metrology compliance rules are abstracted into versioned JSON data configs (<code className="text-[#C9A15A] font-mono">lmpc_rules_v1.json</code>) rather than hardcoded scripts. Test how the engine dynamically resolves weight slabs, screens for blacklisted expressions, and verifies consumer grievance disclosures.
         </p>
       </div>
@@ -80,8 +84,8 @@ export default function RuleEngineSandbox() {
                       key={quick}
                       onClick={() => setTestWeight(quick)}
                       className={`text-[11px] font-mono px-2.5 py-1 rounded border transition-all ${testWeight === quick
-                          ? "bg-[#C9A15A] text-[#241B08] border-[#C9A15A] font-bold"
-                          : "bg-[#17293B] border-[#26394B] text-[#99AAB8] hover:text-[#EDEAE1]"
+                        ? "bg-[#C9A15A] text-[#241B08] border-[#C9A15A] font-bold"
+                        : "bg-[#17293B] border-[#26394B] text-[#99AAB8] hover:text-[#EDEAE1]"
                         }`}
                     >
                       {quick >= 1000 ? `${quick / 1000}kg` : `${quick}g`}
@@ -230,8 +234,8 @@ export default function RuleEngineSandbox() {
               </div>
               <span
                 className={`text-[10px] font-mono px-2 py-0.5 rounded border font-semibold ${careValidation.isComplete
-                    ? "bg-[#5AAE83]/10 text-[#5AAE83] border-[#5AAE83]/30"
-                    : "bg-[#DA9E4E]/10 text-[#DA9E4E] border-[#DA9E4E]/30"
+                  ? "bg-[#5AAE83]/10 text-[#5AAE83] border-[#5AAE83]/30"
+                  : "bg-[#DA9E4E]/10 text-[#DA9E4E] border-[#DA9E4E]/30"
                   }`}
               >
                 {careValidation.score}% Complete

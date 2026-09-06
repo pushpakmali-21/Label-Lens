@@ -2,8 +2,13 @@ import React from "react";
 import LogoMark from "./LogoMark";
 import { Shield, Sparkles, Sliders, FileText, MapPin, CheckCircle2, Scan } from "lucide-react";
 
-export default function Navbar({ activeTab, setActiveTab, onOpenScanner }) {
-  const tabs = [
+export default function Navbar({ activeTab, setActiveTab, onOpenScanner, userRole, onRoleChange }) {
+  const citizenTabs = [
+    { id: "citizen", label: "Scan & Report", icon: Scan, badge: "Citizen" },
+    { id: "heatmap", label: "Vigilance Map", icon: MapPin, badge: "Live Feed" },
+  ];
+
+  const officialTabs = [
     { id: "rule6", label: "Rule 6 Engine", icon: Shield, badge: "3 Scenarios" },
     { id: "vision", label: "Vision & Coin Calibrator", icon: Sparkles, badge: "₹5 Coin" },
     { id: "rulesandbox", label: "LMPC Rule Sandbox", icon: Sliders, badge: "Weight Slabs" },
@@ -11,13 +16,15 @@ export default function Navbar({ activeTab, setActiveTab, onOpenScanner }) {
     { id: "heatmap", label: "Vigilance Heatmap", icon: MapPin, badge: "Live Feed" },
   ];
 
+  const tabs = userRole === "official" ? officialTabs : citizenTabs;
+
   return (
     <header className="border-b border-[#26394B] bg-[#0E1A26]/95 backdrop-blur sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex flex-col md:flex-row items-center justify-between gap-3">
         {/* Brand */}
         <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
-          <div 
-            className="flex items-center gap-2.5 cursor-pointer select-none active:opacity-85 transition-opacity" 
+          <div
+            className="flex items-center gap-2.5 cursor-pointer select-none active:opacity-85 transition-opacity"
             onClick={() => setActiveTab("rule6")}
           >
             <LogoMark size={28} />
@@ -28,6 +35,11 @@ export default function Navbar({ activeTab, setActiveTab, onOpenScanner }) {
                 <span className="text-[10px] font-mono uppercase bg-[#C9A15A]/15 text-[#C9A15A] px-1.5 py-0.5 rounded border border-[#C9A15A]/30 ml-1">
                   SIH 2026
                 </span>
+                {userRole === "official" && (
+                  <span className="text-[10px] uppercase font-bold text-[#D06A5A] ml-2 px-1.5 border border-[#D06A5A]/30 bg-[#D06A5A]/10 rounded">
+                    Official Access
+                  </span>
+                )}
               </div>
               <div className="text-[11px] text-[#99AAB8] font-sans mt-0.5 hidden sm:block">
                 Dept. of Consumer Affairs • Legal Metrology (Packaged Commodities)
@@ -56,35 +68,51 @@ export default function Navbar({ activeTab, setActiveTab, onOpenScanner }) {
         </div>
 
         {/* Desktop & Tablet Navigation Tabs */}
-        <nav className="hidden md:flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-0.5 md:pb-0 scrollbar-thin">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all whitespace-nowrap ${
-                  isActive
-                    ? "bg-[#C9A15A] text-[#241B08] font-semibold shadow-sm"
-                    : "text-[#99AAB8] hover:text-[#EDEAE1] hover:bg-[#17293B]"
-                }`}
-              >
-                <Icon size={14} className={isActive ? "text-[#241B08]" : "text-[#C9A15A]"} />
-                <span>{tab.label}</span>
-                <span
-                  className={`text-[9px] font-mono px-1 py-0.2 rounded ${
-                    isActive
-                      ? "bg-[#241B08]/20 text-[#241B08]"
-                      : "bg-[#26394B] text-[#99AAB8]"
-                  }`}
+        <div className="hidden md:flex items-center gap-1.5 w-full md:w-auto">
+          <nav className="flex items-center gap-1.5 overflow-x-auto pb-0.5 md:pb-0 scrollbar-thin flex-1">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all whitespace-nowrap ${isActive
+                      ? "bg-[#C9A15A] text-[#241B08] font-semibold shadow-sm"
+                      : "text-[#99AAB8] hover:text-[#EDEAE1] hover:bg-[#17293B]"
+                    }`}
                 >
-                  {tab.badge}
-                </span>
-              </button>
-            );
-          })}
-        </nav>
+                  <Icon size={14} className={isActive ? "text-[#241B08]" : "text-[#C9A15A]"} />
+                  <span>{tab.label}</span>
+                  <span
+                    className={`text-[9px] font-mono px-1 py-0.2 rounded ${isActive
+                        ? "bg-[#241B08]/20 text-[#241B08]"
+                        : "bg-[#26394B] text-[#99AAB8]"
+                      }`}
+                  >
+                    {tab.badge}
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Role Toggle */}
+          <div className="flex bg-[#121F2E] p-1 rounded-lg border border-[#26394B] ml-2">
+            <button
+              onClick={() => onRoleChange("citizen")}
+              className={`px-3 py-1 text-[11px] font-semibold rounded-md transition-all ${userRole === "citizen" ? "bg-[#C9A15A] text-[#241B08]" : "text-[#99AAB8] hover:text-[#EDEAE1]"}`}
+            >
+              Citizen
+            </button>
+            <button
+              onClick={() => onRoleChange("official")}
+              className={`px-3 py-1 text-[11px] font-semibold rounded-md transition-all ${userRole === "official" ? "bg-[#C9A15A] text-[#241B08]" : "text-[#99AAB8] hover:text-[#EDEAE1]"}`}
+            >
+              Official
+            </button>
+          </div>
+        </div>
       </div>
     </header>
   );
