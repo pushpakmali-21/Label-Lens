@@ -37,3 +37,10 @@ class ScanImageRequest(BaseModel):
     gps_lat: Optional[float] = None
     gps_lon: Optional[float] = None
     device_id: Optional[str] = None
+    extracted_fields: Optional[dict] = None
+
+class ScanQRRequest(BaseModel):
+    qr_content: str
+    gps_lat: Optional[float] = None
+    gps_lon: Optional[float] = None
+    device_id: Optional[str] = None

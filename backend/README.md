@@ -2,6 +2,15 @@
 
 FastAPI backend for the LabelLens Legal Metrology Compliance Platform (SIH 2026).
 
+## Sprint 1 Pending Checkpoint (Offline Mode)
+> **Note for next session**: Database connection and Alembic migrations have been temporarily deferred due to Docker daemon unavailability. When Docker is active, run the following to initialize the database:
+> ```bash
+> cd backend
+> docker compose up -d db redis
+> .venv/bin/alembic revision --autogenerate -m "create audits and violations"
+> .venv/bin/alembic upgrade head
+> ```
+
 ## Quick start (Docker — recommended)
 
 ```bash
