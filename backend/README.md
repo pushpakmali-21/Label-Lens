@@ -2,7 +2,19 @@
 
 FastAPI backend for the LabelLens Legal Metrology Compliance Platform (SIH 2026).
 
-## Sprint 1 Pending Checkpoint (Offline Mode)
+## Sprint 1 — Complete ✅ (Offline Mode)
+
+Delivered in Offline Sprint 1:
+- **FastAPI scaffold** — `app/main.py`, router registration, CORS, health check.
+- **`POST /api/v1/scan/image`** — accepts `extracted_fields` or falls back to stub mock; runs full LMPC validator; returns stable `ScanResponse` JSON.
+- **`POST /api/v1/scan/qr`** — QR payload parser with JSON / key-value / heuristic fallback; no longer fails valid QR inputs due to missing mocked manufacturer.
+- **`app/utils/lmpc_validator.py`** — Rule 6(1)(a), Rule 6(1)(c), Rule 7 font-slab checks, Rule 11(1) prohibited expressions, consumer-care validation, confidence-based `review` routing.
+- **Pixel/font helpers** — `calculate_pixel_per_mm()`, `convert_px_to_mm()` (parity with frontend JS).
+- **Evidence sealer** — SHA-256 tamper-evidence hash.
+- **SQLAlchemy models + Alembic** — schema defined; migration deferred pending Docker.
+- **pytest** — full offline test suite green.
+
+## ⏳ Sprint 1 Pending Checkpoint — DB Persistence (Deferred)
 > **Note for next session**: Database connection and Alembic migrations have been temporarily deferred due to Docker daemon unavailability. When Docker is active, run the following to initialize the database:
 > ```bash
 > cd backend
