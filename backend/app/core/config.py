@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     # Synchronous URL used by Alembic (Alembic doesn't support asyncpg directly)
     @property
     def sync_database_url(self) -> str:
-        """Return a psycopg2-compatible URL for Alembic migrations."""
+        """Return a psycopg-compatible URL for Alembic migrations."""
         return self.database_url.replace(
             "postgresql+asyncpg://", "postgresql+psycopg://"
         )
