@@ -6,20 +6,20 @@
 
 @layer base {
   :root {
-    --ink: #030712;
-    --panel: rgba(15, 23, 42, 0.4);
-    --panel-raised: rgba(30, 41, 59, 0.5);
-    --panel-line: rgba(255, 255, 255, 0.08);
-    --paper: #F1F5F9;
-    --paper-ink: #0F172A;
-    --brass: #38BDF8;
-    --brass-strong: #7DD3FC;
-    --brass-ink: #082F49;
-    --text-1: #F8FAFC;
-    --text-2: #94A3B8;
-    --text-3: #475569;
+    --ink: #F8FAFC;
+    --panel: rgba(255, 255, 255, 0.7);
+    --panel-raised: rgba(255, 255, 255, 0.95);
+    --panel-line: rgba(148, 163, 184, 0.15);
+    --paper: #FFFFFF;
+    --paper-ink: #1E293B;
+    --brass: #3B82F6;
+    --brass-strong: #60A5FA;
+    --brass-ink: #FFFFFF;
+    --text-1: #0F172A;
+    --text-2: #475569;
+    --text-3: #94A3B8;
     --pass: #10B981;
-    --fail: #F43F5E;
+    --fail: #EF4444;
     --review: #F59E0B;
   }
 
@@ -34,12 +34,12 @@
 
 /* Premium Animated Grid Background for SIH Hackathon */
 .bg-grid-mesh {
-  background-color: #030712;
+  background-color: #F8FAFC;
   background-image:
-    radial-gradient(ellipse at top left, rgba(56, 189, 248, 0.12) 0%, transparent 40%),
-    radial-gradient(ellipse at bottom right, rgba(244, 114, 182, 0.12) 0%, transparent 40%),
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    radial-gradient(ellipse at top left, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+    radial-gradient(ellipse at bottom right, rgba(20, 184, 166, 0.08) 0%, transparent 40%),
+    linear-gradient(to right, rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
   background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
   position: relative;
   background-attachment: fixed;
@@ -57,7 +57,7 @@
   min-width: 600px;
   min-height: 600px;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.06) 0%, rgba(16, 185, 129, 0.03) 30%, transparent 65%);
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.04) 0%, rgba(20, 184, 166, 0.03) 30%, transparent 65%);
   animation: pulseCore 10s ease-in-out infinite alternate;
   pointer-events: none;
   z-index: -1;
@@ -71,8 +71,8 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.8), transparent);
-  box-shadow: 0 0 20px 2px rgba(56, 189, 248, 0.6);
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.4), transparent);
+  box-shadow: 0 0 20px 2px rgba(59, 130, 246, 0.2);
   animation: scanlineSweep 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   pointer-events: none;
   z-index: 1;

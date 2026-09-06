@@ -1,12 +1,12 @@
 import React from "react";
 
-export default function LogoMark({ size = 32, color = "currentColor", primaryColor = "#38BDF8", secondaryColor = "#10B981" }) {
+export default function LogoMark({ size = 32, color = "currentColor", primaryColor = "#FBBF24", secondaryColor = "#34D399" }) {
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="group">
       <defs>
-        <linearGradient id="lensGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-          <stop stopColor={primaryColor} stopOpacity="0.9" />
-          <stop offset="1" stopColor="#C084FC" stopOpacity="0.9" />
+        <linearGradient id="llBagGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+          <stop stopColor={primaryColor} />
+          <stop offset="1" stopColor="#F59E0B" />
         </linearGradient>
         <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="2.5" result="blur" />
@@ -14,29 +14,37 @@ export default function LogoMark({ size = 32, color = "currentColor", primaryCol
         </filter>
         <style>
           {`
-            .scan-line { animation: sweep 2.5s ease-in-out infinite alternate; }
-            @keyframes sweep { 0% { transform: translateY(-5px); } 100% { transform: translateY(22px); } }
-            .lens-circle { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-origin: center; }
-            svg:hover .lens-circle { transform: scale(1.1) rotate(12deg); }
+            .star-pulse { animation: starPulse 2.5s ease-in-out infinite; transform-origin: center; }
+            @keyframes starPulse { 0% { transform: scale(0.8) rotate(0deg); opacity: 0.7; } 50% { transform: scale(1.2) rotate(45deg); opacity: 1; } 100% { transform: scale(0.8) rotate(0deg); opacity: 0.7; } }
+            .ll-bounce { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-origin: center; }
+            svg:hover .ll-bounce { transform: scale(1.05) translateY(-2px); }
           `}
         </style>
       </defs>
 
-      {/* Outer bounding box / Focus Area */}
-      <path d="M6 16V10C6 7.79086 7.79086 6 10 6H16" stroke={primaryColor} strokeWidth="2.5" strokeLinecap="round" opacity="0.8" />
-      <path d="M32 6H38C40.2091 6 42 7.79086 42 10V16" stroke={primaryColor} strokeWidth="2.5" strokeLinecap="round" opacity="0.8" />
-      <path d="M42 32V38C42 40.2091 40.2091 42 38 42H32" stroke={primaryColor} strokeWidth="2.5" strokeLinecap="round" opacity="0.8" />
-      <path d="M16 42H10C7.79086 42 6 40.2091 6 38V32" stroke={primaryColor} strokeWidth="2.5" strokeLinecap="round" opacity="0.8" />
+      <g className="ll-bounce">
+        {/* The lens / bag shape (Unique curved continuous rounded polygon) */}
+        <path d="M 12 4 
+                 C 5.5 4 4 5.5 4 12
+                 L 4 36 
+                 C 4 42.5 5.5 44 12 44
+                 L 36 44 
+                 C 42.5 44 44 42.5 44 36
+                 L 44 12
+                 C 44 5.5 42.5 4 36 4
+                 Z" fill="url(#llBagGrad)" filter="url(#glow)" />
 
-      {/* Magnifying Lens */}
-      <circle className="lens-circle" cx="22" cy="22" r="11" stroke="url(#lensGrad)" strokeWidth="3" filter="url(#glow)" />
-      <path className="lens-circle" d="M30 30L37 37" stroke={primaryColor} strokeWidth="3.5" strokeLinecap="round" filter="url(#glow)" />
+        {/* The "LL" Initials in bold, negative space/white, stylized and italicized */}
+        <g transform="translate(11, 9)">
+          {/* First L */}
+          <path d="M 7 6 L 3 23 Q 2.5 25 4 25 L 11 25" fill="none" stroke="white" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
+          {/* Second L */}
+          <path d="M 19 12 L 15 23 Q 14.5 25 16 25 L 23 25" fill="none" stroke="white" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
+        </g>
 
-      {/* Internal Scan Line */}
-      <line className="scan-line" x1="13" y1="13" x2="31" y2="13" stroke={primaryColor} strokeWidth="2" strokeLinecap="round" filter="url(#glow)" />
-
-      {/* Verification Tick */}
-      <path d="M28 36L33 41L44 26" stroke={secondaryColor} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" filter="url(#glow)" />
+        {/* Dynamic decorative star/sparkle for AI touch */}
+        <path className="star-pulse" d="M 34 10 C 34 14 38 14 38 18 C 38 14 42 14 42 10 C 38 14 38 6 34 10" fill="white" />
+      </g>
     </svg>
   );
 }

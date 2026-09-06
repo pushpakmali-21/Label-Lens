@@ -7,38 +7,38 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#030712",
+        ink: "#F4F7F9",
         panel: {
-          DEFAULT: "rgba(15, 23, 42, 0.4)",
-          raised: "rgba(30, 41, 59, 0.5)",
-          line: "rgba(255, 255, 255, 0.08)",
-          darker: "rgba(2, 6, 23, 0.7)",
+          DEFAULT: "rgba(255, 255, 255, 0.7)",
+          raised: "rgba(255, 255, 255, 0.95)",
+          line: "rgba(100, 116, 139, 0.15)",
+          darker: "rgba(240, 244, 248, 0.8)",
         },
         paper: {
-          DEFAULT: "#F1F5F9",
-          ink: "#0F172A",
+          DEFAULT: "#FFFFFF",
+          ink: "#1E293B",
         },
         brass: {
-          DEFAULT: "#38BDF8", // Cyan-blue for Official
-          strong: "#7DD3FC",
-          ink: "#082F49",
-          glow: "rgba(56, 189, 248, 0.4)",
+          DEFAULT: "#3B82F6", // Calm Blue
+          strong: "#60A5FA",
+          ink: "#FFFFFF",
+          glow: "rgba(59, 130, 246, 0.4)",
         },
         citizen: {
-          primary: "#F472B6", // Pink/Purple vibe for citizens
-          secondary: "#C084FC",
-          glow: "rgba(244, 114, 182, 0.3)",
+          primary: "#14B8A6", // Calm Teal 
+          secondary: "#2DD4BF",
+          glow: "rgba(20, 184, 166, 0.3)",
         },
         text: {
-          1: "#F8FAFC",
-          2: "#94A3B8",
-          3: "#475569",
+          1: "#0F172A",
+          2: "#475569",
+          3: "#94A3B8",
         },
         status: {
           pass: "#10B981",
           'pass-bg': "rgba(16, 185, 129, 0.15)",
-          fail: "#F43F5E",
-          'fail-bg': "rgba(244, 63, 94, 0.15)",
+          fail: "#EF4444",
+          'fail-bg': "rgba(239, 68, 68, 0.15)",
           review: "#F59E0B",
           'review-bg': "rgba(245, 158, 11, 0.15)",
         }
@@ -49,7 +49,7 @@ export default {
         mono: ["'JetBrains Mono'", "monospace"],
       },
       boxShadow: {
-        'brass-glow': '0 0 30px -5px rgba(56, 189, 248, 0.5)',
+        'brass-glow': '0 0 30px -5px rgba(251, 191, 36, 0.5)',
         'pass-glow': '0 0 30px -5px rgba(16, 185, 129, 0.5)',
         'fail-glow': '0 0 30px -5px rgba(244, 63, 94, 0.5)',
         'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.4)',

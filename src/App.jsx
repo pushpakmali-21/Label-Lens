@@ -9,6 +9,8 @@ import HeatmapMonitor from "./components/HeatmapMonitor";
 import MobileScannerModal from "./components/MobileScannerModal";
 import CitizenScanner from "./components/CitizenScanner";
 import { pushCitizenReport } from "./data/districtData";
+import Chatbot from "./components/Chatbot";
+import UserProfileModal from "./components/UserProfileModal";
 
 export default function App() {
   const [userRole, setUserRole] = useState("citizen");
@@ -16,6 +18,15 @@ export default function App() {
   const [selectedNoticeScenario, setSelectedNoticeScenario] = useState(null);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [feedRefreshKey, setFeedRefreshKey] = useState(0);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [userProfile, setUserProfile] = useState({
+    name: "",
+    email: "",
+    gender: "",
+    preferences: "",
+    allergies: [],
+    hasDiabetes: false,
+  });
 
   const handleRoleChange = (role) => {
     setUserRole(role);
@@ -55,6 +66,7 @@ export default function App() {
         onOpenScanner={() => setIsScannerOpen(true)}
         userRole={userRole}
         onRoleChange={handleRoleChange}
+        onOpenProfile={() => setIsProfileOpen(true)}
       />
 
       {/* Main Content Area (Responsive width: Full on mobile, max-w-7xl multi-column on desktop) */}
@@ -126,6 +138,17 @@ export default function App() {
         onClose={() => setIsScannerOpen(false)}
         onSelectScenarioAndScan={handleSelectScenarioAndScan}
       />
+
+      {/* User Profile Modal */}
+      <UserProfileModal
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+        profile={userProfile}
+        setProfile={setUserProfile}
+      />
+
+      {/* Persistent Chatbot Widget */}
+      <Chatbot />
     </div>
   );
 }
