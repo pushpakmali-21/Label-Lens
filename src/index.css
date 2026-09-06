@@ -1,101 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --ink: #0B1520;
-    --panel: #121F2E;
-    --panel-raised: #17293B;
-    --panel-line: #26394B;
-    --paper: #ECE7D9;
-    --paper-ink: #1C1A12;
-    --brass: #C9A15A;
-    --brass-strong: #E0BE7E;
-    --brass-ink: #241B08;
-    --text-1: #EDEAE1;
-    --text-2: #99AAB8;
-    --text-3: #63768A;
-    --pass: #5AAE83;
-    --fail: #D06A5A;
-    --review: #DA9E4E;
+    --ink: #030712;
+    --panel: rgba(15, 23, 42, 0.4);
+    --panel-raised: rgba(30, 41, 59, 0.5);
+    --panel-line: rgba(255, 255, 255, 0.08);
+    --paper: #F1F5F9;
+    --paper-ink: #0F172A;
+    --brass: #38BDF8;
+    --brass-strong: #7DD3FC;
+    --brass-ink: #082F49;
+    --text-1: #F8FAFC;
+    --text-2: #94A3B8;
+    --text-3: #475569;
+    --pass: #10B981;
+    --fail: #F43F5E;
+    --review: #F59E0B;
   }
 
   body {
-    background-color: #0B1520;
-    color: #EDEAE1;
-    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--ink);
+    color: var(--text-1);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
   }
 }
 
-@keyframes scanSweep {
-  0% { top: -25%; opacity: 0.8; }
-  50% { opacity: 1; }
-  100% { top: 105%; opacity: 0.8; }
+/* Premium Animated Grid Background for SIH Hackathon */
+.bg-grid-mesh {
+  background-color: #030712;
+  background-image:
+    radial-gradient(ellipse at top left, rgba(56, 189, 248, 0.12) 0%, transparent 40%),
+    radial-gradient(ellipse at bottom right, rgba(244, 114, 182, 0.12) 0%, transparent 40%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+  position: relative;
+  background-attachment: fixed;
+  z-index: 0;
 }
 
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 15px rgba(201, 161, 90, 0.35); transform: scale(1); }
-  50% { box-shadow: 0 0 25px rgba(201, 161, 90, 0.65); transform: scale(1.03); }
+/* Pulsing ambient core */
+.bg-grid-mesh::before {
+  content: "";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 70vw;
+  height: 70vw;
+  min-width: 600px;
+  min-height: 600px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.06) 0%, rgba(16, 185, 129, 0.03) 30%, transparent 65%);
+  animation: pulseCore 10s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: -1;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Verifying Scan Line */
+.bg-grid-mesh::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.8), transparent);
+  box-shadow: 0 0 20px 2px rgba(56, 189, 248, 0.6);
+  animation: scanlineSweep 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+  z-index: 1;
 }
 
-.animate-fadeIn {
-  animation: fadeIn 300ms ease forwards;
+@keyframes pulseCore {
+  0% {
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 1;
+  }
 }
 
-.animate-pulseGlow {
-  animation: pulseGlow 2.4s ease-in-out infinite;
+@keyframes scanlineSweep {
+  0% {
+    top: -5%;
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    top: 105%;
+    opacity: 0;
+  }
 }
 
-/* Horizontal scroll styling */
+/* Glassmorphism utilities */
+.glass-panel {
+  @apply bg-panel backdrop-blur-glass border border-panel-line shadow-glass rounded-xl;
+  position: relative;
+  z-index: 10;
+}
+
+.glass-panel-raised {
+  @apply bg-panel-raised backdrop-blur-glass border border-panel-line shadow-glass rounded-xl hover:translate-y-[-3px] transition-all duration-300;
+  position: relative;
+  z-index: 10;
+}
+
+/* Smooth transitions for all interactive elements */
+button,
+a,
+input {
+  @apply transition-all duration-200 ease-in-out;
+}
+
+button:active {
+  @apply scale-[0.97];
+}
+
+/* Scrollbar tweaks */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
-.snap-x-mandatory {
-  scroll-snap-type: x mandatory;
-}
-
-.snap-start {
-  scroll-snap-align: start;
-}
-
-/* Custom subtle scrollbar */
 .scrollbar-thin::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: #0E1A26;
-}
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #26394B;
-  border-radius: 3px;
-}
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #63768A;
+  width: 6px;
+  height: 6px;
 }
 
-/* Print optimizations */
-@media print {
-  body {
-    background: #FFFFFF !important;
-    color: #000000 !important;
-  }
-  .no-print {
-    display: none !important;
-  }
-  header, footer, nav, .bottom-nav {
-    display: none !important;
-  }
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }

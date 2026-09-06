@@ -100,6 +100,7 @@ A DoCA officer doing a retail audit.
 
 ---
 
+
 ## Feature Matrix by Role
 
 | Feature | Citizen (No Login) | Citizen (Logged In) | Inspector | DoCA Admin |

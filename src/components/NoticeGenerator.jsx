@@ -40,16 +40,16 @@ export default function NoticeGenerator({ scenarioForNotice, onBackToScan }) {
   return (
     <div className="space-y-6">
       {/* Action Header */}
-      <div className="flex items-center justify-between flex-wrap gap-4 border-b border-[#26394B] pb-4 sm:pb-5 no-print">
+      <div className="flex items-center justify-between flex-wrap gap-4 border-b border-panel-line pb-4 sm:pb-5 no-print">
         <div>
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-[#C9A15A]/10 border border-[#C9A15A]/30 text-[#C9A15A] text-xs font-mono mb-2">
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-brass/10 border border-brass/30 text-brass text-xs font-mono mb-2">
             <FileText size={14} />
             <span>Automated Legal Workflows (Section 39, Legal Metrology Act, 2009)</span>
           </div>
-          <h1 className="font-serif text-2xl sm:text-3xl font-normal text-[#EDEAE1]">
+          <h1 className="font-serif text-2xl sm:text-3xl font-normal text-text-1">
             Statutory Show-Cause Notice Generator
           </h1>
-          <p className="text-xs sm:text-sm text-[#99AAB8] mt-1 leading-relaxed">
+          <p className="text-xs sm:text-sm text-text-2 mt-1 leading-relaxed">
             Instantly compiles Courtroom-grade legal notices with embedded OCR evidence and SHA-256 cryptographic chain-of-custody seal.
           </p>
         </div>
@@ -58,7 +58,7 @@ export default function NoticeGenerator({ scenarioForNotice, onBackToScan }) {
           {onBackToScan && (
             <button
               onClick={onBackToScan}
-              className="bg-[#17293B] hover:bg-[#26394B] border border-[#26394B] text-[#EDEAE1] text-xs font-medium px-3 py-2 rounded flex items-center gap-1.5 transition-all active:scale-95"
+              className="bg-panel-raised hover:bg-panel-line border border-panel-line text-text-1 text-xs font-medium px-3 py-2 rounded flex items-center gap-1.5 transition-all active:scale-95"
             >
               <ArrowLeft size={14} />
               <span>Back to Scanner</span>
@@ -67,7 +67,7 @@ export default function NoticeGenerator({ scenarioForNotice, onBackToScan }) {
 
           <button
             onClick={handlePrint}
-            className="bg-[#C9A15A] hover:bg-[#E0BE7E] active:scale-95 text-[#241B08] font-semibold text-xs sm:text-sm px-4 py-2 rounded flex items-center gap-2 transition-all shadow-sm"
+            className="bg-brass hover:bg-brass-strong active:scale-95 text-brass-ink font-semibold text-xs sm:text-sm px-4 py-2 rounded flex items-center gap-2 transition-all shadow-sm"
           >
             <Printer size={15} />
             <span>Print Official Notice (PDF)</span>
@@ -173,7 +173,7 @@ export default function NoticeGenerator({ scenarioForNotice, onBackToScan }) {
         {/* Cryptographic Chain-of-Custody Seal (Tamper-Proof) */}
         <div className="border-t-2 border-dashed border-gray-300 pt-4 mt-6 font-sans text-xs">
           <div className="flex items-center gap-1.5 font-bold text-gray-800 mb-2">
-            <ShieldCheck size={16} className="text-[#C9A15A]" />
+            <ShieldCheck size={16} className="text-brass" />
             <span>Cryptographic Chain-of-Custody &amp; Electronic Seal (Sec 65B Indian Evidence Act)</span>
           </div>
 
