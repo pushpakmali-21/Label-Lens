@@ -7,6 +7,7 @@ sqlalchemy==2.0.36
 alembic==1.13.3
 psycopg[binary]>=3.2.0,<4.0.0     # PostgreSQL driver (sync, used by Alembic)
 asyncpg==0.30.0           # PostgreSQL driver (async, used by SQLAlchemy async engine)
+greenlet==3.1.1           # Required by SQLAlchemy async
 
 # ── Validation / Settings ───────────────────────────────────────────────────────
 pydantic==2.9.2

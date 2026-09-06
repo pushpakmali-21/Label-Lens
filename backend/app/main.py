@@ -65,11 +65,10 @@ def _register_routers(app: FastAPI) -> None:
     Add new routers here as each phase is completed — do not import them
     at module level to avoid circular dependency issues.
     """
-    # Phase 4 — Scan & Audit routers (uncomment when Phase 4 is complete)
-    # from app.routers import scan, audit
-    # app.include_router(scan.router, prefix="/api/v1", tags=["Scan"])
-    # app.include_router(audit.router, prefix="/api/v1", tags=["Audit"])
-    pass
+    # Phase 4 — Scan & Audit routers
+    from app.routers import scan, audit
+    app.include_router(scan.router, prefix="/api/v1", tags=["Scan"])
+    app.include_router(audit.router, prefix="/api/v1", tags=["Audit"])
 
 
 # ── Application instance ──────────────────────────────────────────────────────
