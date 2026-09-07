@@ -1,0 +1,61 @@
+
+services:
+  # ── PostgreSQL 16 ─────────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: labellens_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: labellens
+      POSTGRES_PASSWORD: labellens_dev
+      POSTGRES_DB: labellens
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U labellens"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis (broker for Celery — Engineer 2 workers, cache for Engineer 1) ──────
+  redis:
+    image: redis:7-alpine
+    container_name: labellens_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── FastAPI Backend ───────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: labellens_api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Overrides .env values for Docker networking
+      DATABASE_URL: postgresql+asyncpg://labellens:labellens_dev@db:5432/labellens
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    volumes:
+      # Hot-reload: mount source code during development
+      - ./app:/app/app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  postgres_data:

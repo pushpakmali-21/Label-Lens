@@ -50,8 +50,8 @@ export default function Navbar({ activeTab, setActiveTab, onOpenScanner, userRol
             </div>
           </div>
 
-          {/* Mobile Right Action Bar: Scan Trigger & Ready Badge */}
-          <div className="md:hidden flex items-center gap-2">
+          {/* Global scanner entry point and service status */}
+          <div className="flex items-center gap-2">
             {onOpenScanner && (
               <button
                 onClick={onOpenScanner}

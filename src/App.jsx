@@ -51,9 +51,11 @@ export default function App() {
   };
 
   const [rule6Mode, setRule6Mode] = useState("qr");
+  const [capturedFrame, setCapturedFrame] = useState(null);
 
-  const handleSelectScenarioAndScan = (mode) => {
+  const handleSelectScenarioAndScan = (mode, frameB64 = null) => {
     setRule6Mode(mode);
+    setCapturedFrame(frameB64);
     setActiveTab("rule6");
   };
 
@@ -75,6 +77,7 @@ export default function App() {
           <Rule6Engine
             mode={rule6Mode}
             setMode={setRule6Mode}
+            capturedFrame={capturedFrame}
             onGenerateNotice={handleGenerateNotice}
             onOpenScanner={() => setIsScannerOpen(true)}
           />
