@@ -9,6 +9,7 @@ import HeatmapMonitor from "./components/HeatmapMonitor";
 import MobileScannerModal from "./components/MobileScannerModal";
 import CitizenScanner from "./components/CitizenScanner";
 import InspectionHistory from "./components/InspectionHistory";
+import AdminDashboard from "./components/AdminDashboard";
 import RoleSelector from "./components/RoleSelector";
 import Login from "./components/Login";
 import { pushCitizenReport } from "./data/districtData";
@@ -145,26 +146,7 @@ export default function App() {
         )}
 
         {role === "admin" && (
-          <div className="space-y-4">
-            <div className="bg-panel p-6 rounded-lg border border-panel-line">
-              <h2 className="text-xl text-text-1 font-serif">
-                Admin Dashboard
-              </h2>
-              <p className="text-text-2 mt-2">
-                System overview and analytics.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-panel p-4 rounded-lg border border-panel-line">
-                Total Reports
-              </div>
-
-              <div className="bg-panel p-4 rounded-lg border border-panel-line">
-                Active Violations
-              </div>
-            </div>
-          </div>
+          <AdminDashboard />
         )}
       </main>
 
