@@ -1,8 +1,10 @@
 import React from "react";
 import LogoMark from "./LogoMark";
-import { Shield, Sparkles, Sliders, FileText, MapPin, CheckCircle2, Scan, UserCircle } from "lucide-react";
+import useNetworkStatus from "../hooks/useNetworkStatus";
+import { Shield, Sparkles, Sliders, FileText, MapPin, CheckCircle2, Scan, UserCircle, Wifi, WifiOff } from "lucide-react";
 
-export default function Navbar({ activeTab, setActiveTab, onOpenScanner, userRole, onRoleChange, onOpenProfile }) {
+export default function Navbar({ activeTab, setActiveTab, onOpenScanner, role, onSelectRole, onSwitchRole, onLogout, onOpenProfile }) {
+  const isOnline = useNetworkStatus();
   const citizenTabs = [
     { id: "citizen", label: "Scan & Report", icon: Scan, badge: "Citizen" },
     { id: "heatmap", label: "Vigilance Map", icon: MapPin, badge: "Live Feed" },
@@ -16,7 +18,7 @@ export default function Navbar({ activeTab, setActiveTab, onOpenScanner, userRol
     { id: "heatmap", label: "Vigilance Heatmap", icon: MapPin, badge: "Live Feed" },
   ];
 
-  const tabs = userRole === "official" ? officialTabs : citizenTabs;
+  const tabs = role === "official" ? officialTabs : citizenTabs;
 
   return (
     <header className="border-b border-panel-line bg-panel/70 backdrop-blur-xl sticky top-0 z-50 shadow-[0_4px_30px_rgba(0,0,0,0.05)]">
@@ -38,11 +40,33 @@ export default function Navbar({ activeTab, setActiveTab, onOpenScanner, userRol
                 <span className="text-[10px] font-mono uppercase bg-brass/10 text-brass px-2 py-0.5 rounded-full border border-brass/20 ml-1 shadow-sm mt-1 not-italic">
                   SIH 26
                 </span>
-                {userRole === "official" && (
+                {role === "official" && (
                   <span className="text-[10px] uppercase font-bold text-status-fail ml-2 px-2 py-0.5 border border-status-fail/40 bg-status-fail/15 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.3)] tracking-wider mt-1 not-italic">
                     Official
                   </span>
                 )}
+                <span className="px-3 py-1 rounded bg-brass/10 text-brass border border-brass/30 text-xs font-mono uppercase">
+                  {role}
+                </span>
+                <span className={`ml-2 inline-flex items-center gap-1 px-3 py-1 rounded border text-xs font-mono uppercase ${isOnline
+                  ? "bg-status-pass/10 text-status-pass border-status-pass/30"
+                  : "bg-status-review/10 text-status-review border-status-review/30"
+                  }`}>
+                  {isOnline ? <Wifi size={13} /> : <WifiOff size={13} />}
+                  {isOnline ? "Online" : "Offline"}
+                </span>
+                <button
+                  onClick={onSwitchRole}
+                  className="ml-2 px-3 py-1 rounded bg-panel-raised text-text-2 border border-panel-line text-xs font-semibold hover:border-brass hover:text-brass transition-colors"
+                >
+                  Switch Role
+                </button>
+                <button
+                  onClick={onLogout}
+                  className="ml-2 px-3 py-1 rounded bg-status-fail/10 text-status-fail border border-status-fail/30 text-xs font-semibold hover:bg-status-fail/20 transition-colors"
+                >
+                  Logout
+                </button>
               </div>
               <div className="text-[11.5px] text-text-2 font-sans mt-2 hidden sm:block tracking-wide">
                 Dept. of Consumer Affairs • Legal Metrology
@@ -102,20 +126,20 @@ export default function Navbar({ activeTab, setActiveTab, onOpenScanner, userRol
 
           <div className="flex bg-panel-darker p-1.5 rounded-xl border border-panel-line ml-3 shadow-inner">
             <button
-              onClick={() => onRoleChange("citizen")}
-              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${userRole === "citizen" ? "bg-citizen-primary text-white shadow-sm" : "text-text-2 hover:text-text-1 hover:bg-panel"}`}
+              onClick={() => onSelectRole("citizen")}
+              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${role === "citizen" ? "bg-citizen-primary text-white shadow-sm" : "text-text-2 hover:text-text-1 hover:bg-panel"}`}
             >
               Citizen
             </button>
             <button
-              onClick={() => onRoleChange("official")}
-              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${userRole === "official" ? "bg-brass text-brass-ink shadow-sm" : "text-text-2 hover:text-text-1 hover:bg-panel"}`}
+              onClick={() => onSelectRole("official")}
+              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${role === "official" ? "bg-brass text-brass-ink shadow-sm" : "text-text-2 hover:text-text-1 hover:bg-panel"}`}
             >
               Official
             </button>
           </div>
 
-          {userRole === "citizen" && onOpenProfile && (
+          {role === "citizen" && onOpenProfile && (
             <button
               onClick={onOpenProfile}
               className="ml-3 flex items-center justify-center p-2 rounded-xl bg-panel-raised border border-panel-line text-text-2 hover:text-brass hover:border-brass/30 transition-all shadow-sm"

@@ -129,7 +129,7 @@ export default function VisionInspector() {
       </div>
 
       {/* Main Interactive Stage (Responsive 12-column grid on desktop, single-column on mobile) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div data-inspection-evidence className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Interactive Canvas Simulator */}
         <div className="lg:col-span-7 bg-panel border border-panel-line rounded-lg p-3.5 sm:p-4">
           <div className="flex items-center justify-between text-xs text-text-3 font-mono mb-2">

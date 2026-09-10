@@ -8,12 +8,17 @@ import NoticeGenerator from "./components/NoticeGenerator";
 import HeatmapMonitor from "./components/HeatmapMonitor";
 import MobileScannerModal from "./components/MobileScannerModal";
 import CitizenScanner from "./components/CitizenScanner";
+import RoleSelector from "./components/RoleSelector";
+import Login from "./components/Login";
 import { pushCitizenReport } from "./data/districtData";
 import Chatbot from "./components/Chatbot";
 import UserProfileModal from "./components/UserProfileModal";
 
 export default function App() {
-  const [userRole, setUserRole] = useState("citizen");
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [role, setRole] = useState(
+    localStorage.getItem("role") || null
+  );
   const [activeTab, setActiveTab] = useState("citizen");
   const [selectedNoticeScenario, setSelectedNoticeScenario] = useState(null);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -28,9 +33,34 @@ export default function App() {
     hasDiabetes: false,
   });
 
-  const handleRoleChange = (role) => {
-    setUserRole(role);
-    setActiveTab(role === "citizen" ? "citizen" : "rule6");
+  const handleRoleSelect = (selectedRole) => {
+    localStorage.setItem("role", selectedRole);
+    setRole(selectedRole);
+  };
+
+  const handleLogin = () => {
+    localStorage.setItem("token", "mock-jwt-token");
+    setToken("mock-jwt-token");
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    setToken(null);
+    setRole(null);
+  };
+
+  const handleSwitchRole = () => {
+    localStorage.removeItem("role");
+    setRole(null);
+  };
+
+  const handleRoleChange = (selectedRole) => {
+    const nextRole = typeof selectedRole === "string"
+      ? selectedRole
+      : role === "citizen" ? "official" : "citizen";
+    handleRoleSelect(nextRole);
+    setActiveTab(nextRole === "citizen" ? "citizen" : "rule6");
   };
 
   const handleCitizenReport = (report) => {
@@ -40,10 +70,10 @@ export default function App() {
 
   React.useEffect(() => {
     const officialOnlyTabs = ["rule6", "vision", "rulesandbox", "notices"];
-    if (userRole === "citizen" && officialOnlyTabs.includes(activeTab)) {
+    if (role === "citizen" && officialOnlyTabs.includes(activeTab)) {
       setActiveTab("citizen");
     }
-  }, [userRole, activeTab]);
+  }, [role, activeTab]);
 
   const handleGenerateNotice = (scenario) => {
     setSelectedNoticeScenario(scenario);
@@ -59,6 +89,14 @@ export default function App() {
     setActiveTab("rule6");
   };
 
+  if (!token) {
+    return <Login onLogin={handleLogin} />;
+  }
+
+  if (!role) {
+    return <RoleSelector onSelect={handleRoleSelect} />;
+  }
+
   return (
     <div className="min-h-screen bg-ink text-text-1 flex flex-col font-sans selection:bg-brass selection:text-brass-ink bg-grid-mesh relative">
       {/* Navigation Header (Responsive: Full tabs on desktop/tablet, compact header on mobile) */}
@@ -66,44 +104,53 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenScanner={() => setIsScannerOpen(true)}
-        userRole={userRole}
-        onRoleChange={handleRoleChange}
+        role={role}
+        onSelectRole={handleRoleChange}
+        onSwitchRole={handleSwitchRole}
+        onLogout={handleLogout}
         onOpenProfile={() => setIsProfileOpen(true)}
       />
 
       {/* Main Content Area (Responsive width: Full on mobile, max-w-7xl multi-column on desktop) */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-24 md:pb-8">
-        {activeTab === "rule6" && (
-          <Rule6Engine
-            mode={rule6Mode}
-            setMode={setRule6Mode}
-            capturedFrame={capturedFrame}
-            onGenerateNotice={handleGenerateNotice}
-            onOpenScanner={() => setIsScannerOpen(true)}
-          />
-        )}
-
-        {activeTab === "vision" && (
-          <VisionInspector />
-        )}
-
-        {activeTab === "rulesandbox" && (
-          <RuleEngineSandbox />
-        )}
-
-        {activeTab === "notices" && (
-          <NoticeGenerator
-            scenarioForNotice={selectedNoticeScenario}
-            onBackToScan={() => setActiveTab("rule6")}
-          />
-        )}
-
-        {activeTab === "citizen" && (
+        {role === "citizen" && (
           <CitizenScanner onReportSubmitted={handleCitizenReport} />
         )}
 
-        {activeTab === "heatmap" && (
-          <HeatmapMonitor refreshKey={feedRefreshKey} />
+        {(role === "inspector" || role === "official") && (
+          <>
+            <Rule6Engine
+              mode={rule6Mode}
+              setMode={setRule6Mode}
+              onGenerateNotice={handleGenerateNotice}
+              onOpenScanner={() => setIsScannerOpen(true)}
+            />
+            <VisionInspector />
+            <HeatmapMonitor refreshKey={feedRefreshKey} />
+          </>
+        )}
+
+        {role === "admin" && (
+          <div className="space-y-4">
+            <div className="bg-panel p-6 rounded-lg border border-panel-line">
+              <h2 className="text-xl text-text-1 font-serif">
+                Admin Dashboard
+              </h2>
+              <p className="text-text-2 mt-2">
+                System overview and analytics.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-panel p-4 rounded-lg border border-panel-line">
+                Total Reports
+              </div>
+
+              <div className="bg-panel p-4 rounded-lg border border-panel-line">
+                Active Violations
+              </div>
+            </div>
+          </div>
         )}
       </main>
 
@@ -132,7 +179,7 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenScanner={() => setIsScannerOpen(true)}
-        userRole={userRole}
+        userRole={role}
       />
 
       {/* Interactive Mobile Camera Scanner Modal */}
