@@ -117,14 +117,25 @@ export default function App() {
 
         {(role === "inspector" || role === "official") && (
           <>
-            <Rule6Engine
-              mode={rule6Mode}
-              setMode={setRule6Mode}
-              onGenerateNotice={handleGenerateNotice}
-              onOpenScanner={() => setIsScannerOpen(true)}
-            />
-            <VisionInspector />
-            <HeatmapMonitor refreshKey={feedRefreshKey} />
+            {activeTab === "rule6" && (
+              <Rule6Engine
+                mode={rule6Mode}
+                setMode={setRule6Mode}
+                onGenerateNotice={handleGenerateNotice}
+                onOpenScanner={() => setIsScannerOpen(true)}
+              />
+            )}
+            {activeTab === "vision" && <VisionInspector />}
+            {activeTab === "rulesandbox" && <RuleEngineSandbox />}
+            {activeTab === "notices" && (
+              <NoticeGenerator
+                scenarioForNotice={selectedNoticeScenario}
+                onBackToScan={() => setActiveTab("rule6")}
+              />
+            )}
+            {activeTab === "heatmap" && (
+              <HeatmapMonitor refreshKey={feedRefreshKey} />
+            )}
           </>
         )}
 
