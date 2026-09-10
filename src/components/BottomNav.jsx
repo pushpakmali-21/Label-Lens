@@ -1,5 +1,5 @@
 import React from "react";
-import { Shield, Sparkles, Scan, FileText, Sliders, MapPin } from "lucide-react";
+import { Shield, Sparkles, Scan, FileText, Sliders, MapPin, History } from "lucide-react";
 
 export default function BottomNav({ activeTab, setActiveTab, onOpenScanner, userRole }) {
   const officialItems = [
@@ -15,7 +15,7 @@ export default function BottomNav({ activeTab, setActiveTab, onOpenScanner, user
     { id: "empty2", hidden: true },
     // Center is the prominent Scan Button
     { id: "heatmap", label: "Vigilance", icon: MapPin },
-    { id: "empty4", hidden: true },
+    { id: "history", label: "History", icon: History },
   ];
 
   const navItems = userRole === "official" ? officialItems : citizenItems;
