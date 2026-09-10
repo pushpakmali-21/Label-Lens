@@ -27,7 +27,7 @@ export default function Navbar({ activeTab, setActiveTab, onOpenScanner, role, o
         <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
           <div
             className="flex items-center gap-3.5 cursor-pointer select-none active:scale-95 transition-transform bg-panel-darker/50 hover:bg-panel-darker py-2 px-3.5 rounded-xl border border-panel-line hover:border-text-3/40 relative overflow-hidden group"
-            onClick={() => setActiveTab("rule6")}
+            onClick={() => setActiveTab(role === "citizen" ? "citizen" : "rule6")}
           >
             {/* Glowing orb behind logo */}
             <div className="absolute -left-4 -top-4 w-12 h-12 bg-brass/30 blur-2xl rounded-full group-hover:bg-brass/50 transition-colors"></div>
