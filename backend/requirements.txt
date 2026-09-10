@@ -1,31 +1,7 @@
-# ── Web framework ──────────────────────────────────────────────────────────────
-fastapi==0.115.0
-uvicorn[standard]==0.30.6
-
-# ── Database ────────────────────────────────────────────────────────────────────
-sqlalchemy==2.0.36
-alembic==1.13.3
-psycopg[binary]>=3.2.0,<4.0.0     # PostgreSQL driver (sync, used by Alembic)
-asyncpg==0.30.0           # PostgreSQL driver (async, used by SQLAlchemy async engine)
-greenlet==3.1.1           # Required by SQLAlchemy async
-
-# ── Validation / Settings ───────────────────────────────────────────────────────
-pydantic==2.9.2
-pydantic-settings==2.6.0
-
-# ── Auth (dependency-injected by Engineer 2 — declared here for route guards) ──
-python-jose[cryptography]==3.3.0
-
-# ── Cache / Background tasks (Redis client — Celery belongs to Engineer 2) ─────
-redis==5.2.0
-
-# ── HTTP client (used in tests) ─────────────────────────────────────────────────
-httpx==0.27.2
-
-# ── Testing ─────────────────────────────────────────────────────────────────────
-pytest==8.3.3
-pytest-asyncio==0.24.0
-pytest-httpx==0.30.0
-
-# ── Env file support ────────────────────────────────────────────────────────────
-python-dotenv==1.0.1
+fastapi
+uvicorn
+sqlalchemy
+alembic
+psycopg2-binary
+pydantic
+pydantic-settings

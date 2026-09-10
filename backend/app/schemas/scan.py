@@ -1,46 +1,17 @@
-from typing import List, Optional, Literal
-from pydantic import BaseModel, ConfigDict
-from uuid import UUID
+from pydantic import BaseModel, Field
+from typing import List, Dict, Any, Optional
+from datetime import datetime
 
-class FieldResult(BaseModel):
-    label: str
-    value: str
-    source: str
-    status: Literal["ok", "review", "missing"]
-    confidence: float
-    rule: str
+class ScanCreate(BaseModel):
+    scan_type: str = Field(..., description="Type of scan: IMAGE or QR")
+    image_path: Optional[str] = None
+    violations: List[Dict[str, Any]] = Field(default_factory=list)
+    metadata_info: Dict[str, Any] = Field(default_factory=dict)
+    evidence_seal_id: str
 
-class ViolationResult(BaseModel):
-    field: str
-    plain: str
-    rule: str
-    severity: Literal["low", "medium", "high", "critical"] = "medium"
+class ScanResponse(ScanCreate):
+    id: int
+    timestamp: datetime
 
-class EvidenceSeal(BaseModel):
-    sha256: str
-    shortHash: str
-    timestamp: str
-    sealed: bool
-
-class ScanResponse(BaseModel):
-    audit_id: UUID
-    verdict: Literal["pass", "review", "fail"]
-    verdictNote: str
-    fields: List[FieldResult]
-    violations: List[ViolationResult]
-    evidence_seal: EvidenceSeal
-
-    model_config = ConfigDict(from_attributes=True)
-
-class ScanImageRequest(BaseModel):
-    image_base64: str
-    gps_lat: Optional[float] = None
-    gps_lon: Optional[float] = None
-    device_id: Optional[str] = None
-    extracted_fields: Optional[dict] = None
-
-class ScanQRRequest(BaseModel):
-    qr_content: str
-    gps_lat: Optional[float] = None
-    gps_lon: Optional[float] = None
-    device_id: Optional[str] = None
+    class Config:
+        from_attributes = True
