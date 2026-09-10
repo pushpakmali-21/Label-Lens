@@ -8,6 +8,7 @@ import NoticeGenerator from "./components/NoticeGenerator";
 import HeatmapMonitor from "./components/HeatmapMonitor";
 import MobileScannerModal from "./components/MobileScannerModal";
 import CitizenScanner from "./components/CitizenScanner";
+import InspectionHistory from "./components/InspectionHistory";
 import RoleSelector from "./components/RoleSelector";
 import Login from "./components/Login";
 import { pushCitizenReport } from "./data/districtData";
@@ -111,8 +112,12 @@ export default function App() {
 
       {/* Main Content Area (Responsive width: Full on mobile, max-w-7xl multi-column on desktop) */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-24 md:pb-8">
-        {role === "citizen" && (
+        {role === "citizen" && activeTab !== "history" && (
           <CitizenScanner onReportSubmitted={handleCitizenReport} />
+        )}
+
+        {role === "citizen" && activeTab === "history" && (
+          <InspectionHistory />
         )}
 
         {(role === "inspector" || role === "official") && (
