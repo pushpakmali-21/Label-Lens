@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import html2canvas from "html2canvas";
 import { Camera, Search, MapPin, AlertTriangle, CheckCircle2, Scan, Database, Zap, SearchCode } from "lucide-react";
+import { generateComplianceDocxReport } from "../utils/docxReport";
+import { generateComplianceReport, getSuggestedCorrections } from "../utils/pdfReport";
 
 export default function CitizenScanner({ onReportSubmitted }) {
   const [scanState, setScanState] = useState("idle");
@@ -24,6 +27,31 @@ export default function CitizenScanner({ onReportSubmitted }) {
     brand: "Britannia Industries Ltd",
     cachedSince: "12 Oct 2025"
   };
+
+  const suggestedCorrections = getSuggestedCorrections(activeProduct);
+
+  const saveOfflineReport = (report) => {
+    try {
+      const savedReports = JSON.parse(localStorage.getItem("offlineReports") || "[]");
+      const offlineReports = Array.isArray(savedReports) ? savedReports : [];
+      localStorage.setItem("offlineReports", JSON.stringify([...offlineReports, report]));
+    } catch {
+      localStorage.setItem("offlineReports", JSON.stringify([report]));
+    }
+  };
+
+  useEffect(() => {
+    if (scanState !== "pass" && scanState !== "fail") return;
+
+    const product = scanState === "pass" ? activeProductPass : activeProduct;
+    saveOfflineReport({
+      inspectionId: `AUD-${Math.floor(Math.random() * 9000 + 1000)}`,
+      productName: product.name,
+      brand: product.brand,
+      scanStatus: scanState,
+      timestamp: new Date().toISOString(),
+    });
+  }, [scanState]);
 
   const handleScanFailDemo = () => {
     setScanState("barcode_scan");
@@ -80,6 +108,27 @@ export default function CitizenScanner({ onReportSubmitted }) {
         });
       }
     }, 1500);
+  };
+
+  const handleDownloadPdf = async () => {
+    const evidenceElement = document.querySelector("[data-inspection-evidence]");
+    let evidenceImage = null;
+
+    if (evidenceElement) {
+      const canvas = await html2canvas(evidenceElement, {
+        backgroundColor: null,
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+      evidenceImage = {
+        dataUrl: canvas.toDataURL("image/png"),
+        width: canvas.width,
+        height: canvas.height,
+      };
+    }
+
+    generateComplianceReport(activeProduct, scanState, evidenceImage);
   };
 
   return (
@@ -178,7 +227,7 @@ export default function CitizenScanner({ onReportSubmitted }) {
 
         {scanState === "cached" && (
           <div className="space-y-4 animate-fadeIn">
-            <div className="bg-panel rounded-xl border border-status-pass/50 overflow-hidden shadow-lg">
+            <div data-inspection-evidence className="bg-panel rounded-xl border border-status-pass/50 overflow-hidden shadow-lg">
               <div className="bg-status-pass/10 p-4 border-b border-status-pass/30 flex gap-3">
                 <div className="mt-0.5">
                   <Zap size={24} className="text-status-pass fill-current" />
@@ -251,6 +300,7 @@ export default function CitizenScanner({ onReportSubmitted }) {
                     </li>
                   </ul>
                 </div>
+
               </div>
             </div>
 
@@ -267,6 +317,18 @@ export default function CitizenScanner({ onReportSubmitted }) {
               >
                 Scan Another Product
               </button>
+              <button
+                onClick={handleDownloadPdf}
+                className="w-full px-4 py-2 rounded-lg bg-brass text-brass-ink font-semibold hover:opacity-90 transition"
+              >
+                Download PDF Report
+              </button>
+              <button
+                onClick={() => generateComplianceDocxReport(activeProduct, scanState)}
+                className="w-full px-4 py-2 rounded-lg border border-brass text-brass hover:bg-brass hover:text-brass-ink transition"
+              >
+                Download DOCX Report
+              </button>
             </div>
           </div>
         )}
@@ -274,7 +336,7 @@ export default function CitizenScanner({ onReportSubmitted }) {
         {scanState === "fail" && (
           <div className="space-y-4 animate-fadeIn">
             {/* Plain English Verdict Card */}
-            <div className="glass-panel overflow-hidden border border-status-fail/40 bg-status-fail/5">
+            <div data-inspection-evidence className="glass-panel overflow-hidden border border-status-fail/40 bg-status-fail/5">
               <div className="bg-status-fail/10 p-4 border-b border-status-fail/30 flex gap-3">
                 <div className="mt-0.5">
                   <AlertTriangle size={24} className="text-status-fail" />
@@ -303,6 +365,63 @@ export default function CitizenScanner({ onReportSubmitted }) {
                     ))}
                   </ul>
                 </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle size={18} className="text-status-fail" />
+                    <h3 className="text-sm font-bold text-text-1">Suggested Correction</h3>
+                  </div>
+
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <div className="rounded-lg border border-status-fail/50 bg-status-fail/10 p-3">
+                      <div className="flex items-center gap-2 text-sm font-bold text-status-fail">
+                        <AlertTriangle size={16} />
+                        Before (Current Package)
+                      </div>
+                      <ul className="mt-3 space-y-2 text-xs text-text-1">
+                        {suggestedCorrections.map((correction) => (
+                          <li key={`before-${correction.field}`}>
+                            <strong>{correction.field}:</strong> {correction.before}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="rounded-lg border border-status-pass/50 bg-status-pass/10 p-3">
+                      <div className="flex items-center gap-2 text-sm font-bold text-status-pass">
+                        <CheckCircle2 size={16} />
+                        After (Compliant Package)
+                      </div>
+                      <ul className="mt-3 space-y-2 text-xs text-text-1">
+                        {suggestedCorrections.map((correction) => (
+                          <li key={`after-${correction.field}`}>
+                            <strong>{correction.field}:</strong> {correction.after}
+                            <span className="block mt-0.5 font-mono text-[10px] text-status-pass">{correction.rule}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 rounded-lg border border-panel-line bg-panel-darker p-3">
+                    <div className="relative min-h-32 rounded border-2 border-status-fail/60 bg-red-950/20 p-3">
+                      <span className="text-[10px] font-mono uppercase text-status-fail">Current package</span>
+                      <div className="mt-3 space-y-3">
+                        <div className="h-3 rounded bg-status-fail/40" />
+                        <div className="h-7 rounded border-2 border-status-fail bg-status-fail/20" />
+                        <div className="h-4 w-2/3 rounded border-2 border-status-fail bg-status-fail/20" />
+                      </div>
+                    </div>
+                    <div className="relative min-h-32 rounded border-2 border-status-pass/60 bg-emerald-950/20 p-3">
+                      <span className="text-[10px] font-mono uppercase text-status-pass">Corrected package</span>
+                      <div className="mt-3 space-y-3">
+                        <div className="h-3 rounded bg-status-pass/40" />
+                        <div className="h-7 rounded border-2 border-status-pass bg-status-pass/20" />
+                        <div className="h-4 w-2/3 rounded border-2 border-status-pass bg-status-pass/20" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -316,6 +435,18 @@ export default function CitizenScanner({ onReportSubmitted }) {
                 >
                   <AlertTriangle size={20} />
                   <span className="tracking-wide">Report Violation</span>
+                </button>
+                <button
+                  onClick={handleDownloadPdf}
+                  className="w-full mt-3 px-4 py-2 rounded-lg border border-brass text-brass hover:bg-brass hover:text-brass-ink transition"
+                >
+                  Download PDF Report
+                </button>
+                <button
+                  onClick={() => generateComplianceDocxReport(activeProduct, scanState)}
+                  className="w-full px-4 py-2 rounded-lg border border-brass text-brass hover:bg-brass hover:text-brass-ink transition"
+                >
+                  Download DOCX Report
                 </button>
                 <button
                   onClick={() => setScanState("idle")}
@@ -343,6 +474,18 @@ export default function CitizenScanner({ onReportSubmitted }) {
                 <p className="text-xs text-text-2">
                   Your report has been routed to the local Legal Metrology Inspector for Pune District. Thank you for protecting consumers.
                 </p>
+                <button
+                  onClick={handleDownloadPdf}
+                  className="w-full bg-panel-raised border border-panel-line text-text-1 text-sm py-3 rounded-lg font-bold"
+                >
+                  Download PDF Report
+                </button>
+                <button
+                  onClick={() => generateComplianceDocxReport(activeProduct, scanState)}
+                  className="w-full bg-panel-raised border border-panel-line text-text-1 text-sm py-3 rounded-lg font-bold"
+                >
+                  Download DOCX Report
+                </button>
                 <button
                   onClick={() => {
                     setScanState("idle");

@@ -1,17 +1,31 @@
 import React, { useState } from "react";
-import { MapPin, Activity, ShieldAlert, CheckCircle2, TrendingDown, Eye, Filter, RefreshCw } from "lucide-react";
+import { MapPin, Activity, ShieldAlert, CheckCircle2, TrendingDown, Eye, Filter, RefreshCw, Search } from "lucide-react";
 import { DISTRICT_METRICS, LIVE_AUDIT_FEED, getLiveAuditFeed } from "../data/districtData";
 
 export default function HeatmapMonitor({ refreshKey }) {
   const [selectedDistrict, setSelectedDistrict] = useState(DISTRICT_METRICS[0]);
   const [feedFilter, setFeedFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const feed = getLiveAuditFeed();
 
   const filteredFeed = feed.filter((item) => {
-    if (feedFilter === "violation") return item.status === "violation";
-    if (feedFilter === "pass") return item.status === "pass";
-    return true;
+    const matchesStatus = feedFilter === "all" || item.status === feedFilter;
+    const query = searchQuery.trim().toLowerCase();
+    const searchableFields = [
+      item.product,
+      item.seller,
+      item.brand,
+      item.id,
+      item.district,
+      item.location,
+      item.platform,
+    ];
+    const matchesSearch = !query || searchableFields.some((field) =>
+      String(field || "").toLowerCase().includes(query)
+    );
+
+    return matchesStatus && matchesSearch;
   });
 
   return (
@@ -160,9 +174,25 @@ export default function HeatmapMonitor({ refreshKey }) {
             </div>
           </div>
 
+          <div className="relative mb-3">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-3" />
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Search product, seller, ID, or district"
+              aria-label="Search audit reports"
+              className="w-full rounded border border-panel-line bg-panel-darker py-2 pl-9 pr-3 text-xs text-text-1 placeholder:text-text-3 outline-none transition-colors focus:border-brass"
+            />
+          </div>
+
           {/* Feed List */}
           <div className="space-y-2.5 overflow-y-auto max-h-[460px] pr-1 scrollbar-thin">
-            {filteredFeed.map((item) => {
+            {filteredFeed.length === 0 ? (
+              <div className="flex min-h-24 items-center justify-center rounded border border-dashed border-panel-line px-4 text-center text-xs text-text-3">
+                No matching reports found
+              </div>
+            ) : filteredFeed.map((item) => {
               const isViol = item.status === "violation";
               return (
                 <div
