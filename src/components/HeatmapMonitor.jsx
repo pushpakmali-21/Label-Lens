@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MapPin, Activity, ShieldAlert, CheckCircle2, TrendingDown, Eye, Filter, RefreshCw, Search } from "lucide-react";
+import { MapPin, Activity, ShieldAlert, CheckCircle2, TrendingDown, Eye, Filter, RefreshCw, Search, SearchX } from "lucide-react";
 import { DISTRICT_METRICS, LIVE_AUDIT_FEED, getLiveAuditFeed } from "../data/districtData";
 
 export default function HeatmapMonitor({ refreshKey }) {
@@ -189,8 +189,28 @@ export default function HeatmapMonitor({ refreshKey }) {
           {/* Feed List */}
           <div className="space-y-2.5 overflow-y-auto max-h-[460px] pr-1 scrollbar-thin">
             {filteredFeed.length === 0 ? (
-              <div className="flex min-h-24 items-center justify-center rounded border border-dashed border-panel-line px-4 text-center text-xs text-text-3">
-                No matching reports found
+              <div className="flex min-h-32 flex-col items-center justify-center gap-2 rounded border border-dashed border-panel-line px-4 text-center text-xs text-text-3">
+                <SearchX size={24} className="text-text-3" />
+                {feed.length === 0 ? (
+                  <>
+                    <div className="text-text-2">No inspection data available.</div>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-text-2">No results found</div>
+                    <div>Try a different search term or clear your search.</div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery("");
+                        setFeedFilter("all");
+                      }}
+                      className="mt-1 rounded border border-panel-line bg-panel-darker px-3 py-1.5 text-[10px] font-mono uppercase text-text-2 hover:border-brass hover:text-brass transition-colors"
+                    >
+                      Clear Search
+                    </button>
+                  </>
+                )}
               </div>
             ) : filteredFeed.map((item) => {
               const isViol = item.status === "violation";
