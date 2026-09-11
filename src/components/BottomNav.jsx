@@ -11,14 +11,14 @@ export default function BottomNav({ activeTab, setActiveTab, onOpenScanner, user
   ];
 
   const citizenItems = [
-    { id: "empty1", hidden: true },
+    { id: "history", label: "History", icon: History },
     { id: "empty2", hidden: true },
     // Center is the prominent Scan Button
     { id: "heatmap", label: "Vigilance", icon: MapPin },
-    { id: "history", label: "History", icon: History },
+    { id: "empty4", hidden: true },
   ];
 
-  const navItems = userRole === "official" ? officialItems : citizenItems;
+  const navItems = userRole === "official" || userRole === "inspector" ? officialItems : citizenItems;
 
   return (
     <nav
