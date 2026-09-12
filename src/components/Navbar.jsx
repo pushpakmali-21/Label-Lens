@@ -1,8 +1,8 @@
 import React from "react";
 import LogoMark from "./LogoMark";
-import { Shield, Sparkles, Sliders, FileText, MapPin, CheckCircle2, Scan, UserCircle } from "lucide-react";
+import { Shield, Sparkles, Sliders, FileText, MapPin, CheckCircle2, Scan, UserCircle, Globe } from "lucide-react";
 
-export default function Navbar({ activeTab, setActiveTab, onOpenScanner, userRole, onRoleChange, onOpenProfile }) {
+export default function Navbar({ activeTab, setActiveTab, onOpenScanner, userRole, onRoleChange, onOpenProfile, language, setLanguage }) {
   const citizenTabs = [
     { id: "citizen", label: "Scan & Report", icon: Scan, badge: "Citizen" },
     { id: "heatmap", label: "Vigilance Map", icon: MapPin, badge: "Live Feed" },
@@ -71,8 +71,8 @@ export default function Navbar({ activeTab, setActiveTab, onOpenScanner, userRol
         </div>
 
         {/* Desktop & Tablet Navigation Tabs */}
-        <div className="hidden md:flex items-center gap-1.5 w-full md:w-auto">
-          <nav className="flex items-center gap-1.5 overflow-x-auto pb-0.5 md:pb-0 scrollbar-thin flex-1">
+        <div className="hidden md:flex items-center gap-3 w-full lg:w-auto ml-auto">
+          <nav className="flex items-center p-1.5 bg-panel-darker/80 border border-panel-line rounded-2xl shadow-inner gap-1.5 overflow-x-auto scrollbar-none max-w-[60vw]">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -80,50 +80,63 @@ export default function Navbar({ activeTab, setActiveTab, onOpenScanner, userRol
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all whitespace-nowrap ${isActive
-                    ? "bg-brass text-brass-ink font-semibold shadow-sm"
-                    : "text-text-2 hover:text-text-1 hover:bg-panel-raised"
+                  className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 whitespace-nowrap group relative ${isActive
+                    ? "bg-gradient-to-br from-brass to-brass-strong text-brass-ink shadow-lg shadow-brass/20 scale-100"
+                    : "text-text-2 hover:text-text-1 hover:bg-panel scale-95 hover:scale-100"
                     }`}
                 >
-                  <Icon size={14} className={isActive ? "text-brass-ink" : "text-brass"} />
-                  <span>{tab.label}</span>
-                  <span
-                    className={`text-[9px] font-mono px-1 py-0.2 rounded ${isActive
-                      ? "bg-brass-ink/20 text-brass-ink"
-                      : "bg-panel-line text-text-2"
-                      }`}
-                  >
-                    {tab.badge}
-                  </span>
+                  <Icon size={18} className={`${isActive ? "text-brass-ink" : "text-text-3 group-hover:text-brass"} transition-colors`} />
+                  <span className="tracking-wide">{tab.label}</span>
+                  {tab.badge && (
+                    <span
+                      className={`text-[10px] font-mono px-2 py-0.5 rounded-md shadow-sm transition-colors ${isActive
+                        ? "bg-brass-ink/20 text-brass-ink font-bold"
+                        : "bg-panel-line text-text-3 group-hover:text-text-2 group-hover:bg-panel-raised"
+                        }`}
+                    >
+                      {tab.badge}
+                    </span>
+                  )}
                 </button>
               );
             })}
           </nav>
 
-          <div className="flex bg-panel-darker p-1.5 rounded-xl border border-panel-line ml-3 shadow-inner">
-            <button
-              onClick={() => onRoleChange("citizen")}
-              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${userRole === "citizen" ? "bg-citizen-primary text-white shadow-sm" : "text-text-2 hover:text-text-1 hover:bg-panel"}`}
-            >
-              Citizen
-            </button>
-            <button
-              onClick={() => onRoleChange("official")}
-              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${userRole === "official" ? "bg-brass text-brass-ink shadow-sm" : "text-text-2 hover:text-text-1 hover:bg-panel"}`}
-            >
-              Official
-            </button>
-          </div>
+          <div className="flex items-center gap-2 ml-2">
+            <div className="flex items-center bg-panel-raised border border-panel-line rounded-xl px-3 py-1.5 hover:border-brass/40 transition-colors shadow-sm">
+              <Globe size={16} className="text-brass mr-2" />
+              <select
+                value={language || "English"}
+                onChange={(e) => setLanguage && setLanguage(e.target.value)}
+                className="bg-transparent text-text-1 text-xs font-semibold focus:outline-none cursor-pointer appearance-none outline-none"
+                style={{ background: 'transparent' }}
+              >
+                <option className="bg-panel text-text-1" value="English">EN - English</option>
+                <option className="bg-panel text-text-1" value="Hindi">HI - हिन्दी</option>
+                <option className="bg-panel text-text-1" value="Marathi">MR - मराठी</option>
+                <option className="bg-panel text-text-1" value="Gujarati">GU - ગુજરાતી</option>
+                <option className="bg-panel text-text-1" value="Tamil">TA - தமிழ்</option>
+                <option className="bg-panel text-text-1" value="Telugu">TE - తెలుగు</option>
+                <option className="bg-panel text-text-1" value="Kannada">KN - ಕನ್ನಡ</option>
+                <option className="bg-panel text-text-1" value="Malayalam">ML - മലയാളം</option>
+                <option className="bg-panel text-text-1" value="Bengali">BN - বাংলা</option>
+                <option className="bg-panel text-text-1" value="Punjabi">PA - ਪੰਜਾਬੀ</option>
+                <option className="bg-panel text-text-1" value="Urdu">UR - اردو</option>
+                <option className="bg-panel text-text-1" value="Odia">OR - ଓଡ଼ିଆ</option>
+                <option className="bg-panel text-text-1" value="Assamese">AS - অসমୀয়া</option>
+              </select>
+            </div>
 
-          {userRole === "citizen" && onOpenProfile && (
-            <button
-              onClick={onOpenProfile}
-              className="ml-3 flex items-center justify-center p-2 rounded-xl bg-panel-raised border border-panel-line text-text-2 hover:text-brass hover:border-brass/30 transition-all shadow-sm"
-              title="User Profile"
-            >
-              <UserCircle size={18} />
-            </button>
-          )}
+            {onOpenProfile && (
+              <button
+                onClick={onOpenProfile}
+                className="flex items-center justify-center p-2 rounded-xl bg-panel-raised border border-panel-line text-text-2 hover:text-brass hover:border-brass/30 transition-all shadow-sm"
+                title="User Profile"
+              >
+                <UserCircle size={20} />
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </header>
