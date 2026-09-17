@@ -29,6 +29,9 @@ export default function App() {
     name: "",
     email: "",
     gender: "",
+    preferences: "",
+    allergies: [],
+    hasDiabetes: false,
   });
 
   const handleRoleSelect = (selectedRole) => {
