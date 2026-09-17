@@ -10,7 +10,6 @@ import MobileScannerModal from "./components/MobileScannerModal";
 import CitizenScanner from "./components/CitizenScanner";
 import InspectionHistory from "./components/InspectionHistory";
 import AdminDashboard from "./components/AdminDashboard";
-import RoleSelector from "./components/RoleSelector";
 import Login from "./components/Login";
 import { pushCitizenReport } from "./data/districtData";
 import Chatbot from "./components/Chatbot";
@@ -37,9 +36,10 @@ export default function App() {
     setRole(selectedRole);
   };
 
-  const handleLogin = () => {
+  const handleLogin = ({ role: selectedRole }) => {
     localStorage.setItem("token", "mock-jwt-token");
     setToken("mock-jwt-token");
+    handleRoleSelect(selectedRole);
   };
 
   const handleLogout = () => {
@@ -86,12 +86,8 @@ export default function App() {
     setActiveTab("rule6");
   };
 
-  if (!token) {
+  if (!token || !role) {
     return <Login onLogin={handleLogin} />;
-  }
-
-  if (!role) {
-    return <RoleSelector onSelect={handleRoleSelect} />;
   }
 
   return (

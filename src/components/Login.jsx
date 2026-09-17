@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
+import { Eye, EyeOff, LockKeyhole, Mail, Shield, User } from "lucide-react";
 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
@@ -16,8 +17,13 @@ export default function Login({ onLogin }) {
       return;
     }
 
+    if (!role) {
+      setError("Select a role to continue.");
+      return;
+    }
+
     setError("");
-    onLogin({ email: email.trim(), password, rememberMe });
+    onLogin({ email: email.trim(), password, rememberMe, role });
   };
 
   return (
@@ -34,13 +40,13 @@ export default function Login({ onLogin }) {
         </div>
 
         <div className="mb-6">
-          <h1 className="text-2xl font-serif text-text-1">Secure sign in</h1>
+          <h1 className="text-2xl font-serif text-text-1">Welcome to LabelLens</h1>
           <p className="text-sm text-text-2 mt-1">Access your LabelLens workspace.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <label className="block">
-            <span className="text-xs font-mono uppercase text-text-3">Email</span>
+            <span className="text-xs font-mono uppercase text-text-3">Email / Username</span>
             <div className="relative mt-2">
               <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-brass" />
               <input
@@ -76,6 +82,27 @@ export default function Login({ onLogin }) {
               </button>
             </div>
           </label>
+
+          <fieldset>
+            <legend className="text-xs font-mono uppercase text-text-3">Select your role</legend>
+            <div className="grid grid-cols-2 gap-3 mt-2">
+              {[
+                { id: "citizen", label: "Citizen", Icon: User },
+                { id: "inspector", label: "Inspector", Icon: Shield },
+              ].map(({ id, label, Icon }) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setRole(id)}
+                  aria-pressed={role === id}
+                  className={`flex items-center justify-center gap-2 rounded-lg border py-3 text-sm font-semibold transition-colors ${role === id ? "border-brass bg-brass text-brass-ink" : "border-panel-line bg-panel-darker text-text-2 hover:border-brass hover:text-text-1"}`}
+                >
+                  <Icon size={16} />
+                  {label}
+                </button>
+              ))}
+            </div>
+          </fieldset>
 
           <label className="flex items-center gap-2 text-sm text-text-2">
             <input
