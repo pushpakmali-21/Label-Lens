@@ -45,7 +45,7 @@ export default function Navbar({ activeTab, setActiveTab, onOpenScanner, role, o
 
   return (
     <header className="border-b border-panel-line bg-panel/70 backdrop-blur-xl sticky top-0 z-50 shadow-[0_4px_30px_rgba(0,0,0,0.05)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto h-auto min-h-0 px-4 sm:px-6 py-2 md:py-2.5 flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4">
         {/* Brand */}
         <div className="flex items-center gap-2 sm:gap-3 w-full md:w-auto min-w-0 justify-between md:justify-start">
           <div
@@ -57,7 +57,7 @@ export default function Navbar({ activeTab, setActiveTab, onOpenScanner, role, o
 
             <LogoMark size={32} />
             <div className="relative z-10 min-w-0">
-              <div className="flex flex-wrap items-center gap-1 font-sans text-2xl tracking-wide leading-none text-text-1 italic">
+              <div className="flex flex-wrap md:flex-nowrap items-center gap-1 font-sans text-2xl tracking-wide leading-none text-text-1 italic">
                 <span className="font-light" style={{ fontFamily: "'Playfair Display', serif" }}>Label</span>
                 <span className="bg-gradient-to-r from-brass to-citizen-primary bg-clip-text text-transparent font-bold">Lens</span>
                 <span className="text-[10px] font-mono uppercase bg-brass/10 text-brass px-2 py-0.5 rounded-full border border-brass/20 ml-1 shadow-sm mt-1 not-italic">
@@ -145,8 +145,8 @@ export default function Navbar({ activeTab, setActiveTab, onOpenScanner, role, o
         </div>
 
         {/* Desktop & Tablet Navigation Tabs */}
-        <div className="hidden md:flex items-center gap-1.5 w-full md:w-auto">
-          <nav className="flex items-center gap-1.5 overflow-x-auto pb-0.5 md:pb-0 scrollbar-thin flex-1">
+        <div className="hidden md:flex items-center gap-1.5 w-full md:w-auto min-w-0">
+          <nav className="flex items-center gap-1.5 overflow-x-auto pb-0.5 md:pb-0 scrollbar-thin flex-1 min-w-0">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
