@@ -3,7 +3,7 @@ import LogoMark from "./LogoMark";
 import useNetworkStatus from "../hooks/useNetworkStatus";
 import { Shield, Sparkles, Sliders, FileText, MapPin, Scan, UserCircle, Wifi, WifiOff, ChevronDown } from "lucide-react";
 
-export default function Navbar({ activeTab, setActiveTab, onOpenScanner, role, onSelectRole, onSwitchRole, onLogout, onOpenProfile }) {
+export default function Navbar({ activeTab, setActiveTab, onOpenScanner, role, onLogout, onOpenProfile }) {
   const isOnline = useNetworkStatus();
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const accountMenuRef = useRef(null);
@@ -20,7 +20,7 @@ export default function Navbar({ activeTab, setActiveTab, onOpenScanner, role, o
     { id: "heatmap", label: "Vigilance Heatmap", icon: MapPin, badge: "Live Feed" },
   ];
 
-  const tabs = role === "official" ? officialTabs : citizenTabs;
+  const tabs = role === "inspector" || role === "official" ? officialTabs : citizenTabs;
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -32,11 +32,6 @@ export default function Navbar({ activeTab, setActiveTab, onOpenScanner, role, o
     document.addEventListener("mousedown", handleOutsideClick);
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, []);
-
-  const handleSwitchRole = () => {
-    setIsAccountMenuOpen(false);
-    onSwitchRole();
-  };
 
   const handleLogout = () => {
     setIsAccountMenuOpen(false);
@@ -120,13 +115,6 @@ export default function Navbar({ activeTab, setActiveTab, onOpenScanner, role, o
                 )}
                 <button
                   type="button"
-                  onClick={handleSwitchRole}
-                  className="w-full text-left px-2.5 py-2 rounded text-xs text-text-2 hover:bg-panel hover:text-brass transition-colors"
-                >
-                  Switch Role
-                </button>
-                <button
-                  type="button"
                   onClick={handleLogout}
                   className="w-full text-left px-2.5 py-2 rounded text-xs text-status-fail hover:bg-status-fail/10 transition-colors"
                 >
@@ -185,21 +173,6 @@ export default function Navbar({ activeTab, setActiveTab, onOpenScanner, role, o
               );
             })}
           </nav>
-
-          <div className="flex bg-panel-darker p-1.5 rounded-xl border border-panel-line ml-3 shadow-inner">
-            <button
-              onClick={() => onSelectRole("citizen")}
-              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${role === "citizen" ? "bg-citizen-primary text-white shadow-sm" : "text-text-2 hover:text-text-1 hover:bg-panel"}`}
-            >
-              Citizen
-            </button>
-            <button
-              onClick={() => onSelectRole("official")}
-              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${role === "official" ? "bg-brass text-brass-ink shadow-sm" : "text-text-2 hover:text-text-1 hover:bg-panel"}`}
-            >
-              Official
-            </button>
-          </div>
 
         </div>
       </div>

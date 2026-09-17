@@ -43,6 +43,7 @@ export default function App() {
     localStorage.setItem("token", "mock-jwt-token");
     setToken("mock-jwt-token");
     handleRoleSelect(selectedRole);
+    setActiveTab(selectedRole === "citizen" ? "citizen" : "rule6");
   };
 
   const handleLogout = () => {
@@ -50,19 +51,6 @@ export default function App() {
     localStorage.removeItem("role");
     setToken(null);
     setRole(null);
-  };
-
-  const handleSwitchRole = () => {
-    localStorage.removeItem("role");
-    setRole(null);
-  };
-
-  const handleRoleChange = (selectedRole) => {
-    const nextRole = typeof selectedRole === "string"
-      ? selectedRole
-      : role === "citizen" ? "official" : "citizen";
-    handleRoleSelect(nextRole);
-    setActiveTab(nextRole === "citizen" ? "citizen" : "rule6");
   };
 
   const handleCitizenReport = (report) => {
@@ -101,8 +89,6 @@ export default function App() {
         setActiveTab={setActiveTab}
         onOpenScanner={() => setIsScannerOpen(true)}
         role={role}
-        onSelectRole={handleRoleChange}
-        onSwitchRole={handleSwitchRole}
         onLogout={handleLogout}
         onOpenProfile={() => setIsProfileOpen(true)}
       />
