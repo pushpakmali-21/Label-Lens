@@ -36,12 +36,21 @@ const QR_PATTERN = [
   [1, 0, 1, 0, 1, 0, 1],
 ];
 
-function EvidencePanel({ scenario, phase }) {
+function imageDataUrl(imageBase64) {
+  if (imageBase64.startsWith("iVBOR")) return `data:image/png;base64,${imageBase64}`;
+  if (imageBase64.startsWith("UklGR")) return `data:image/webp;base64,${imageBase64}`;
+  if (imageBase64.startsWith("R0lGOD")) return `data:image/gif;base64,${imageBase64}`;
+  return `data:image/jpeg;base64,${imageBase64}`;
+}
+
+function EvidencePanel({ scenario, phase, imageBase64 }) {
   return (
     <div className="glass-panel border border-panel-line rounded-2xl p-4 sm:p-5 relative overflow-hidden group">
       <div className="absolute top-0 right-0 w-32 h-32 bg-brass/10 blur-3xl rounded-full pointer-events-none transition-all group-hover:bg-brass/20"></div>
       <div className="relative overflow-hidden rounded-xl min-h-[290px] sm:min-h-[320px] flex items-center justify-center bg-panel-darker border border-panel-line">
-        {scenario.id !== "ecommerce" ? (
+        {imageBase64 ? (
+          <img src={imageDataUrl(imageBase64)} alt="Uploaded package label" className="max-h-[320px] w-full object-contain" />
+        ) : scenario.id !== "ecommerce" ? (
           <div className="bg-paper text-paper-ink w-[94%] sm:w-[92%] my-4 sm:my-5 mx-auto p-4 rounded shadow-md border border-brass/20">
             <div className="flex items-center gap-2.5 mb-3">
               <div className="w-6 h-6 bg-paper-ink/15 rounded flex items-center justify-center text-paper-ink font-bold text-xs">
@@ -143,26 +152,64 @@ function EvidencePanel({ scenario, phase }) {
   );
 }
 
-export default function Rule6Engine({ mode = "qr", setMode, onGenerateNotice, onOpenScanner }) {
+export default function Rule6Engine({ mode = "qr", setMode, capturedFrame, onGenerateNotice, onOpenScanner }) {
   const [phase, setPhase] = useState("idle");
   const [runId, setRunId] = useState(0);
+  const [liveScenario, setLiveScenario] = useState(null);
+  const [scanError, setScanError] = useState(null);
   const timeoutRef = useRef(null);
+  const autoRunFrameRef = useRef(null);
 
-  const scenario = SCENARIOS[mode];
+  const scenario = liveScenario || SCENARIOS[mode];
 
   useEffect(() => {
     setPhase("idle");
+    setLiveScenario(null);
+    setScanError(null);
     window.clearTimeout(timeoutRef.current);
-  }, [mode]);
+  }, [mode, capturedFrame]);
 
   useEffect(() => () => window.clearTimeout(timeoutRef.current), []);
 
-  const handleRun = () => {
+  const handleRun = async () => {
     if (phase === "scanning") return;
     setPhase("scanning");
+    setScanError(null);
     setRunId((id) => id + 1);
+
+    if (capturedFrame) {
+      try {
+        const response = await fetch("/api/v1/scan/image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image_base64: capturedFrame }),
+        });
+        if (!response.ok) throw new Error(`The scan service returned ${response.status}.`);
+        const result = await response.json();
+        setLiveScenario({
+          ...SCENARIOS[mode],
+          verdict: result.verdict,
+          verdictNote: result.verdictNote,
+          fields: result.fields,
+          violations: result.violations,
+        });
+        setPhase("done");
+      } catch (error) {
+        console.error("Scan failed:", error);
+        setScanError(error instanceof Error ? error.message : "The uploaded image could not be scanned.");
+        setPhase("error");
+      }
+      return;
+    }
+
     timeoutRef.current = window.setTimeout(() => setPhase("done"), 1600);
   };
+
+  useEffect(() => {
+    if (!capturedFrame || autoRunFrameRef.current === capturedFrame) return;
+    autoRunFrameRef.current = capturedFrame;
+    handleRun();
+  }, [capturedFrame]);
 
   const avgConfidence = useMemo(() => {
     const sum = scenario.fields.reduce((a, f) => a + f.confidence, 0);
@@ -257,7 +304,7 @@ export default function Rule6Engine({ mode = "qr", setMode, onGenerateNotice, on
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Visual Evidence & Execution */}
         <div className="lg:col-span-5 space-y-3">
-          <EvidencePanel scenario={scenario} phase={phase} />
+          <EvidencePanel scenario={scenario} phase={phase} imageBase64={capturedFrame} />
 
           <div className="flex items-center justify-between gap-3 pt-1">
             <button
@@ -265,10 +312,11 @@ export default function Rule6Engine({ mode = "qr", setMode, onGenerateNotice, on
               disabled={phase === "scanning"}
               className="flex-1 bg-brass hover:bg-brass-strong active:scale-95 text-brass-ink font-semibold text-xs sm:text-sm py-2.5 px-4 rounded flex items-center justify-center gap-2 transition-all shadow-sm disabled:opacity-60"
             >
-              {phase === "done" ? <RotateCcw size={15} /> : <Play size={15} />}
+              {phase === "done" || phase === "error" ? <RotateCcw size={15} /> : <Play size={15} />}
               {phase === "idle" && "Run compliance check"}
               {phase === "scanning" && "Reading statutory fields…"}
               {phase === "done" && "Re-run compliance check"}
+              {phase === "error" && "Retry compliance check"}
             </button>
 
             {scenario.verdict === "fail" && phase === "done" && onGenerateNotice && (
@@ -318,6 +366,15 @@ export default function Rule6Engine({ mode = "qr", setMode, onGenerateNotice, on
                     <span className="truncate">{line}</span>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {phase === "error" && (
+              <div className="m-auto max-w-md text-center py-8" role="alert">
+                <AlertTriangle size={36} className="mx-auto mb-3 text-status-fail" />
+                <p className="text-sm font-semibold text-text-1">We couldn’t scan that image.</p>
+                <p className="mt-2 text-xs leading-relaxed text-text-2">{scanError}</p>
+                <p className="mt-3 text-xs text-text-3">Check that the backend is running, then try again.</p>
               </div>
             )}
 

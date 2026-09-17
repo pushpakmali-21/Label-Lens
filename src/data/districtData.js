@@ -79,7 +79,7 @@ export const DISTRICT_METRICS = [
   }
 ];
 
-export let LIVE_AUDIT_FEED = [
+const _liveAuditFeed = [
   {
     id: "AUD-8921",
     timestamp: "2 mins ago",
@@ -126,8 +126,10 @@ export let LIVE_AUDIT_FEED = [
   }
 ];
 
-export const getLiveAuditFeed = () => LIVE_AUDIT_FEED;
+export const LIVE_AUDIT_FEED = _liveAuditFeed;
+
+export const getLiveAuditFeed = () => _liveAuditFeed;
 
 export const pushCitizenReport = (report) => {
-  LIVE_AUDIT_FEED = [report, ...LIVE_AUDIT_FEED];
+  _liveAuditFeed.unshift(report);
 };

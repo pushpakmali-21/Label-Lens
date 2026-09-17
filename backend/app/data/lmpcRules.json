@@ -1,0 +1,89 @@
+{
+  "rule_engine_version": "1.0.4",
+  "last_updated": "2026-09-04",
+  "applicable_legislation": "Legal Metrology (Packaged Commodities) Rules, 2011",
+  "governing_body": "Department of Consumer Affairs (DoCA), Ministry of Consumer Affairs, Food & Public Distribution",
+  "weight_slabs_font_mapping": [
+    {
+      "slab_id": "SLAB_A",
+      "name": "Up to 50 g / ml",
+      "net_quantity_range": { "min_inclusive_g_ml": 0, "max_inclusive_g_ml": 50 },
+      "mandatory_min_font_height_mm": 1.0,
+      "numeral_height_mm": 1.0,
+      "capital_letters_height_mm": 1.0
+    },
+    {
+      "slab_id": "SLAB_B",
+      "name": "51 g / ml to 200 g / ml",
+      "net_quantity_range": { "min_exclusive_g_ml": 50, "max_inclusive_g_ml": 200 },
+      "mandatory_min_font_height_mm": 2.0,
+      "numeral_height_mm": 2.0,
+      "capital_letters_height_mm": 2.0
+    },
+    {
+      "slab_id": "SLAB_C",
+      "name": "201 g / ml to 1000 g / ml (1 kg / 1 L)",
+      "net_quantity_range": { "min_exclusive_g_ml": 200, "max_inclusive_g_ml": 1000 },
+      "mandatory_min_font_height_mm": 4.0,
+      "numeral_height_mm": 4.0,
+      "capital_letters_height_mm": 4.0
+    },
+    {
+      "slab_id": "SLAB_D",
+      "name": "Above 1000 g / 1 kg / 1 L",
+      "net_quantity_range": { "min_exclusive_g_ml": 1000, "max_inclusive_g_ml": 100000 },
+      "mandatory_min_font_height_mm": 6.0,
+      "numeral_height_mm": 6.0,
+      "capital_letters_height_mm": 6.0
+    }
+  ],
+  "prohibited_expressions": [
+    {
+      "term": "net weight when packed",
+      "rule": "Rule 11(1)",
+      "reason": "Manufacturer cannot hedge against transit desiccation; net weight must hold true at sale point"
+    },
+    {
+      "term": "approximate weight",
+      "rule": "Rule 11(1)",
+      "reason": "Vague quantification is strictly illegal under LMPC Act"
+    },
+    {
+      "term": "approx",
+      "rule": "Rule 11(1)",
+      "reason": "Abbreviated approximate qualification is impermissible"
+    },
+    {
+      "term": "gms",
+      "rule": "Rule 13 / Second Schedule",
+      "reason": "Impermissible non-standard unit symbol. Permissible standard SI symbol is 'g'"
+    },
+    {
+      "term": "kilos",
+      "rule": "Rule 13 / Second Schedule",
+      "reason": "Impermissible colloquial unit symbol. Permissible standard SI symbol is 'kg'"
+    },
+    {
+      "term": "net wt when packed",
+      "rule": "Rule 11(1)",
+      "reason": "Conditional weight declaration is prohibited"
+    }
+  ],
+  "mandatory_consumer_care_fields": [
+    { "key": "name", "label": "Officer / Department Name", "mandatory": true },
+    { "key": "telephone", "label": "Toll-Free Helpline / Phone Number", "mandatory": true },
+    { "key": "email", "label": "Consumer Redressal Email", "mandatory": true },
+    { "key": "address", "label": "Postal / Physical Address", "mandatory": true }
+  ],
+  "confidence_thresholds": {
+    "auto_pass": 85,
+    "human_review": 75,
+    "auto_fail": 40
+  },
+  "coin_reference": {
+    "name": "Indian 5-Rupee Coin (Standard)",
+    "diameter_mm": 23.0,
+    "thickness_mm": 1.9,
+    "shape": "Circular"
+  }
+}

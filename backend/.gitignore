@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment secrets — NEVER commit these
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Alembic — don't commit auto-generated versions unless intentional
+# (remove this line when you want to track migration files in git)
+# alembic/versions/*.py
+
+# macOS
+.DS_Store
+
+# Test artifacts
+.pytest_cache/
+htmlcov/
+.coverage

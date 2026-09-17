@@ -228,7 +228,7 @@ export default function HeatmapMonitor({ refreshKey }) {
                     </span>
                     <div className="flex items-center gap-2">
                       {item.isCitizenReport && (
-                        <span className="text-[9px] font-mono bg-[#3B82F6]/20 text-[#3B82F6] px-1.5 py-0.5 rounded border border-[#3B82F6]/40 uppercase">
+                        <span className="text-[9px] font-mono bg-[#5AAE83]/20 text-[#5AAE83] px-1.5 py-0.5 rounded border border-[#5AAE83]/40 uppercase">
                           Citizen Report
                         </span>
                       )}
