@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Label Lens — AI Legal Metrology Compliance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;650;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --bg-subtle: #f5f6fb;
+            --surface: #ffffff;
+            --ink: #14152b;
+            --ink-soft: #585b76;
+            --ink-faint: #8c8fac;
+            --line: #e3e5f0;
+            --line-strong: #cfd2e6;
+            --indigo: #4338ca;
+            --indigo-deep: #2f2a99;
+            --indigo-tint: #edeffc;
+            --blue: #2f5bea;
+            --success: #0f9960;
+            --success-bg: #e6f6ee;
+            --danger: #d1373b;
+            --danger-bg: #fbeaea;
+            --warn: #b06a09;
+            --warn-bg: #fbf1e1;
+            --focus: #2f5bea;
+        }
+
+        :root:not([data-theme="light"]) {
+            @media (prefers-color-scheme: dark) {
+                --bg: #0f1020;
+                --bg-subtle: #161832;
+                --surface: #181a36;
+                --ink: #eef0fb;
+                --ink-soft: #b6b9d9;
+                --ink-faint: #8386ab;
+                --line: #2b2e52;
+                --line-strong: #3a3d68;
+                --indigo: #7c72f0;
+                --indigo-deep: #9a92f5;
+                --indigo-tint: #232456;
+                --blue: #7c9bff;
+                --success: #4ed394;
+                --success-bg: #123527;
+                --danger: #ff8585;
+                --danger-bg: #3a1a1e;
+                --warn: #f0b256;
+                --warn-bg: #3a2b12;
+            }
+        }
+
+        :root[data-theme="dark"] {
+            --bg: #0f1020;
+            --bg-subtle: #161832;
+            --surface: #181a36;
+            --ink: #eef0fb;
+            --ink-soft: #b6b9d9;
+            --ink-faint: #8386ab;
+            --line: #2b2e52;
+            --line-strong: #3a3d68;
+            --indigo: #7c72f0;
+            --indigo-deep: #9a92f5;
+            --indigo-tint: #232456;
+            --blue: #7c9bff;
+            --success: #4ed394;
+            --success-bg: #123527;
+            --danger: #ff8585;
+            --danger-bg: #3a1a1e;
+            --warn: #f0b256;
+            --warn-bg: #3a2b12;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .mono {
+            font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+        }
+
+        img,
+        svg {
+            max-width: 100%;
+            display: block;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--focus);
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        .wrap {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 28px;
+        }
+
+        @media (max-width:640px) {
+            .wrap {
+                padding: 0 18px;
+            }
+        }
+
+        /* ---------- Header ---------- */
+        header.site {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: color-mix(in srgb, var(--bg) 88%, transparent);
+            backdrop-filter: saturate(150%) blur(10px);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 68px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 650;
+            font-size: 1.05rem;
+            letter-spacing: -0.01em;
+        }
+
+        .brand-mark {
+            width: 30px;
+            height: 30px;
+            flex: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-size: 0.92rem;
+            color: var(--ink-soft);
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--ink);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.94rem;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: background-color .15s ease, border-color .15s ease, transform .05s ease;
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-primary {
+            background: var(--indigo);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--indigo-deep);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--ink);
+            border-color: var(--line-strong);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--indigo);
+        }
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 0.85rem;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        @media (max-width:860px) {
+            .nav-links {
+                display: none;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        /* ---------- Hero ---------- */
+        .hero {
+            padding: 76px 0 64px;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            gap: 56px;
+            align-items: center;
+        }
+
+        @media (max-width:900px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 44px;
+            }
+        }
+
+        .badge-line {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: var(--indigo-deep);
+            font-weight: 600;
+            background: var(--indigo-tint);
+            border-radius: 999px;
+            padding: 6px 12px 6px 8px;
+            margin-bottom: 22px;
+        }
+
+        .badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--indigo);
+            flex: none;
+        }
+
+        h1.headline {
+            font-size: clamp(2.3rem, 4vw, 3.35rem);
+            line-height: 1.06;
+            font-weight: 650;
+            letter-spacing: -0.02em;
+            margin: 0 0 22px;
+        }
+
+        .sub {
+            font-size: 1.13rem;
+            color: var(--ink-soft);
+            max-width: 540px;
+            margin: 0 0 30px;
+        }
+
+        .hero-ctas {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            flex-wrap: wrap;
+            margin-bottom: 34px;
+        }
+
+        .link-quiet {
+            font-size: 0.94rem;
+            font-weight: 600;
+            color: var(--ink-soft);
+            border-bottom: 1px solid var(--line-strong);
+            padding-bottom: 2px;
+        }
+
+        .link-quiet:hover {
+            color: var(--ink);
+            border-color: var(--ink-soft);
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 26px;
+            flex-wrap: wrap;
+        }
+
+        .hero-meta-item {
+            font-size: 0.82rem;
+            color: var(--ink-faint);
+        }
+
+        .hero-meta-item b {
+            color: var(--ink);
+            font-weight: 650;
+            display: block;
+            font-size: 1.15rem;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        /* Hero scan visual */
+        .scan-card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 1px 2px rgba(20, 21, 43, 0.04), 0 12px 32px -18px rgba(20, 21, 43, 0.18);
+        }
+
+        .scan-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .scan-card-top .dot-row {
+            display: flex;
+            gap: 6px;
+        }
+
+        .scan-card-top .dot-row span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--line-strong);
+        }
+
+        .scan-card-top .label {
+            font-size: 0.75rem;
+            color: var(--ink-faint);
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .label-panel {
+            position: relative;
+            border-radius: 10px;
+            background: var(--bg-subtle);
+            border: 1px dashed var(--line-strong);
+            padding: 26px 22px;
+            overflow: hidden;
+        }
+
+        .label-panel .pkg-title {
+            font-weight: 650;
+            font-size: 1.02rem;
+            margin-bottom: 4px;
+        }
+
+        .label-panel .pkg-sub {
+            font-size: 0.82rem;
+            color: var(--ink-faint);
+            margin-bottom: 18px;
+        }
+
+        .field-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 9px 0;
+            border-top: 1px solid var(--line);
+            position: relative;
+        }
+
+        .field-row:first-of-type {
+            border-top: none;
+        }
+
+        .field-row .fname {
+            font-size: 0.82rem;
+            color: var(--ink-soft);
+        }
+
+        .field-row .fval {
+            font-size: 0.86rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 500;
+        }
+
+        .flag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-left: 8px;
+        }
+
+        .flag.ok {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .flag.bad {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .scan-frame {
+            position: absolute;
+            border: 1.5px solid var(--indigo);
+            border-radius: 6px;
+            opacity: 0;
+            animation: frameIn .5s ease forwards;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .scan-frame {
+                animation: none;
+                opacity: 1;
+            }
+        }
+
+        @keyframes frameIn {
+            from {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .scan-result-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+        }
+
+        .scan-result-row .r-label {
+            font-size: 0.78rem;
+            color: var(--ink-faint);
+        }
+
+        .scan-result-row .r-val {
+            font-size: 0.9rem;
+            font-weight: 650;
+        }
+
+        /* ---------- Section shell ---------- */
+        section {
+            padding: 88px 0;
+        }
+
+        section.tight {
+            padding: 64px 0;
+        }
+
+        .section-head {
+            max-width: 640px;
+            margin-bottom: 48px;
+        }
+
+        .section-head.wide {
+            max-width: 760px;
+        }
+
+        h2.sec-title {
+            font-size: clamp(1.7rem, 2.6vw, 2.15rem);
+            font-weight: 650;
+            letter-spacing: -0.015em;
+            margin: 0 0 12px;
+        }
+
+        .sec-sub {
+            color: var(--ink-soft);
+            font-size: 1.02rem;
+            margin: 0;
+        }
+
+        .sec-alt {
+            background: var(--bg-subtle);
+        }
+
+        /* ---------- Features ---------- */
+        .feat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            overflow: hidden;
+            background: var(--line);
+        }
+
+        @media (max-width:720px) {
+            .feat-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .feat-card {
+            background: var(--surface);
+            padding: 32px 30px;
+            position: relative;
+        }
+
+        .feat-idx {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.78rem;
+            color: var(--ink-faint);
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .feat-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            background: var(--indigo-tint);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .feat-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--indigo-deep);
+        }
+
+        .feat-card h3 {
+            font-size: 1.08rem;
+            font-weight: 650;
+            margin: 0 0 8px;
+        }
+
+        .feat-card p {
+            font-size: 0.93rem;
+            color: var(--ink-soft);
+            margin: 0;
+            max-width: 320px;
+        }
+
+        /* ---------- Dashboard preview ---------- */
+        .dash-shell {
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: var(--surface);
+            overflow: hidden;
+            box-shadow: 0 20px 50px -30px rgba(20, 21, 43, 0.25);
+        }
+
+        .dash-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--line);
+            background: var(--bg-subtle);
+        }
+
+        .dash-top .t {
+            font-weight: 650;
+            font-size: 0.95rem;
+        }
+
+        .dash-top .d {
+            font-size: 0.78rem;
+            color: var(--ink-faint);
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .dash-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .dash-stat {
+            padding: 20px 24px;
+            border-right: 1px solid var(--line);
+        }
+
+        .dash-stat:last-child {
+            border-right: none;
+        }
+
+        .dash-stat .n {
+            font-size: 1.55rem;
+            font-weight: 650;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .dash-stat .l {
+            font-size: 0.78rem;
+            color: var(--ink-faint);
+            margin-top: 2px;
+        }
+
+        .dash-stat.success .n {
+            color: var(--success);
+        }
+
+        .dash-stat.danger .n {
+            color: var(--danger);
+        }
+
+        .dash-stat.warn .n {
+            color: var(--warn);
+        }
+
+        @media (max-width:760px) {
+            .dash-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .dash-body {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+        }
+
+        @media (max-width:900px) {
+            .dash-body {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .dash-table {
+            padding: 22px 24px;
+        }
+
+        .dash-table-head {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.4fr;
+            gap: 12px;
+            font-size: 0.74rem;
+            color: var(--ink-faint);
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--line);
+            text-transform: none;
+        }
+
+        .dash-table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.4fr;
+            gap: 12px;
+            padding: 13px 0;
+            border-bottom: 1px solid var(--line);
+            align-items: center;
+            font-size: 0.86rem;
+        }
+
+        .dash-table-row:last-child {
+            border-bottom: none;
+        }
+
+        .prod-name {
+            font-weight: 600;
+        }
+
+        .prod-time {
+            color: var(--ink-faint);
+            font-size: 0.82rem;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 999px;
+            width: fit-content;
+        }
+
+        .status-pill.compliant {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .status-pill.violation {
+            background: var(--danger-bg);
+            color: var(--danger);
+        }
+
+        .status-pill.pending {
+            background: var(--warn-bg);
+            color: var(--warn);
+        }
+
+        .status-pill .sp-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .violation-note {
+            color: var(--ink-faint);
+            font-size: 0.82rem;
+        }
+
+        .dash-history {
+            padding: 22px 24px;
+            border-left: 1px solid var(--line);
+        }
+
+        @media (max-width:900px) {
+            .dash-history {
+                border-left: none;
+                border-top: 1px solid var(--line);
+            }
+        }
+
+        .dash-history h4 {
+            font-size: 0.85rem;
+            margin: 0 0 16px;
+            color: var(--ink-faint);
+            font-weight: 600;
+        }
+
+        .hist-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-top: 1px solid var(--line);
+        }
+
+        .hist-item:first-of-type {
+            border-top: none;
+        }
+
+        .hist-time {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.76rem;
+            color: var(--ink-faint);
+            width: 64px;
+            flex: none;
+            padding-top: 1px;
+        }
+
+        .hist-text {
+            font-size: 0.85rem;
+        }
+
+        .hist-text b {
+            font-weight: 600;
+        }
+
+        /* ---------- Process ---------- */
+        .process-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            position: relative;
+        }
+
+        @media (max-width:900px) {
+            .process-row {
+                grid-template-columns: 1fr;
+                gap: 28px;
+            }
+        }
+
+        .process-step {
+            position: relative;
+            padding: 0 20px 0 0;
+        }
+
+        .process-step:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            top: 22px;
+            right: -2px;
+            width: calc(100% - 44px);
+            height: 1px;
+            background: var(--line-strong);
+        }
+
+        @media (max-width:900px) {
+            .process-step:not(:last-child)::after {
+                display: none;
+            }
+        }
+
+        .process-num {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1.5px solid var(--indigo);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+            color: var(--indigo-deep);
+            margin-bottom: 18px;
+            background: var(--surface);
+            position: relative;
+            z-index: 2;
+        }
+
+        .process-step h3 {
+            font-size: 1.05rem;
+            font-weight: 650;
+            margin: 0 0 8px;
+        }
+
+        .process-step p {
+            font-size: 0.9rem;
+            color: var(--ink-soft);
+            margin: 0;
+            max-width: 250px;
+        }
+
+        /* ---------- Repository ---------- */
+        .repo-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 26px;
+            flex-wrap: wrap;
+        }
+
+        .repo-search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--line-strong);
+            border-radius: 9px;
+            padding: 9px 14px;
+            font-size: 0.86rem;
+            color: var(--ink-faint);
+            background: var(--surface);
+            min-width: 260px;
+        }
+
+        .repo-search svg {
+            width: 16px;
+            height: 16px;
+            stroke: var(--ink-faint);
+            flex: none;
+        }
+
+        .repo-filters {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chip {
+            font-size: 0.8rem;
+            padding: 7px 13px;
+            border-radius: 999px;
+            border: 1px solid var(--line-strong);
+            color: var(--ink-soft);
+            background: var(--surface);
+        }
+
+        .chip.active {
+            background: var(--indigo);
+            border-color: var(--indigo);
+            color: #fff;
+        }
+
+        .repo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        @media (max-width:900px) {
+            .repo-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width:600px) {
+            .repo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .repo-card {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 20px;
+            background: var(--surface);
+        }
+
+        .repo-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+
+        .repo-pkg-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            background: var(--bg-subtle);
+            border: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .repo-pkg-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--ink-soft);
+        }
+
+        .repo-card h4 {
+            font-size: 0.98rem;
+            font-weight: 650;
+            margin: 0 0 2px;
+        }
+
+        .repo-cat {
+            font-size: 0.78rem;
+            color: var(--ink-faint);
+            margin-bottom: 14px;
+        }
+
+        .repo-card-foot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+        }
+
+        .repo-date {
+            font-size: 0.78rem;
+            color: var(--ink-faint);
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .repo-link {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--indigo-deep);
+        }
+
+        .repo-link:hover {
+            color: var(--indigo);
+        }
+
+        /* ---------- Rules ---------- */
+        .rules-shell {
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            overflow: hidden;
+            background: var(--surface);
+        }
+
+        .rule-row {
+            display: grid;
+            grid-template-columns: 110px 1fr 150px;
+            gap: 20px;
+            padding: 20px 26px;
+            border-bottom: 1px solid var(--line);
+            align-items: center;
+        }
+
+        .rule-row:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width:700px) {
+            .rule-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+
+        .rule-code {
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+            color: var(--indigo-deep);
+            font-size: 0.92rem;
+        }
+
+        .rule-desc h4 {
+            font-size: 0.96rem;
+            font-weight: 650;
+            margin: 0 0 4px;
+        }
+
+        .rule-desc p {
+            font-size: 0.86rem;
+            color: var(--ink-soft);
+            margin: 0;
+        }
+
+        .rule-status {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--success);
+            justify-self: end;
+        }
+
+        @media (max-width:700px) {
+            .rule-status {
+                justify-self: start;
+            }
+        }
+
+        .rule-status svg {
+            width: 15px;
+            height: 15px;
+            stroke: var(--success);
+        }
+
+        .rules-foot-note {
+            font-size: 0.82rem;
+            color: var(--ink-faint);
+            margin-top: 16px;
+        }
+
+        /* ---------- Final CTA ---------- */
+        .cta-band {
+            background: var(--indigo-deep);
+            color: #fff;
+            border-radius: 20px;
+            padding: 64px 56px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        .cta-band h2 {
+            font-size: clamp(1.6rem, 3vw, 2.1rem);
+            font-weight: 650;
+            letter-spacing: -0.015em;
+            margin: 0 0 10px;
+            max-width: 480px;
+        }
+
+        .cta-band p {
+            color: #c9c6f5;
+            margin: 0;
+            max-width: 420px;
+            font-size: 0.98rem;
+        }
+
+        .cta-band .btn-primary {
+            background: #fff;
+            color: var(--indigo-deep);
+        }
+
+        .cta-band .btn-primary:hover {
+            background: #eceafe;
+        }
+
+        .cta-band-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-band .link-quiet {
+            color: #d8d6f7;
+            border-color: #5c55b8;
+        }
+
+        .cta-band .link-quiet:hover {
+            color: #fff;
+            border-color: #fff;
+        }
+
+        /* ---------- Footer ---------- */
+        footer {
+            border-top: 1px solid var(--line);
+            padding: 40px 0;
+        }
+
+        .foot-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .foot-row .brand {
+            font-size: 0.95rem;
+        }
+
+        .foot-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .foot-links a {
+            font-size: 0.85rem;
+            color: var(--ink-faint);
+        }
+
+        .foot-links a:hover {
+            color: var(--ink);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="site">
+        <div class="wrap nav-row">
+            <a class="brand" href="#top">
+                <svg class="brand-mark" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 10V6a2 2 0 0 1 2-2h4" stroke="#4338ca" stroke-width="2" stroke-linecap="round" />
+                    <path d="M26 10V6a2 2 0 0 0-2-2h-4" stroke="#4338ca" stroke-width="2" stroke-linecap="round" />
+                    <path d="M4 20v4a2 2 0 0 0 2 2h4" stroke="#4338ca" stroke-width="2" stroke-linecap="round" />
+                    <path d="M26 20v4a2 2 0 0 1-2 2h-4" stroke="#4338ca" stroke-width="2" stroke-linecap="round" />
+                    <circle cx="15" cy="15" r="4.5" stroke="#4338ca" stroke-width="2" />
+                </svg>
+                Label Lens
+            </a>
+            <nav class="nav-links">
+                <a href="#features">Product</a>
+                <a href="#dashboard">Dashboard</a>
+                <a href="#repository">Repository</a>
+                <a href="#rules">Compliance Rules</a>
+            </nav>
+            <div class="nav-right">
+                <a class="btn btn-primary btn-sm" href="#top">Start Scanning</a>
+                <button class="menu-toggle" aria-label="Menu">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14152b" stroke-width="1.8">
+                        <path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main id="top">
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="wrap hero-grid">
+                <div>
+                    <span class="badge-line"><span class="badge-dot"></span>Built for the Legal Metrology (Packaged
+                        Commodities) Rules, 2011</span>
+                    <h1 class="headline">Scan Products. Detect Violations. Ensure Compliance.</h1>
+                    <p class="sub">Label Lens reads packaged-commodity labels with AI-powered scanning and OCR, then
+                        validates every declaration — net quantity, MRP, manufacturer details, font size — against the
+                        Legal Metrology (Packaged Commodities) Rules, 2011, automatically.</p>
+                    <div class="hero-ctas">
+                        <a href="#dashboard" class="btn btn-primary">Start Scanning</a>
+                        <a href="#rules" class="link-quiet">See which rules it checks</a>
+                    </div>
+                    <div class="hero-meta">
+                        <div class="hero-meta-item"><b>12</b>declaration fields checked</div>
+                        <div class="hero-meta-item"><b>&lt;30s</b>average scan-to-report time</div>
+                        <div class="hero-meta-item"><b>2011</b>rules edition covered</div>
+                    </div>
+                </div>
+
+                <div class="scan-card">
+                    <div class="scan-card-top">
+                        <span class="label">SCAN_PREVIEW · PDP_001</span>
+                        <div class="dot-row"><span></span><span></span><span></span></div>
+                    </div>
+                    <div class="label-panel">
+                        <div class="pkg-title">Sunrise Cooking Oil</div>
+                        <div class="pkg-sub">Principal display panel — front</div>
+
+                        <div class="field-row">
+                            <span class="fname">Net quantity</span>
+                            <span><span class="fval">1 L</span><span class="flag ok">Rule 22 ✓</span></span>
+                        </div>
+                        <div class="field-row">
+                            <span class="fname">MRP (incl. of all taxes)</span>
+                            <span><span class="fval">₹186.00</span><span class="flag ok">Rule 18 ✓</span></span>
+                        </div>
+                        <div class="field-row">
+                            <span class="fname">Manufactured by</span>
+                            <span><span class="fval">declared</span><span class="flag ok">Rule 6 ✓</span></span>
+                        </div>
+                        <div class="field-row">
+                            <span class="fname">Font height, net qty</span>
+                            <span><span class="fval">1.2 mm</span><span class="flag bad">Rule 8 ✕</span></span>
+                        </div>
+
+                        <div class="scan-frame"
+                            style="top:26px; left:22px; width:120px; height:16px; animation-delay:.1s;"></div>
+                        <div class="scan-frame"
+                            style="top:96px; left:22px; width:200px; height:16px; animation-delay:.3s;"></div>
+                        <div class="scan-frame"
+                            style="top:190px; left:22px; width:170px; height:16px; animation-delay:.5s;"></div>
+                    </div>
+
+                    <div class="scan-result-row">
+                        <span class="r-label">Result</span>
+                        <span class="r-val" style="color:var(--danger);">1 violation found</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURES -->
+        <section id="features">
+            <div class="wrap">
+                <div class="section-head">
+                    <h2 class="sec-title">Four checks, one scan</h2>
+                    <p class="sec-sub">Everything a manual label audit covers, run automatically the moment a photo is
+                        uploaded.</p>
+                </div>
+                <div class="feat-grid">
+                    <div class="feat-card">
+                        <span class="feat-idx">01</span>
+                        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 8V6a2 2 0 0 1 2-2h2" />
+                                <path d="M20 8V6a2 2 0 0 0-2-2h-2" />
+                                <path d="M4 16v2a2 2 0 0 0 2 2h2" />
+                                <path d="M20 16v2a2 2 0 0 1-2 2h-2" />
+                                <circle cx="12" cy="12" r="3.2" />
+                            </svg></div>
+                        <h3>AI-powered label scanning</h3>
+                        <p>Capture a package with a phone camera or upload an existing photo. Computer vision locates
+                            the principal display panel and isolates every printed declaration on it.</p>
+                    </div>
+                    <div class="feat-card">
+                        <span class="feat-idx">02</span>
+                        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 11l2 2 4-4" />
+                                <rect x="4" y="4" width="16" height="16" rx="2.5" />
+                            </svg></div>
+                        <h3>Mandatory declaration detection</h3>
+                        <p>OCR reads and classifies each field against the declarations Rule 6 requires — manufacturer
+                            details, common name, net quantity, packing date, MRP, and consumer care information.</p>
+                    </div>
+                    <div class="feat-card">
+                        <span class="feat-idx">03</span>
+                        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 18L10 6h1l4 12" />
+                                <path d="M7.3 14h6.4" />
+                                <path d="M17 10v8" />
+                                <path d="M17 9.5h.01" />
+                            </svg></div>
+                        <h3>Font size &amp; readability check</h3>
+                        <p>Measures the printed height of declared text against the minimum letter and numeral sizes
+                            Rule 8 sets for the package's net quantity, and flags anything under-sized.</p>
+                    </div>
+                    <div class="feat-card">
+                        <span class="feat-idx">04</span>
+                        <div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9z" />
+                                <path d="M14 3v6h6" />
+                                <path d="M9 13h6M9 17h6" />
+                            </svg></div>
+                        <h3>Automated compliance reports</h3>
+                        <p>Every scan produces a report listing what passed, what failed, and the exact rule each
+                            violation falls under — ready to export or hand to a supplier.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DASHBOARD PREVIEW -->
+        <section id="dashboard" class="sec-alt">
+            <div class="wrap">
+                <div class="section-head">
+                    <h2 class="sec-title">See compliance across your catalog</h2>
+                    <p class="sec-sub">One dashboard for every scanned product, its current status, and the trail of
+                        inspections behind it.</p>
+                </div>
+
+                <div class="dash-shell">
+                    <div class="dash-top">
+                        <span class="t">Compliance dashboard</span>
+                        <span class="d">Updated 2 min ago</span>
+                    </div>
+                    <div class="dash-stats">
+                        <div class="dash-stat">
+                            <div class="n">148</div>
+                            <div class="l">Scanned today</div>
+                        </div>
+                        <div class="dash-stat success">
+                            <div class="n">121</div>
+                            <div class="l">Compliant</div>
+                        </div>
+                        <div class="dash-stat danger">
+                            <div class="n">19</div>
+                            <div class="l">Violations found</div>
+                        </div>
+                        <div class="dash-stat warn">
+                            <div class="n">8</div>
+                            <div class="l">Pending review</div>
+                        </div>
+                    </div>
+                    <div class="dash-body">
+                        <div class="dash-table">
+                            <div class="dash-table-head">
+                                <span>Product</span><span>Scanned</span><span>Status</span><span>Violation</span>
+                            </div>
+                            <div class="dash-table-row">
+                                <span class="prod-name">Sunrise Cooking Oil 1L</span>
+                                <span class="prod-time">10:42 AM</span>
+                                <span class="status-pill compliant"><span class="sp-dot"></span>Compliant</span>
+                                <span class="violation-note">—</span>
+                            </div>
+                            <div class="dash-table-row">
+                                <span class="prod-name">Nutri Wheat Flour 5kg</span>
+                                <span class="prod-time">10:15 AM</span>
+                                <span class="status-pill violation"><span class="sp-dot"></span>Violation</span>
+                                <span class="violation-note">Font size below minimum</span>
+                            </div>
+                            <div class="dash-table-row">
+                                <span class="prod-name">Classic Detergent Bar 250g</span>
+                                <span class="prod-time">09:58 AM</span>
+                                <span class="status-pill violation"><span class="sp-dot"></span>Violation</span>
+                                <span class="violation-note">MRP not tax-inclusive</span>
+                            </div>
+                            <div class="dash-table-row">
+                                <span class="prod-name">Golden Honey 500g</span>
+                                <span class="prod-time">09:40 AM</span>
+                                <span class="status-pill pending"><span class="sp-dot"></span>Pending review</span>
+                                <span class="violation-note">Manual check requested</span>
+                            </div>
+                            <div class="dash-table-row">
+                                <span class="prod-name">Fresh Basmati Rice 1kg</span>
+                                <span class="prod-time">Yesterday</span>
+                                <span class="status-pill compliant"><span class="sp-dot"></span>Compliant</span>
+                                <span class="violation-note">—</span>
+                            </div>
+                        </div>
+                        <div class="dash-history">
+                            <h4>Inspection history</h4>
+                            <div class="hist-item"><span class="hist-time">10:42 AM</span><span class="hist-text">Scan
+                                    completed for <b>Sunrise Cooking Oil</b> — compliant.</span></div>
+                            <div class="hist-item"><span class="hist-time">10:15 AM</span><span
+                                    class="hist-text">Violation flagged on <b>Nutri Wheat Flour</b> — font size.</span>
+                            </div>
+                            <div class="hist-item"><span class="hist-time">09:58 AM</span><span
+                                    class="hist-text">Violation flagged on <b>Detergent Bar</b> — MRP
+                                    declaration.</span></div>
+                            <div class="hist-item"><span class="hist-time">09:40 AM</span><span class="hist-text">Report
+                                    generated for <b>Golden Honey</b>, sent for review.</span></div>
+                            <div class="hist-item"><span class="hist-time">09:12 AM</span><span class="hist-text">Batch
+                                    of 6 packages scanned from warehouse inbox.</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROCESS -->
+        <section>
+            <div class="wrap">
+                <div class="section-head">
+                    <h2 class="sec-title">From photo to compliance report in four steps</h2>
+                    <p class="sec-sub">The same sequence a manual auditor follows, run in seconds instead of hours.</p>
+                </div>
+                <div class="process-row">
+                    <div class="process-step">
+                        <div class="process-num">01</div>
+                        <h3>Scan</h3>
+                        <p>Capture the package's principal display panel with a phone camera, or upload an existing
+                            image.</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="process-num">02</div>
+                        <h3>Extract</h3>
+                        <p>OCR reads every declaration on the panel — text, numbers, and letter height — into a
+                            structured record.</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="process-num">03</div>
+                        <h3>Validate</h3>
+                        <p>Each field is checked against the Legal Metrology (Packaged Commodities) Rules, 2011 for
+                            presence, format, and size.</p>
+                    </div>
+                    <div class="process-step">
+                        <div class="process-num">04</div>
+                        <h3>Report</h3>
+                        <p>A compliance report lists what passed, what failed, and the exact rule behind each violation.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- REPOSITORY -->
+        <section id="repository" class="sec-alt">
+            <div class="wrap">
+                <div class="section-head">
+                    <h2 class="sec-title">Every scan, saved and searchable</h2>
+                    <p class="sec-sub">A running repository of previously scanned products and the compliance reports
+                        generated for each.</p>
+                </div>
+
+                <div class="repo-toolbar">
+                    <div class="repo-search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round">
+                            <circle cx="11" cy="11" r="6.5" />
+                            <path d="M20 20l-4.3-4.3" />
+                        </svg>
+                        Search scanned products…
+                    </div>
+                    <div class="repo-filters">
+                        <span class="chip active">All</span>
+                        <span class="chip">Compliant</span>
+                        <span class="chip">Violations</span>
+                        <span class="chip">Pending</span>
+                    </div>
+                </div>
+
+                <div class="repo-grid">
+                    <div class="repo-card">
+                        <div class="repo-card-top">
+                            <div class="repo-pkg-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7">
+                                    <rect x="4" y="7" width="16" height="13" rx="1.5" />
+                                    <path d="M4 7l3-4h10l3 4" />
+                                </svg></div>
+                            <span class="status-pill compliant"><span class="sp-dot"></span>Compliant</span>
+                        </div>
+                        <h4>Sunrise Cooking Oil 1L</h4>
+                        <div class="repo-cat">Edible oil</div>
+                        <div class="repo-card-foot"><span class="repo-date">Scanned today</span><a class="repo-link"
+                                href="#">View report</a></div>
+                    </div>
+                    <div class="repo-card">
+                        <div class="repo-card-top">
+                            <div class="repo-pkg-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7">
+                                    <rect x="4" y="7" width="16" height="13" rx="1.5" />
+                                    <path d="M4 7l3-4h10l3 4" />
+                                </svg></div>
+                            <span class="status-pill violation"><span class="sp-dot"></span>2 issues</span>
+                        </div>
+                        <h4>Nutri Wheat Flour 5kg</h4>
+                        <div class="repo-cat">Staples</div>
+                        <div class="repo-card-foot"><span class="repo-date">Scanned today</span><a class="repo-link"
+                                href="#">View report</a></div>
+                    </div>
+                    <div class="repo-card">
+                        <div class="repo-card-top">
+                            <div class="repo-pkg-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7">
+                                    <rect x="4" y="7" width="16" height="13" rx="1.5" />
+                                    <path d="M4 7l3-4h10l3 4" />
+                                </svg></div>
+                            <span class="status-pill violation"><span class="sp-dot"></span>1 issue</span>
+                        </div>
+                        <h4>Classic Detergent Bar 250g</h4>
+                        <div class="repo-cat">Home care</div>
+                        <div class="repo-card-foot"><span class="repo-date">Scanned today</span><a class="repo-link"
+                                href="#">View report</a></div>
+                    </div>
+                    <div class="repo-card">
+                        <div class="repo-card-top">
+                            <div class="repo-pkg-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7">
+                                    <rect x="4" y="7" width="16" height="13" rx="1.5" />
+                                    <path d="M4 7l3-4h10l3 4" />
+                                </svg></div>
+                            <span class="status-pill pending"><span class="sp-dot"></span>Pending</span>
+                        </div>
+                        <h4>Golden Honey 500g</h4>
+                        <div class="repo-cat">Food</div>
+                        <div class="repo-card-foot"><span class="repo-date">Scanned today</span><a class="repo-link"
+                                href="#">View report</a></div>
+                    </div>
+                    <div class="repo-card">
+                        <div class="repo-card-top">
+                            <div class="repo-pkg-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7">
+                                    <rect x="4" y="7" width="16" height="13" rx="1.5" />
+                                    <path d="M4 7l3-4h10l3 4" />
+                                </svg></div>
+                            <span class="status-pill compliant"><span class="sp-dot"></span>Compliant</span>
+                        </div>
+                        <h4>Fresh Basmati Rice 1kg</h4>
+                        <div class="repo-cat">Staples</div>
+                        <div class="repo-card-foot"><span class="repo-date">Yesterday</span><a class="repo-link"
+                                href="#">View report</a></div>
+                    </div>
+                    <div class="repo-card">
+                        <div class="repo-card-top">
+                            <div class="repo-pkg-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7">
+                                    <rect x="4" y="7" width="16" height="13" rx="1.5" />
+                                    <path d="M4 7l3-4h10l3 4" />
+                                </svg></div>
+                            <span class="status-pill compliant"><span class="sp-dot"></span>Compliant</span>
+                        </div>
+                        <h4>Herbal Shampoo 200ml</h4>
+                        <div class="repo-cat">Personal care</div>
+                        <div class="repo-card-foot"><span class="repo-date">Yesterday</span><a class="repo-link"
+                                href="#">View report</a></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RULES -->
+        <section id="rules">
+            <div class="wrap">
+                <div class="section-head wide">
+                    <h2 class="sec-title">Built on the Legal Metrology (Packaged Commodities) Rules, 2011</h2>
+                    <p class="sec-sub">Label Lens maps each check directly to a rule, so a flagged label always comes
+                        with the specific provision it fails.</p>
+                </div>
+
+                <div class="rules-shell">
+                    <div class="rule-row">
+                        <span class="rule-code">Rule 6</span>
+                        <div class="rule-desc">
+                            <h4>General declarations</h4>
+                            <p>Name and address of manufacturer/packer/importer, common name, net quantity, month and
+                                year of packing, MRP, and consumer care details.</p>
+                        </div>
+                        <span class="rule-status"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 6L9 17l-5-5" />
+                            </svg>Validated</span>
+                    </div>
+                    <div class="rule-row">
+                        <span class="rule-code">Rule 8</span>
+                        <div class="rule-desc">
+                            <h4>Manner of declaration</h4>
+                            <p>Minimum size of letters and numerals used for declarations, scaled to the package's net
+                                quantity.</p>
+                        </div>
+                        <span class="rule-status"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 6L9 17l-5-5" />
+                            </svg>Validated</span>
+                    </div>
+                    <div class="rule-row">
+                        <span class="rule-code">Rule 18</span>
+                        <div class="rule-desc">
+                            <h4>Retail sale price</h4>
+                            <p>MRP must be declared inclusive of all taxes, in the prescribed format and position on the
+                                panel.</p>
+                        </div>
+                        <span class="rule-status"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 6L9 17l-5-5" />
+                            </svg>Validated</span>
+                    </div>
+                    <div class="rule-row">
+                        <span class="rule-code">Rule 22</span>
+                        <div class="rule-desc">
+                            <h4>Declaration of net quantity</h4>
+                            <p>Units and standard sizes in which net quantity must be expressed for the commodity
+                                category.</p>
+                        </div>
+                        <span class="rule-status"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 6L9 17l-5-5" />
+                            </svg>Validated</span>
+                    </div>
+                    <div class="rule-row">
+                        <span class="rule-code">Rule 23</span>
+                        <div class="rule-desc">
+                            <h4>Rounding off net quantity</h4>
+                            <p>Permitted rounding conventions when converting declared quantity between units.</p>
+                        </div>
+                        <span class="rule-status"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 6L9 17l-5-5" />
+                            </svg>Validated</span>
+                    </div>
+                </div>
+                <p class="rules-foot-note">Rule numbers reference the Legal Metrology (Packaged Commodities) Rules,
+                    2011. Confirm current provisions against the official notification before relying on them for
+                    filings.</p>
+            </div>
+        </section>
+
+        <!-- FINAL CTA -->
+        <section class="tight">
+            <div class="wrap">
+                <div class="cta-band">
+                    <div>
+                        <h2>Stop guessing whether your labels comply.</h2>
+                        <p>Scan your first package and get a rule-by-rule compliance report in under a minute.</p>
+                    </div>
+                    <div class="cta-band-actions">
+                        <a href="#top" class="btn btn-primary">Start Scanning</a>
+                        <a href="#rules" class="link-quiet">Review the rule coverage</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="wrap foot-row">
+            <span class="brand">Label Lens</span>
+            <div class="foot-links">
+                <a href="#features">Product</a>
+                <a href="#dashboard">Dashboard</a>
+                <a href="#repository">Repository</a>
+                <a href="#rules">Compliance Rules</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.chip').forEach(function (chip) {
+            chip.addEventListener('click', function () {
+                document.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('active'); });
+                chip.classList.add('active');
+            });
+        });
+    </script>
+</body>
+
+</html>

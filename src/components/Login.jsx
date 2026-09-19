@@ -1,102 +1,112 @@
 import React, { useState } from "react";
-import { Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
+import LogoMark from "./LogoMark";
+import { ArrowRight, UserCircle, ShieldCheck } from "lucide-react";
 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [role, setRole] = useState("official"); // "official" or "citizen"
   const [error, setError] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (!email.trim() || !password) {
-      setError("Enter your email and password to continue.");
+    if (!email.trim()) {
+      setError("Email is required.");
       return;
     }
 
     setError("");
-    onLogin({ email: email.trim(), password, rememberMe });
+    onLogin({ email: email.trim(), role, password: "password", rememberMe: true });
   };
 
   return (
-    <main className="min-h-screen bg-ink text-text-1 flex items-center justify-center px-4 py-8 bg-grid-mesh">
-      <section className="w-full max-w-md bg-panel border border-panel-line rounded-xl p-6 sm:p-8 shadow-glass">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 text-3xl font-serif italic">
-            <span className="text-text-1">Label</span>
-            <span className="bg-gradient-to-r from-brass to-citizen-primary bg-clip-text text-transparent font-bold">Lens</span>
-          </div>
-          <p className="text-xs font-mono uppercase tracking-wider text-brass mt-3">
-            LMPC Compliance Verification System
+    <div className="w-full min-h-screen flex bg-white font-sans text-black">
+
+      {/* Left Area - Branding / Context */}
+      <div className="hidden lg:flex w-1/2 bg-slate-50 border-r border-slate-200 p-12 flex-col justify-between">
+        <div className="flex items-center gap-3">
+          <LogoMark size={32} color="#000" />
+          <span className="font-bold text-2xl tracking-tight">LabelLens</span>
+        </div>
+
+        <div>
+          <h2 className="text-4xl font-semibold tracking-tight text-slate-900 leading-[1.1]">
+            Regulatory Compliance, <br /> Streamlined.
+          </h2>
+          <p className="mt-6 text-slate-600 max-w-md text-lg">
+            Verify label declarations accurately under the Legal Metrology (Packaged Commodities) Rules, 2011.
           </p>
         </div>
 
-        <div className="mb-6">
-          <h1 className="text-2xl font-serif text-text-1">Secure sign in</h1>
-          <p className="text-sm text-text-2 mt-1">Access your LabelLens workspace.</p>
+        <div className="text-sm font-medium text-slate-400">
+          © 2026 Department of Consumer Affairs
         </div>
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <label className="block">
-            <span className="text-xs font-mono uppercase text-text-3">Email</span>
-            <div className="relative mt-2">
-              <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-brass" />
+      {/* Right Area - Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
+        <div className="w-full max-w-[400px]">
+
+          <div className="lg:hidden flex items-center gap-2 mb-12">
+            <LogoMark size={28} color="#000" />
+            <span className="font-bold text-xl tracking-tight">LabelLens</span>
+          </div>
+
+          <h1 className="text-3xl font-semibold tracking-tight mb-2">Sign In</h1>
+          <p className="text-slate-500 mb-10">Access your LabelLens account.</p>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+
+            {/* Role Selection */}
+            <div className="space-y-3">
+              <label className="text-sm font-semibold">Select Account Type</label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setRole("official")}
+                  className={`flex items-center justify-center gap-2 py-3 px-4 rounded-md border text-sm font-semibold transition-all ${role === "official"
+                      ? "border-black bg-black text-white"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+                    }`}
+                >
+                  <ShieldCheck size={18} /> Official
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole("citizen")}
+                  className={`flex items-center justify-center gap-2 py-3 px-4 rounded-md border text-sm font-semibold transition-all ${role === "citizen"
+                      ? "border-black bg-black text-white"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+                    }`}
+                >
+                  <UserCircle size={18} /> Citizen
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold">Email Address</label>
               <input
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="name@example.com"
-                autoComplete="email"
-                className="w-full rounded-lg border border-panel-line bg-panel-darker py-3 pl-10 pr-3 text-sm text-text-1 placeholder:text-text-3 outline-none focus:border-brass"
+                placeholder={role === "official" ? "officer@gov.in" : "citizen@example.com"}
+                className="w-full bg-white border border-slate-300 rounded-md py-3 px-4 text-sm text-black placeholder:text-slate-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
               />
             </div>
-          </label>
 
-          <label className="block">
-            <span className="text-xs font-mono uppercase text-text-3">Password</span>
-            <div className="relative mt-2">
-              <LockKeyhole size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-brass" />
-              <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="Enter your password"
-                autoComplete="current-password"
-                className="w-full rounded-lg border border-panel-line bg-panel-darker py-3 pl-10 pr-11 text-sm text-text-1 placeholder:text-text-3 outline-none focus:border-brass"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((visible) => !visible)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1.5 text-text-3 hover:text-brass"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
-              </button>
-            </div>
-          </label>
+            {error && <p className="text-sm text-red-600 font-medium">{error}</p>}
 
-          <label className="flex items-center gap-2 text-sm text-text-2">
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(event) => setRememberMe(event.target.checked)}
-              className="rounded border-panel-line text-brass focus:ring-brass"
-            />
-            Remember me
-          </label>
+            <button
+              type="submit"
+              className="w-full flex items-center justify-center gap-2 bg-black hover:bg-slate-800 text-white rounded-md py-3.5 text-sm font-semibold transition-colors mt-4"
+            >
+              Continue <ArrowRight size={16} />
+            </button>
+          </form>
 
-          {error && <p className="text-sm text-status-fail">{error}</p>}
-
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-brass py-3 text-sm font-bold text-brass-ink hover:bg-brass-strong transition-colors"
-          >
-            Login
-          </button>
-        </form>
-      </section>
-    </main>
+        </div>
+      </div>
+    </div>
   );
 }
