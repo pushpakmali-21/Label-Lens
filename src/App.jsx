@@ -22,6 +22,7 @@ export default function App() {
   const [language, setLanguage] = useState("English");
   const [selectedNoticeScenario, setSelectedNoticeScenario] = useState(null);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [capturedFrame, setCapturedFrame] = useState(null);
   const [feedRefreshKey, setFeedRefreshKey] = useState(0);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -83,7 +84,8 @@ export default function App() {
 
   const handleSelectScenarioAndScan = (mode, frameB64 = null) => {
     if (mode) setRule6Mode(mode);
-    setActiveTab(userRole === "citizen" ? "citizen" : "vision");
+    if (frameB64) setCapturedFrame(frameB64);
+    setActiveTab(userRole === "citizen" ? "citizen" : "rule6");
   };
 
   if (!isLoggedIn) {
@@ -145,6 +147,7 @@ export default function App() {
             <Rule6Engine
               mode={rule6Mode}
               setMode={setRule6Mode}
+              capturedFrame={capturedFrame}
               onGenerateNotice={handleGenerateNotice}
               onOpenScanner={() => setIsScannerOpen(true)}
             />

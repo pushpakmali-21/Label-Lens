@@ -2,12 +2,17 @@ fastapi
 uvicorn
 sqlalchemy
 alembic
-psycopg2-binary
 pydantic
 pydantic-settings
-pgvector
-pymupdf
 python-multipart
-sentence-transformers
-asyncpg
+google-generativeai
+aiofiles
 greenlet
+
+# ── Optional / Production ─────────────────────────────────────────────────────
+# Uncomment these when moving to Postgres + pgvector production stack:
+# psycopg2-binary
+# asyncpg
+# pgvector
+# pymupdf
+# sentence-transformers
