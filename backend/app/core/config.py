@@ -1,13 +1,21 @@
+from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+BACKEND_DIR = Path(__file__).resolve().parents[2]
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "LabelLens API"
     # SQLite fallback keeps the prototype running without Postgres
     DATABASE_URL: str = "sqlite:///./labellens.db"
-    # Gemini API key — fill in backend/.env before running scans
+    # Gemini API key — set this in backend/.env before running scans.
     GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-2.5-flash"
 
     # Allow extra fields from .env to be ignored if not explicitly defined
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    # Resolve relative to backend, not process working directory. This makes
+    # `uvicorn app.main:app` work when launched from repository root or backend.
+    model_config = SettingsConfigDict(env_file=BACKEND_DIR / ".env", extra="ignore")
 
 settings = Settings()

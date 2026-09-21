@@ -32,6 +32,7 @@ import re
 from pathlib import Path
 from typing import Optional
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 from pydantic import ValidationError
 
 # ── Rules data ─────────────────────────────────────────────────────────────────
@@ -408,7 +409,15 @@ def validate_package_data(
                 match = re.search(r"Rule\s+(\d+)", rule_ref, re.IGNORECASE)
                 if match:
                     rule_num = match.group(1)
-                    db_rule = db.query(ExtractedRule).filter(ExtractedRule.rule_number == rule_num).first()
+                    try:
+                        db_rule = db.query(ExtractedRule).filter(
+                            ExtractedRule.rule_number == rule_num
+                        ).first()
+                    except SQLAlchemyError:
+                        # Rule-text enrichment is optional. A fresh SQLite
+                        # database may not have ingestion tables yet; scan
+                        # verdict must still be returned.
+                        db_rule = None
                     if db_rule:
                         v["rule_text"] = db_rule.original_text
 

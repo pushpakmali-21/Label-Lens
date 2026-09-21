@@ -10,7 +10,7 @@ with a carefully-crafted LMPC-aware prompt, and returns a structured
 
 Key design decisions
 ────────────────────
-* Uses ``gemini-2.0-flash`` — fast, cheap, excellent vision.
+* Uses configurable current Gemini model through supported ``google-genai`` SDK.
 * The prompt is self-contained: it embeds all mandatory LMPC Rule 6
   fields so Gemini knows exactly what to look for.
 * Returns ``None`` on any failure (key missing, API error, bad JSON)
@@ -28,6 +28,37 @@ import re
 from typing import Optional
 
 logger = logging.getLogger(__name__)
+
+
+def normalise_gemini_fields(fields: dict) -> dict:
+    """Map Gemini prompt keys to the validator's established field contract."""
+    normalised = dict(fields)
+
+    manufacturer = " ".join(
+        value.strip()
+        for value in (
+            str(fields.get("manufacturer_name") or ""),
+            str(fields.get("manufacturer_address") or ""),
+        )
+        if value and value.strip()
+    )
+    if manufacturer:
+        normalised["manufacturer"] = manufacturer
+
+    quantity = str(fields.get("net_quantity") or "").strip()
+    if quantity:
+        normalised["net_weight_str"] = quantity
+        match = re.search(r"(\d+(?:\.\d+)?)\s*(kg|g|ml|l)\b", quantity, re.IGNORECASE)
+        if match:
+            amount = float(match.group(1))
+            unit = match.group(2).lower()
+            normalised["net_weight_g"] = amount * 1000 if unit in {"kg", "l"} else amount
+
+    customer_care = str(fields.get("customer_care_details") or "").strip()
+    if customer_care:
+        normalised["consumer_care"] = {"name": customer_care}
+
+    return normalised
 
 # ── Prompt ─────────────────────────────────────────────────────────────────────
 
@@ -92,7 +123,7 @@ def _build_client():
     Returns None if the SDK is not installed or the key is missing.
     """
     try:
-        import google.generativeai as genai  # type: ignore
+        from google import genai  # type: ignore
         from app.core.config import settings
 
         api_key = settings.GEMINI_API_KEY
@@ -104,13 +135,12 @@ def _build_client():
             )
             return None
 
-        genai.configure(api_key=api_key)
-        return genai.GenerativeModel("gemini-2.0-flash")
+        return genai.Client(api_key=api_key)
 
     except ImportError:
         logger.error(
-            "google-generativeai package is not installed. "
-            "Run: pip install google-generativeai"
+            "google-genai package is not installed. "
+            "Run: pip install google-genai"
         )
         return None
 
@@ -130,13 +160,16 @@ def _call_gemini_sync(image_base64: str) -> Optional[dict]:
         return None
 
     try:
-        import google.generativeai as genai  # type: ignore
+        from google.genai import types  # type: ignore
+        from app.core.config import settings
 
-        # Detect image format from base64 magic bytes
+        # Decode once. New Gemini SDK accepts bytes rather than a legacy
+        # inline-data dictionary.
         try:
-            raw = base64.b64decode(image_base64[:16] + "==")
-        except Exception:
-            raw = b""
+            raw = base64.b64decode(image_base64, validate=True)
+        except Exception as exc:
+            logger.warning("Gemini image input is not valid base64: %s", exc)
+            return None
 
         if raw[:8] == b"\x89PNG\r\n\x1a\n":
             mime_type = "image/png"
@@ -147,19 +180,17 @@ def _call_gemini_sync(image_base64: str) -> Optional[dict]:
         else:
             mime_type = "image/jpeg"  # safe default
 
-        image_part = {
-            "inline_data": {
-                "mime_type": mime_type,
-                "data": image_base64,
-            }
-        }
-
-        response = model.generate_content(
-            [_LMPC_EXTRACTION_PROMPT, image_part],
-            generation_config={
-                "temperature": 0.1,        # low temp → deterministic extraction
-                "max_output_tokens": 2048,
-            },
+        response = model.models.generate_content(
+            model=settings.GEMINI_MODEL,
+            contents=[
+                types.Part.from_bytes(data=raw, mime_type=mime_type),
+                _LMPC_EXTRACTION_PROMPT,
+            ],
+            config=types.GenerateContentConfig(
+                temperature=0.1,
+                max_output_tokens=2048,
+                response_mime_type="application/json",
+            ),
         )
 
         raw_text = response.text.strip()
@@ -169,6 +200,10 @@ def _call_gemini_sync(image_base64: str) -> Optional[dict]:
         raw_text = re.sub(r"\s*```$", "", raw_text, flags=re.MULTILINE)
 
         fields = json.loads(raw_text)
+        if not isinstance(fields, dict):
+            logger.error("Gemini returned JSON that is not an object.")
+            return None
+        fields = normalise_gemini_fields(fields)
         logger.info(
             "Gemini extraction complete. Quality=%s product=%s",
             fields.get("label_quality", "?"),
@@ -186,7 +221,7 @@ def _call_gemini_sync(image_base64: str) -> Optional[dict]:
 
 async def extract_fields_from_image(image_base64: str) -> Optional[dict]:
     """
-    Async wrapper — runs the blocking Gemini SDK call in a thread pool
+    Async wrapper — runs blocking Gemini SDK call in a thread pool
     so FastAPI's event loop is never blocked.
 
     Args:

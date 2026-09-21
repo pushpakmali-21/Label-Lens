@@ -43,7 +43,8 @@ services:
       - .env
     environment:
       # Overrides .env values for Docker networking
-      DATABASE_URL: postgresql+asyncpg://labellens:labellens_dev@db:5432/labellens
+      # App uses synchronous SQLAlchemy sessions, so use a synchronous driver.
+      DATABASE_URL: postgresql+psycopg://labellens:labellens_dev@db:5432/labellens
       REDIS_URL: redis://redis:6379/0
     ports:
       - "8000:8000"

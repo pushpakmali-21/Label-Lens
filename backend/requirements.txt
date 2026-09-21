@@ -5,14 +5,10 @@ alembic
 pydantic
 pydantic-settings
 python-multipart
-google-generativeai
+google-genai
 aiofiles
 greenlet
-
-# ── Optional / Production ─────────────────────────────────────────────────────
-# Uncomment these when moving to Postgres + pgvector production stack:
-# psycopg2-binary
-# asyncpg
-# pgvector
-# pymupdf
-# sentence-transformers
+PyMuPDF
+sentence-transformers
+pgvector
+psycopg[binary]

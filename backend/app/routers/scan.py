@@ -14,7 +14,7 @@ Engineer 3 changes (Rules & Evidence sprint):
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 import hashlib
 
@@ -44,7 +44,7 @@ async def scan_image(request: ScanImageRequest, db: Session = Depends(get_db)):
         )
     )
 
-    timestamp_iso = datetime.utcnow().isoformat()
+    timestamp_iso = datetime.now(timezone.utc).isoformat()
     seal = generate_evidence_seal(
         image_hash=image_hash,
         verdict=verdict,
@@ -72,6 +72,7 @@ async def scan_image(request: ScanImageRequest, db: Session = Depends(get_db)):
         violations=violations,
         evidence_seal=seal,  # type: ignore[arg-type]
         rule_version=rule_version,
+        gemini_observations=extracted_data.get("gemini_observations"),
     )
 
 
@@ -89,7 +90,7 @@ async def scan_qr(request: ScanQRRequest, db: Session = Depends(get_db)):
     explicit violation rather than running a misleading mock through the validator.
     """
     qr_hash = hashlib.sha256(request.qr_content.encode("utf-8")).hexdigest()
-    timestamp_iso = datetime.utcnow().isoformat()
+    timestamp_iso = datetime.now(timezone.utc).isoformat()
     audit_id = uuid.uuid4()
 
     # Attempt to parse the QR payload into package fields
@@ -161,4 +162,5 @@ async def scan_qr(request: ScanQRRequest, db: Session = Depends(get_db)):
         violations=violations,
         evidence_seal=seal,  # type: ignore[arg-type]
         rule_version=rule_version,
+        gemini_observations=extracted_data.get("gemini_observations"),
     )

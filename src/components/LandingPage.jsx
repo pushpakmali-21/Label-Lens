@@ -1,86 +1,139 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
-  Scan, FileText, ShieldCheck, BarChart3, CheckCircle2,
-  ArrowRight, ChevronRight, Scale, Zap, Eye, AlertTriangle,
-  Clock, Database, FileSearch, Settings2, Star, TrendingUp,
-  Package, ClipboardList, Search, BookOpen, Building2, User,
-  KeyRound, X, Menu, Shield, Globe, Award, Camera, Cpu,
-  ScanLine, FileBadge2, BadgeCheck
+  Camera, Cpu, ScanLine, Scale, FileBadge2, ArrowRight,
+  Menu, X, ChevronRight, CheckCircle2, AlertCircle,
+  XCircle, FileText, Eye, Clock, Database
 } from "lucide-react";
 import LogoMark from "./LogoMark";
 import Login from "./Login";
 
-// ─── Shared Theme: Deep Navy + Warm Amber ────────────────────────────────────
-const C = {
-  navy: "#0F1B2D",
-  navyDark: "#080F1A",
-  navyMid: "#162236",
-  navyLight: "#1E2F45",
-  amber: "#E05A00",
-  amberHover: "#C24E00",
-  sand: "#F5F6F8",
-  sandBorder: "#E4E6EC",
-  textLight: "#8BA4BE",
-  textMuted: "#64748b",
+// ─── Design tokens ────────────────────────────────────────────────────────────
+const T = {
+  ivory:      "#F7F5F0",
+  charcoal:   "#20252B",
+  slate:      "#59636E",
+  green:      "#183D35",
+  greenLight: "#234F45",
+  vermilion:  "#C9572C",
+  sage:       "#DCE5DD",
+  sageDark:   "#B3C5B5",
+  border:     "#D8D7D2",
+  borderDark: "#BFC0BC",
+  amber:      "#C9572C",
 };
 
-// ─── Nav ─────────────────────────────────────────────────────────────────────
-function LandingNav({ onLoginClick }) {
+const styles = {
+  serif:  { fontFamily: "'Instrument Serif', 'IBM Plex Serif', Georgia, serif" },
+  sans:   { fontFamily: "'IBM Plex Sans', system-ui, sans-serif" },
+  mono:   { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" },
+};
+
+// ─── Reusable pieces ──────────────────────────────────────────────────────────
+function SectionLabel({ number, text }) {
+  return (
+    <div className="flex items-center gap-3 mb-8">
+      <span style={{ ...styles.mono, color: T.slate, fontSize: "10px", letterSpacing: "0.15em" }}>
+        {number} /
+      </span>
+      <span className="w-8 h-px" style={{ background: T.border }} />
+      <span style={{ ...styles.mono, color: T.slate, fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase" }}>
+        {text}
+      </span>
+    </div>
+  );
+}
+
+function Rule({ style, className }) {
+  return <div className={`${className || ""} h-px`} style={{ background: T.border, ...style }} />;
+}
+
+// ─── Navigation ───────────────────────────────────────────────────────────────
+function Nav({ onLoginClick }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", fn);
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#F5F6F8]/95 backdrop-blur-lg border-b border-[#E4E6EC] shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 h-20 flex items-center justify-between">
+    <nav
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      style={{
+        background: scrolled ? "rgba(247, 245, 240, 0.97)" : T.ivory,
+        borderBottom: `1px solid ${T.border}`,
+        backdropFilter: scrolled ? "blur(8px)" : "none",
+      }}
+    >
+      <div className="mx-auto px-6 lg:px-10 h-16 flex items-center justify-between" style={{ maxWidth: 1200 }}>
         {/* Logo */}
-        <div className="flex items-center gap-3">
-          <LogoMark size={38} color={C.navy} />
-          <div className="flex flex-col">
-            <span className="text-2xl font-serif font-black tracking-tight leading-none" style={{ color: C.navy }}>
-              LabelLens
-            </span>
-            <span className="text-[10px] font-mono font-bold tracking-widest uppercase mt-0.5" style={{ color: C.amber }}>
-              Gov. Compliance Engine
-            </span>
+        <div className="flex items-center gap-2.5">
+          {/* Measurement mark — crosshairs + scale tick */}
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <rect x="1" y="1" width="22" height="22" rx="1" stroke={T.green} strokeWidth="1.5" />
+            <line x1="12" y1="5" x2="12" y2="9" stroke={T.green} strokeWidth="1.5" strokeLinecap="round" />
+            <line x1="12" y1="15" x2="12" y2="19" stroke={T.green} strokeWidth="1.5" strokeLinecap="round" />
+            <line x1="5" y1="12" x2="9" y2="12" stroke={T.green} strokeWidth="1.5" strokeLinecap="round" />
+            <line x1="15" y1="12" x2="19" y2="12" stroke={T.green} strokeWidth="1.5" strokeLinecap="round" />
+            <circle cx="12" cy="12" r="2" fill={T.vermilion} />
+          </svg>
+          <div style={{ lineHeight: 1 }}>
+            <div style={{ ...styles.mono, fontSize: "15px", fontWeight: 700, color: T.charcoal, letterSpacing: "0.08em" }}>
+              LABEL<span style={{ color: T.green }}>LENS</span>
+            </div>
           </div>
         </div>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-10 text-xs font-bold tracking-widest text-slate-600 uppercase">
-          <a href="#features" className="hover:text-[#E05A00] transition-colors">Features</a>
-          <a href="#how-it-works" className="hover:text-[#E05A00] transition-colors">Workflow</a>
-          <a href="#dashboard" className="hover:text-[#E05A00] transition-colors">Live Data</a>
-          <a href="#rules" className="hover:text-[#E05A00] transition-colors">Regulations</a>
+        {/* Desktop links */}
+        <div className="hidden md:flex items-center gap-8">
+          {["Product", "How it works", "Rules", "Reports"].map((l) => (
+            <a
+              key={l}
+              href={`#${l.toLowerCase().replace(/ /g, "-")}`}
+              style={{ ...styles.sans, fontSize: "13px", color: T.slate, letterSpacing: "0.01em" }}
+              className="hover:text-[#20252B] transition-colors"
+            >
+              {l}
+            </a>
+          ))}
         </div>
 
         {/* CTA */}
-        <div className="flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-4">
           <button
             onClick={onLoginClick}
-            className="hidden sm:inline-flex items-center font-bold text-slate-700 hover:text-[#E05A00] transition-colors uppercase text-xs tracking-widest"
+            className="transition-all duration-200 hover:bg-[#183D35] hover:text-white"
+            style={{
+              ...styles.sans,
+              fontSize: "13px",
+              fontWeight: 500,
+              color: T.charcoal,
+              border: `1px solid ${T.border}`,
+              padding: "7px 18px",
+              letterSpacing: "0.01em",
+            }}
           >
-            Sign In
-          </button>
-          <button
-            onClick={onLoginClick}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white text-xs font-bold tracking-widest uppercase shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-amber-700/30"
-            style={{ background: C.amber }}
-          >
-            <Scan size={14} />
-            <span>Initiate Scan</span>
-          </button>
-          <button className="md:hidden p-2 text-slate-800" onClick={() => setMobileOpen(!mobileOpen)}>
-            <Menu size={24} />
+            Open scanner
           </button>
         </div>
+
+        <button className="md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>
+          {mobileOpen ? <X size={20} color={T.charcoal} /> : <Menu size={20} color={T.charcoal} />}
+        </button>
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden border-t border-[#E4E6EC] bg-[#F5F6F8] px-6 py-6 space-y-5 text-xs font-bold uppercase tracking-widest text-slate-700">
-          <a href="#features" className="block hover:text-[#E05A00]" onClick={() => setMobileOpen(false)}>Features</a>
-          <a href="#how-it-works" className="block hover:text-[#E05A00]" onClick={() => setMobileOpen(false)}>Workflow</a>
-          <a href="#dashboard" className="block hover:text-[#E05A00]" onClick={() => setMobileOpen(false)}>Live Data</a>
-          <a href="#rules" className="block hover:text-[#E05A00]" onClick={() => setMobileOpen(false)}>Regulations</a>
-          <button onClick={onLoginClick} className="block text-[#E05A00]">Sign In →</button>
+        <div style={{ borderTop: `1px solid ${T.border}`, background: T.ivory }} className="md:hidden px-6 py-5 space-y-4">
+          {["Product", "How it works", "Rules", "Reports"].map((l) => (
+            <a key={l} href={`#${l.toLowerCase().replace(/ /g, "-")}`}
+              className="block" style={{ ...styles.sans, fontSize: "14px", color: T.slate }}
+              onClick={() => setMobileOpen(false)}>{l}</a>
+          ))}
+          <button onClick={onLoginClick} className="block" style={{ ...styles.sans, fontSize: "14px", color: T.green, fontWeight: 600 }}>
+            Open scanner →
+          </button>
         </div>
       )}
     </nav>
@@ -88,395 +141,380 @@ function LandingNav({ onLoginClick }) {
 }
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
-function HeroSection({ onLoginClick }) {
+function Hero({ onLoginClick }) {
   return (
-    <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-10 relative overflow-hidden" style={{ background: C.sand }}>
-      {/* Decorative blobs */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[120px] opacity-50 pointer-events-none" style={{ background: "#C8D8E8" }} />
-      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full blur-[80px] opacity-30 pointer-events-none" style={{ background: "#E05A0020" }} />
+    <section className="pt-24 pb-0" style={{ background: T.ivory, borderBottom: `1px solid ${T.border}` }}>
+      <div className="mx-auto px-6 lg:px-10" style={{ maxWidth: 1200 }}>
+        <div className="flex flex-col lg:flex-row gap-0 items-stretch">
 
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 relative z-10">
-        {/* Left */}
-        <div className="flex-1 text-left">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-[#E4E6EC] text-xs font-bold uppercase tracking-widest shadow-sm mb-7 rounded-full" style={{ color: C.navy }}>
-            <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: C.amber }} />
-            <Shield size={13} style={{ color: C.amber }} />
-            Official LMPC Rules 2011 Standard
+          {/* Left column */}
+          <div className="flex-1 py-16 lg:py-24 lg:pr-16" style={{ borderRight: `1px solid ${T.border}` }}>
+            <p style={{ ...styles.mono, fontSize: "10px", color: T.slate, letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "28px" }}>
+              Legal Metrology • India
+            </p>
+
+            <h1 style={{ ...styles.serif, fontSize: "clamp(2.4rem, 4.5vw, 3.5rem)", color: T.charcoal, lineHeight: 1.12, fontWeight: 400, marginBottom: "24px" }}>
+              Know what the label says.<br />
+              Know whether it complies.
+            </h1>
+
+            <p className="max-w-sm" style={{ ...styles.sans, fontSize: "15px", color: T.slate, lineHeight: 1.65, marginBottom: "36px" }}>
+              LabelLens uses computer vision and OCR to inspect packaged commodity labels against mandatory declarations under the Legal Metrology (Packaged Commodities) Rules, 2011.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 mb-8">
+              <button
+                onClick={onLoginClick}
+                className="transition-all duration-200 hover:bg-[#0f2a23]"
+                style={{
+                  ...styles.sans,
+                  background: T.green,
+                  color: "#fff",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  padding: "11px 22px",
+                  letterSpacing: "0.02em",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                Scan a label
+              </button>
+              <a
+                href="#how-it-works"
+                className="transition-all duration-200 hover:bg-[#F0EEE9]"
+                style={{
+                  ...styles.sans,
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  color: T.charcoal,
+                  border: `1px solid ${T.border}`,
+                  padding: "11px 22px",
+                  letterSpacing: "0.01em",
+                  textDecoration: "none",
+                  display: "inline-block",
+                }}
+              >
+                See how it works
+              </a>
+            </div>
+
+            <p style={{ ...styles.mono, fontSize: "10px", color: T.slate, letterSpacing: "0.08em" }}>
+              8 mandatory declarations checked&nbsp; •&nbsp; OCR + vision&nbsp; •&nbsp; structured compliance report
+            </p>
           </div>
 
-          <h1 className="text-5xl lg:text-[4.75rem] font-serif font-black leading-[1.05] tracking-tight mb-8" style={{ color: C.navy }}>
-            Upholding <br />
-            <span style={{ color: C.amber }}>Transparency.</span><br />
-            Protecting Consumers.
-          </h1>
-
-          <p className="text-base lg:text-lg text-slate-600 leading-relaxed font-medium max-w-xl mb-10 border-l-4 pl-6 py-2" style={{ borderColor: C.amber }}>
-            AI-powered scanning &amp; OCR validation of packaged commodity labels. Ensure flawless compliance without the manual overhead.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center gap-4">
-            <button
-              onClick={onLoginClick}
-              className="inline-flex items-center justify-center gap-3 px-8 py-4 text-white font-bold text-sm uppercase tracking-wider rounded-full shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl w-full sm:w-auto"
-              style={{ background: C.amber }}
-            >
-              <Scan size={17} /> Ensure Compliance Now
-            </button>
-            <a
-              href="#how-it-works"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-transparent border-2 font-bold text-sm uppercase tracking-wider rounded-full transition-all duration-300 hover:scale-105 w-full sm:w-auto justify-center"
-              style={{ borderColor: C.navy, color: C.navy }}
-              onMouseEnter={e => { e.currentTarget.style.background = C.navy; e.currentTarget.style.color = "#fff"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.navy; }}
-            >
-              See Workflow
-            </a>
+          {/* Right column — inspection workstation */}
+          <div className="lg:w-[520px] relative bg-white" style={{ borderLeft: `1px solid ${T.border}` }}>
+            <InspectionWorkstation />
           </div>
 
-          <div className="mt-12 flex flex-wrap items-center gap-8 text-xs font-bold uppercase tracking-widest" style={{ color: C.navy }}>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 size={18} style={{ color: C.amber }} /> 8/8 Declarations
-            </div>
-            <div className="flex items-center gap-2">
-              <Zap size={18} style={{ color: C.amber }} /> &lt;2s Analysis
-            </div>
-            <div className="flex items-center gap-2">
-              <Award size={18} style={{ color: C.amber }} /> DoCA Verified
-            </div>
-          </div>
-        </div>
-
-        {/* Right visual */}
-        <div className="flex-1 w-full max-w-2xl relative">
-          <div className="absolute inset-0 translate-x-4 translate-y-4 shadow-2xl rounded" style={{ background: C.navy }} />
-          <div className="relative bg-white p-4 border border-[#E4E6EC] shadow-xl rounded">
-            <img
-              src="/images/hero_scan.png"
-              alt="LabelLens AI Scan"
-              className="w-full h-auto object-cover contrast-110"
-              style={{ filter: "grayscale(15%) contrast(1.1)" }}
-            />
-            <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-md p-4 flex justify-between items-center border border-[#E4E6EC] rounded">
-              <div className="font-serif" style={{ color: C.navy }}>
-                <div className="text-[10px] font-bold tracking-widest uppercase text-slate-500">Target Result</div>
-                <div className="text-lg font-black">AI Validation Complete</div>
-              </div>
-              <div className="text-white px-4 py-2 font-mono font-bold text-[10px] uppercase tracking-widest shadow-md rounded" style={{ background: C.navy }}>
-                Status: Verified
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
   );
 }
 
-// ─── Partner Strip ────────────────────────────────────────────────────────────
-function PartnerStrip() {
+// Inspection workstation visual (right side of hero)
+function InspectionWorkstation() {
+  const fields = [
+    { label: "MRP",              value: "₹70",                status: "verified" },
+    { label: "Net quantity",     value: "70 g",               status: "verified" },
+    { label: "Manufacturer",     value: "Nestlé India Ltd.",   status: "verified" },
+    { label: "Consumer helpline",value: "1800-xxx-xxxx",       status: "missing"  },
+    { label: "Date of packing",  value: "AUG 2026",           status: "verified" },
+    { label: "Country of origin",value: "India",              status: "verified" },
+    { label: "FSSAI license",    value: "—",                  status: "review"   },
+    { label: "Veg / Non-veg",    value: "VEG",                status: "verified" },
+  ];
+
   return (
-    <div className="py-10 border-y relative overflow-hidden" style={{ background: `linear-gradient(to right, ${C.navyDark}, ${C.navy}, ${C.navyDark})`, borderColor: C.navyMid }}>
-      <div className="absolute top-0 left-0 w-full h-px" style={{ background: `linear-gradient(to right, transparent, ${C.amber}99, transparent)` }} />
-      <div className="absolute bottom-0 left-0 w-full h-px" style={{ background: `linear-gradient(to right, transparent, ${C.amber}44, transparent)` }} />
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
-        <p className="text-center text-xs font-bold uppercase tracking-[0.25em] mb-8" style={{ color: C.textLight }}>Recognized by Leading Consumer Authorities</p>
-        <div className="flex flex-wrap justify-center gap-12 lg:gap-24 items-center">
-          {[
-            { icon: Globe, label: "DoCA", sub: "Consumer Affairs" },
-            { icon: Scale, label: "LMPC", sub: "Legal Metrology" },
-            { icon: Building2, label: "SIH 2026", sub: "Innovator" },
-          ].map(({ icon: Icon, label, sub }) => (
-            <div key={label} className="group flex items-center gap-3 text-white opacity-70 hover:opacity-100 transition-all duration-300 hover:-translate-y-1 cursor-default">
-              <div className="w-10 h-10 flex items-center justify-center rounded-full border transition-all duration-300" style={{ borderColor: `${C.amber}55` }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = C.amber; e.currentTarget.style.background = `${C.amber}18`; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = `${C.amber}55`; e.currentTarget.style.background = "transparent"; }}>
-                <Icon size={20} style={{ color: C.amber }} />
-              </div>
-              <span className="font-serif font-bold text-base tracking-wide leading-none">
-                {label}<br /><span className="text-[10px] font-sans uppercase tracking-widest" style={{ color: C.textLight }}>{sub}</span>
-              </span>
-            </div>
-          ))}
+    <div className="h-full min-h-[520px] flex flex-col" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+      {/* Toolbar strip */}
+      <div className="flex items-center justify-between px-4 py-2.5" style={{ borderBottom: `1px solid ${T.border}`, background: T.ivory }}>
+        <span style={{ ...styles.mono, fontSize: "9px", color: T.slate, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+          LabelLens · Inspection view
+        </span>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full" style={{ background: "#4CAF50" }} />
+          <span style={{ ...styles.mono, fontSize: "9px", color: T.slate }}>active</span>
         </div>
+      </div>
+
+      {/* Product thumbnail with OCR boxes */}
+      <div className="relative" style={{ height: "190px", background: "#F0EDE6", borderBottom: `1px solid ${T.border}`, overflow: "hidden" }}>
+        <img
+          src="/images/hero_scan.png"
+          alt="Packaged product scan"
+          className="w-full h-full object-cover"
+          style={{ opacity: 0.85, filter: "contrast(1.05)" }}
+          onError={(e) => { e.target.style.display = "none"; }}
+        />
+        {/* OCR annotation boxes */}
+        <svg className="absolute inset-0 w-full h-full">
+          <rect x="18%" y="18%" width="30%" height="12%" rx="0" fill="none" stroke="#4CAF50" strokeWidth="1.5" strokeDasharray="3,2" />
+          <rect x="55%" y="24%" width="25%" height="9%" rx="0" fill="none" stroke="#4CAF50" strokeWidth="1.5" strokeDasharray="3,2" />
+          <rect x="18%" y="55%" width="45%" height="10%" rx="0" fill="none" stroke={T.vermilion} strokeWidth="1.5" strokeDasharray="3,2" />
+          <rect x="18%" y="70%" width="35%" height="9%" rx="0" fill="none" stroke="#F59E0B" strokeWidth="1.5" strokeDasharray="3,2" />
+          {/* Leader lines */}
+          <line x1="48%" y1="24%" x2="60%" y2="15%" stroke={T.border} strokeWidth="1" />
+          <line x1="63%" y1="24%" x2="85%" y2="12%" stroke={T.border} strokeWidth="1" />
+        </svg>
+        {/* Floating annotation */}
+        <div
+          className="absolute bottom-3 right-3 flex items-center gap-2 px-2.5 py-1.5"
+          style={{ background: T.charcoal, border: `1px solid ${T.border}` }}
+        >
+          <span style={{ ...styles.mono, fontSize: "9px", color: "#fff", letterSpacing: "0.06em" }}>6 / 8 declarations verified</span>
+          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#4CAF50" }} />
+        </div>
+      </div>
+
+      {/* Field list */}
+      <div className="flex-1 overflow-auto divide-y" style={{ divideColor: T.border }}>
+        {fields.map((f) => (
+          <div key={f.label} className="flex items-center justify-between px-4 py-2" style={{ borderBottom: `1px solid ${T.border}` }}>
+            <div>
+              <div style={{ ...styles.mono, fontSize: "9px", color: T.slate, letterSpacing: "0.1em", textTransform: "uppercase" }}>{f.label}</div>
+              <div style={{ ...styles.sans, fontSize: "12px", color: T.charcoal, fontWeight: 500, marginTop: "1px" }}>{f.value}</div>
+            </div>
+            <StatusBadge status={f.status} />
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
-// ─── Features ─────────────────────────────────────────────────────────────────
-const FEATURES = [
-  { icon: Scan, title: "AI-Precision Scanning", desc: "Computer vision instantly isolates label regions via camera streams or batch uploads in under 2 seconds." },
-  { icon: FileSearch, title: "Mandatory OCR Detection", desc: "High-accuracy OCR extracts all 8 statutory packaging parameters—from MRP to manufacturing origins." },
-  { icon: Eye, title: "Spatio-Typographic Checks", desc: "Font legibility assessed against Schedule II dimensions using coin-fiducial calibration techniques." },
-  { icon: FileText, title: "Immutable Reports", desc: "Cryptographically sealed (SHA-256) compliance audits that stand ground in legal and official reviews." },
-];
-
-function FeaturesSection() {
+function StatusBadge({ status }) {
+  const map = {
+    verified: { label: "Verified",  color: "#166534", bg: "#F0FDF4", border: "#BBF7D0" },
+    missing:  { label: "Not found", color: "#9A3412", bg: "#FFF7ED", border: "#FED7AA" },
+    review:   { label: "Review",    color: "#92400E", bg: "#FFFBEB", border: "#FDE68A" },
+  };
+  const s = map[status] || map.review;
   return (
-    <section id="features" className="py-24 bg-white px-4 sm:px-6 lg:px-10">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-16">
-        <div className="md:w-1/3">
-          <div className="inline-block px-3 py-1 bg-[#F5F6F8] border border-[#E4E6EC] text-xs font-bold uppercase tracking-widest mb-6 rounded-full" style={{ color: C.navy }}>
-            Core Mechanics
-          </div>
-          <h2 className="text-4xl font-serif font-black leading-tight mb-5 mt-2" style={{ color: C.navy }}>
-            Engineered for <br />
-            <span style={{ color: C.amber }}>Absolute Accuracy.</span>
-          </h2>
-          <p className="text-slate-500 font-medium leading-relaxed text-sm">
-            A highly calibrated AI model designed explicitly for the stipulations of Legal Metrology (Packaged Commodities) Rules, 2011.
-          </p>
-        </div>
-
-        <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {FEATURES.map((f, i) => (
-            <div
-              key={i}
-              className="p-7 border border-[#E4E6EC] bg-[#F5F6F8] hover:bg-white hover:shadow-xl transition-all duration-300 group hover:-translate-y-1 rounded-2xl cursor-default"
-            >
-              <div
-                className="w-11 h-11 flex items-center justify-center text-white mb-5 rounded-lg transition-all duration-500 group-hover:scale-110 group-hover:rotate-6"
-                style={{ background: C.navy }}
-                onMouseEnter={e => e.currentTarget.style.background = C.amber}
-                onMouseLeave={e => e.currentTarget.style.background = C.navy}
-              >
-                <f.icon size={22} />
-              </div>
-              <h3 className="text-lg font-serif font-bold mb-2.5 transition-colors duration-300 group-hover:text-[#E05A00]" style={{ color: C.navy }}>{f.title}</h3>
-              <p className="text-sm text-slate-500 leading-relaxed">{f.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+    <span style={{ ...styles.mono, fontSize: "8.5px", color: s.color, background: s.bg, border: `1px solid ${s.border}`, padding: "2px 7px", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+      {s.label}
+    </span>
   );
 }
 
-// ─── Workflow Steps ───────────────────────────────────────────────────────────
-const WORKFLOW_STEPS = [
-  {
-    step: "01",
-    icon: Camera,
-    title: "Capture / Upload",
-    desc: "Submit a product image via live camera stream or direct batch upload. Accepts JPEG, PNG, and HEIC formats.",
-    tag: "Input Layer",
-  },
-  {
-    step: "02",
-    icon: Cpu,
-    title: "AI Region Detection",
-    desc: "Computer vision model isolates the label zone using object segmentation, removing noise & background clutter.",
-    tag: "Vision Engine",
-  },
-  {
-    step: "03",
-    icon: ScanLine,
-    title: "OCR Extraction",
-    desc: "High-fidelity OCR reads all 8 mandatory declarations — MRP, net qty, date, manufacturer address, and more.",
-    tag: "Text Engine",
-  },
-  {
-    step: "04",
-    icon: Scale,
-    title: "Rule Validation",
-    desc: "Each extracted field is verified against LMPC 2011 Rules 6(1), 6(2), and 6(10) — zero manual checks needed.",
-    tag: "Compliance Core",
-  },
-  {
-    step: "05",
-    icon: FileBadge2,
-    title: "Compliance Report",
-    desc: "A SHA-256 sealed audit certificate is generated — pass or violation with exact rule citations for legal use.",
-    tag: "Output Layer",
-  },
-];
-
-function WorkflowSection() {
-  const [activeStep, setActiveStep] = useState(null);
-
+// ─── Section 01: The problem ──────────────────────────────────────────────────
+function ProblemSection() {
   return (
-    <section id="how-it-works" className="py-24 px-4 sm:px-6 lg:px-10 text-white relative overflow-hidden" style={{ background: C.navy }}>
-      {/* background grid texture */}
-      <div className="absolute inset-0 opacity-[0.04]" style={{
-        backgroundImage: `linear-gradient(${C.textLight} 1px, transparent 1px), linear-gradient(to right, ${C.textLight} 1px, transparent 1px)`,
-        backgroundSize: "48px 48px",
-      }} />
-      {/* glow orbs */}
-      <div className="absolute top-20 left-1/3 w-72 h-72 rounded-full blur-[120px] opacity-20 pointer-events-none" style={{ background: C.amber }} />
-      <div className="absolute bottom-10 right-1/4 w-48 h-48 rounded-full blur-[80px] opacity-10 pointer-events-none" style={{ background: C.amber }} />
+    <section id="product" className="py-20 px-6 lg:px-10" style={{ background: T.ivory, borderBottom: `1px solid ${T.border}` }}>
+      <div className="mx-auto" style={{ maxWidth: 1200 }}>
+        <SectionLabel number="01" text="The challenge" />
 
-      <div className="max-w-7xl mx-auto relative z-10">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/20 text-xs font-bold uppercase tracking-widest mb-6" style={{ color: C.amber, background: `${C.amber}14` }}>
-            <BadgeCheck size={13} /> End-to-End Process
-          </div>
-          <h2 className="text-4xl sm:text-5xl font-serif font-black mb-5">
-            How It <span style={{ color: C.amber }}>Works.</span>
-          </h2>
-          <p className="text-base max-w-2xl mx-auto font-medium" style={{ color: C.textLight }}>
-            Five precise steps from raw image to certified compliance verdict — fully automated, legally defensible.
-          </p>
-        </div>
-
-        {/* Connector line (desktop) */}
-        <div className="hidden lg:block relative mb-4">
-          <div className="absolute top-1/2 left-0 right-0 h-px -translate-y-1/2" style={{ background: `linear-gradient(to right, transparent, ${C.amber}55, ${C.amber}88, ${C.amber}55, transparent)` }} />
-        </div>
-
-        {/* Steps grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-          {WORKFLOW_STEPS.map((s, i) => (
-            <div
-              key={i}
-              className="relative flex flex-col items-start p-6 rounded-2xl border cursor-pointer transition-all duration-300"
-              style={{
-                background: activeStep === i ? `${C.amber}18` : `${C.navyMid}`,
-                borderColor: activeStep === i ? C.amber : `${C.textLight}33`,
-                transform: activeStep === i ? "translateY(-6px)" : "translateY(0)",
-                boxShadow: activeStep === i ? `0 12px 40px ${C.amber}30` : "none",
-              }}
-              onMouseEnter={() => setActiveStep(i)}
-              onMouseLeave={() => setActiveStep(null)}
-            >
-              {/* Step number badge */}
-              <div className="text-[10px] font-mono font-black tracking-widest mb-4 px-2 py-0.5 rounded-full border" style={{ color: C.amber, borderColor: `${C.amber}55` }}>
-                {s.step}
-              </div>
-
-              {/* Icon */}
-              <div
-                className="w-10 h-10 flex items-center justify-center rounded-lg mb-4 transition-all duration-300"
-                style={{ background: activeStep === i ? C.amber : `${C.amber}22`, color: activeStep === i ? "#fff" : C.amber }}
-              >
-                <s.icon size={20} />
-              </div>
-
-              {/* Tag */}
-              <span className="text-[9px] font-bold uppercase tracking-[0.15em] mb-2" style={{ color: C.textLight }}>
-                {s.tag}
-              </span>
-
-              {/* Title */}
-              <h3 className="text-base font-serif font-bold mb-2 leading-snug" style={{ color: activeStep === i ? "#fff" : "#CBD5E1" }}>
-                {s.title}
-              </h3>
-
-              {/* Desc */}
-              <p className="text-xs leading-relaxed" style={{ color: C.textLight }}>
-                {s.desc}
-              </p>
-
-              {/* Active arrow */}
-              {activeStep === i && i < WORKFLOW_STEPS.length - 1 && (
-                <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
-                  <ChevronRight size={20} style={{ color: C.amber }} />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Bottom stat bar */}
-        <div className="mt-14 grid grid-cols-1 sm:grid-cols-3 gap-px border rounded-2xl overflow-hidden" style={{ borderColor: `${C.textLight}22`, background: `${C.textLight}22` }}>
-          {[
-            { val: "<2s", label: "End-to-End Processing" },
-            { val: "99.4%", label: "OCR Field Accuracy" },
-            { val: "8/8", label: "Mandatory Fields Checked" },
-          ].map(({ val, label }) => (
-            <div key={label} className="flex flex-col items-center justify-center py-8 px-4 text-center" style={{ background: C.navyMid }}>
-              <div className="text-3xl font-serif font-black mb-1" style={{ color: C.amber }}>{val}</div>
-              <div className="text-[10px] font-bold uppercase tracking-widest" style={{ color: C.textLight }}>{label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─── Dashboard Preview ────────────────────────────────────────────────────────
-const SCANNED_PRODUCTS = [
-  { name: "Tropicana Orange Juice 1L", brand: "PepsiCo", status: "COMPLIANT", date: "19 Sep 2026" },
-  { name: "Maggi 2-Minute Noodles 70g", brand: "Nestlé", status: "VIOLATION", date: "19 Sep 2026" },
-  { name: "Amul Butter 100g", brand: "GCMMF", status: "COMPLIANT", date: "18 Sep 2026" },
-  { name: "Haldiram's Aloo Bhujia 200g", brand: "Haldiram's", status: "REVIEW", date: "18 Sep 2026" },
-];
-
-function DashboardPreview({ onLoginClick }) {
-  return (
-    <section id="dashboard" className="py-24 bg-white px-4 sm:px-6 lg:px-10 border-b border-[#E4E6EC]">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col lg:flex-row gap-16 items-center">
+        <div className="flex flex-col lg:flex-row gap-16">
+          {/* Statement */}
           <div className="lg:w-1/2">
-            <div className="inline-block px-3 py-1 bg-[#F5F6F8] border border-[#E4E6EC] text-xs font-bold uppercase tracking-widest mb-6 rounded-full" style={{ color: C.navy }}>
-              Live Telemetry
-            </div>
-            <h2 className="text-4xl font-serif font-black mb-5" style={{ color: C.navy }}>
-              Command &amp; Control <br /> <span style={{ color: C.amber }}>At a Glance.</span>
+            <h2 style={{ ...styles.serif, fontSize: "clamp(1.65rem, 3.2vw, 2.5rem)", color: T.charcoal, lineHeight: 1.2, fontWeight: 400, marginBottom: "20px" }}>
+              Compliance information is already on the package. The problem is finding, reading and verifying it consistently.
             </h2>
-            <p className="text-sm text-slate-500 font-medium mb-8 leading-relaxed">
-              Unparalleled oversight of systemic compliance metrics. Track violations, review pending audits, and dissect regional trends in real-time.
+            <p style={{ ...styles.sans, fontSize: "14px", color: T.slate, lineHeight: 1.7 }}>
+              Manual label inspection is slow, inconsistent, and difficult to audit. Officers spend time on legibility and completeness checks that should be automated. LabelLens turns printed label data into a structured, machine-verifiable compliance record.
             </p>
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              <div
-                className="p-5 border-l-4 rounded-r-xl group cursor-default transition-all duration-300 hover:shadow-lg hover:bg-white"
-                style={{ borderColor: C.navy, background: C.sand }}
-              >
-                <div className="text-3xl font-black font-serif transition-transform duration-300 group-hover:scale-105 inline-block" style={{ color: C.navy }}>1,247</div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">Total Scans</div>
-              </div>
-              <div
-                className="p-5 border-l-4 rounded-r-xl group cursor-default transition-all duration-300 hover:shadow-lg hover:bg-white"
-                style={{ borderColor: C.amber, background: "#FFF4EE" }}
-              >
-                <div className="text-3xl font-black font-serif transition-transform duration-300 group-hover:scale-105 inline-block" style={{ color: C.amber }}>183</div>
-                <div className="text-[10px] font-bold uppercase tracking-widest mt-1" style={{ color: C.amber }}>Violations</div>
-              </div>
-            </div>
-            <button
-              onClick={onLoginClick}
-              className="inline-flex items-center gap-2 font-bold uppercase tracking-widest text-xs border-b-2 border-transparent hover:border-current transition-all"
-              style={{ color: C.navy }}
-              onMouseEnter={e => { e.currentTarget.style.color = C.amber; }}
-              onMouseLeave={e => { e.currentTarget.style.color = C.navy; }}
-            >
-              Access Telemetry <ArrowRight size={15} />
-            </button>
           </div>
 
-          <div className="lg:w-1/2 w-full">
-            <div className="border border-[#E4E6EC] p-6 shadow-xl rounded-2xl" style={{ background: C.sand }}>
-              <div className="flex items-center justify-between mb-5 pb-4 border-b border-[#E4E6EC]">
-                <h3 className="font-serif font-bold uppercase tracking-wide text-sm" style={{ color: C.navy }}>Live Inspection Logs</h3>
-                <span className="flex h-3 w-3 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: C.amber }} />
-                  <span className="relative inline-flex rounded-full h-3 w-3" style={{ background: C.amber }} />
+          {/* Comparison */}
+          <div className="lg:w-1/2 flex flex-col sm:flex-row gap-0">
+            {/* Manual */}
+            <div className="flex-1 pr-6 sm:pr-8 pb-6 sm:pb-0" style={{ borderRight: `1px solid ${T.border}` }}>
+              <div style={{ ...styles.mono, fontSize: "9px", color: T.slate, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "16px" }}>
+                Manual review
+              </div>
+              {["Find declaration", "Read label physically", "Compare against rule", "Record finding manually"].map((step, i) => (
+                <div key={i} className="flex items-start gap-3 mb-4">
+                  <span style={{ ...styles.mono, fontSize: "10px", color: T.border, minWidth: 16 }}>{i + 1}.</span>
+                  <span style={{ ...styles.sans, fontSize: "13px", color: T.slate, lineHeight: 1.45 }}>{step}</span>
+                </div>
+              ))}
+              <div className="mt-6 pt-5" style={{ borderTop: `1px solid ${T.border}` }}>
+                <span style={{ ...styles.mono, fontSize: "9px", color: T.vermilion }}>Inconsistent · Not auditable</span>
+              </div>
+            </div>
+
+            {/* LabelLens */}
+            <div className="flex-1 pl-6 sm:pl-8 pt-6 sm:pt-0">
+              <div style={{ ...styles.mono, fontSize: "9px", color: T.green, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: "16px" }}>
+                LabelLens
+              </div>
+              {["Detect label region", "Extract declarations via OCR", "Validate against rules", "Generate report automatically"].map((step, i) => (
+                <div key={i} className="flex items-start gap-3 mb-4">
+                  <span style={{ ...styles.mono, fontSize: "10px", color: T.green, minWidth: 16 }}>{i + 1}.</span>
+                  <span style={{ ...styles.sans, fontSize: "13px", color: T.charcoal, lineHeight: 1.45 }}>{step}</span>
+                </div>
+              ))}
+              <div className="mt-6 pt-5" style={{ borderTop: `1px solid ${T.border}` }}>
+                <span style={{ ...styles.mono, fontSize: "9px", color: T.green }}>Consistent · Auditable · Fast</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Section 02: Workflow ─────────────────────────────────────────────────────
+function WorkflowSection() {
+  const steps = [
+    { num: "01", title: "Capture",  sub: "Camera or upload",       icon: Camera,    note: "JPEG / PNG / HEIC" },
+    { num: "02", title: "Detect",   sub: "Label region isolated",  icon: Eye,       note: "Object segmentation" },
+    { num: "03", title: "Extract",  sub: "OCR reads declarations", icon: ScanLine,  note: "8 mandatory fields" },
+    { num: "04", title: "Validate", sub: "Rules are checked",      icon: Scale,     note: "LMPC 2011 Rules 6(1)–(10)" },
+    { num: "05", title: "Report",   sub: "Evidence-backed result", icon: FileBadge2,note: "SHA-256 sealed" },
+  ];
+
+  return (
+    <section id="how-it-works" className="py-20 px-6 lg:px-10" style={{ background: T.charcoal, borderBottom: `1px solid #2E3540` }}>
+      <div className="mx-auto" style={{ maxWidth: 1200 }}>
+        <div className="flex items-center gap-3 mb-2">
+          <span style={{ ...styles.mono, color: "#59636E", fontSize: "10px", letterSpacing: "0.15em" }}>02 /</span>
+          <span className="w-8 h-px" style={{ background: "#2E3540" }} />
+          <span style={{ ...styles.mono, color: "#59636E", fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase" }}>The scan</span>
+        </div>
+
+        <div className="flex flex-col lg:flex-row items-end gap-4 mb-14">
+          <h2 style={{ ...styles.serif, fontSize: "clamp(1.65rem, 3.2vw, 2.5rem)", color: "#F7F5F0", lineHeight: 1.15, fontWeight: 400 }}>
+            From package to finding.
+          </h2>
+          <p className="lg:ml-auto lg:max-w-xs" style={{ ...styles.sans, fontSize: "13px", color: "#59636E", lineHeight: 1.65 }}>
+            Five automated stages turn a photograph of a packaged commodity into a structured compliance verdict.
+          </p>
+        </div>
+
+        {/* Steps */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-0" style={{ border: `1px solid #2E3540` }}>
+          {steps.map((s, i) => {
+            const Icon = s.icon;
+            return (
+              <div
+                key={s.num}
+                className="group relative p-6 transition-all duration-300 hover:bg-[#2E3540] cursor-default"
+                style={{ borderRight: i < steps.length - 1 ? "1px solid #2E3540" : "none" }}
+              >
+                {/* Arrow connector */}
+                {i < steps.length - 1 && (
+                  <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
+                    <ChevronRight size={14} color="#2E3540" />
+                  </div>
+                )}
+                <div style={{ ...styles.mono, fontSize: "10px", color: "#59636E", marginBottom: "16px" }}>{s.num}</div>
+                <div className="mb-4 w-8 h-8 flex items-center justify-center" style={{ border: `1px solid #2E3540`, background: "#1A2330" }}>
+                  <Icon size={15} color={i === 4 ? "#4CAF50" : "#59636E"} />
+                </div>
+                <div style={{ ...styles.sans, fontSize: "14px", fontWeight: 600, color: "#EDEAE1", marginBottom: "4px" }}>{s.title}</div>
+                <div style={{ ...styles.sans, fontSize: "12px", color: "#59636E", marginBottom: "12px" }}>{s.sub}</div>
+                <div style={{ ...styles.mono, fontSize: "9px", color: "#3A4550", letterSpacing: "0.05em" }}>{s.note}</div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Stat strip */}
+        <div className="mt-1 grid grid-cols-3" style={{ border: `1px solid #2E3540`, borderTop: "none" }}>
+          {[
+            { v: "<2s",   l: "End-to-end" },
+            { v: "99.4%", l: "OCR accuracy" },
+            { v: "8 / 8", l: "Fields checked" },
+          ].map(({ v, l }, i) => (
+            <div key={l} className="py-5 flex flex-col items-center" style={{ borderRight: i < 2 ? "1px solid #2E3540" : "none" }}>
+              <span style={{ ...styles.serif, fontSize: "1.6rem", color: "#F7F5F0", fontWeight: 400 }}>{v}</span>
+              <span style={{ ...styles.mono, fontSize: "9px", color: "#59636E", letterSpacing: "0.12em", marginTop: "3px" }}>{l}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Section 03: Inspection result ───────────────────────────────────────────
+function InspectionResultSection() {
+  const findings = [
+    { field: "MRP",              value: "₹70",              status: "pass",   rule: "Rule 6(1)(d)" },
+    { field: "Net quantity",     value: "70 g",             status: "pass",   rule: "Rule 6(1)(b)" },
+    { field: "Manufacturer",     value: "Nestlé India Ltd.",status: "pass",   rule: "Rule 6(1)(e)" },
+    { field: "Consumer helpline",value: "Not found on label",status: "review",rule: "Rule 6(1)(h)" },
+    { field: "Date of packing",  value: "AUG 2026",        status: "pass",   rule: "Rule 6(1)(f)" },
+    { field: "Country of origin",value: "India",           status: "pass",   rule: "Rule 6(1)(g)" },
+    { field: "FSSAI Lic. No.",   value: "Not legible",     status: "fail",   rule: "Rule 6(1)(j)" },
+    { field: "Veg / Non-veg",    value: "Green dot present",status: "pass",  rule: "FSS Rules" },
+  ];
+
+  return (
+    <section id="reports" className="py-20 px-6 lg:px-10" style={{ background: "#F0EEE9", borderBottom: `1px solid ${T.border}` }}>
+      <div className="mx-auto" style={{ maxWidth: 1200 }}>
+        <SectionLabel number="03" text="Inspection result" />
+
+        <div className="mb-10 flex flex-col lg:flex-row items-start gap-6">
+          <h2 style={{ ...styles.serif, fontSize: "clamp(1.65rem, 3.2vw, 2.5rem)", color: T.charcoal, lineHeight: 1.15, fontWeight: 400 }}>
+            A structured inspection record, not a summary.
+          </h2>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-0" style={{ border: `1px solid ${T.border}` }}>
+          {/* Product panel */}
+          <div className="lg:w-72 flex-shrink-0" style={{ borderRight: `1px solid ${T.border}`, background: "#fff" }}>
+            <div className="p-4" style={{ borderBottom: `1px solid ${T.border}` }}>
+              <span style={{ ...styles.mono, fontSize: "9px", color: T.slate, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+                Product image
+              </span>
+            </div>
+            <div className="relative" style={{ height: 220, background: "#F5F3EE" }}>
+              <img src="/images/hero_scan.png" alt="product" className="w-full h-full object-cover" style={{ opacity: 0.8 }}
+                onError={(e) => e.target.style.display = "none"} />
+              {/* Number markers */}
+              {[[20, 25], [65, 36], [20, 62], [20, 76]].map(([x, y], i) => (
+                <div key={i} className="absolute flex items-center justify-center" style={{
+                  left: `${x}%`, top: `${y}%`, width: 18, height: 18,
+                  background: T.charcoal, border: `1px solid ${T.border}`,
+                  transform: "translate(-50%, -50%)"
+                }}>
+                  <span style={{ ...styles.mono, fontSize: "8px", color: "#fff" }}>{i + 1}</span>
+                </div>
+              ))}
+            </div>
+            <div className="p-4 space-y-2">
+              <div style={{ ...styles.mono, fontSize: "9px", color: T.slate, letterSpacing: "0.1em", textTransform: "uppercase" }}>Product</div>
+              <div style={{ ...styles.sans, fontSize: "13px", color: T.charcoal, fontWeight: 500, lineHeight: 1.4 }}>Maggi 2-Minute Noodles, 70g</div>
+              <div style={{ ...styles.mono, fontSize: "9px", color: T.slate }}>Scanned 18 Sep 2026 · REF-2026-0918-001</div>
+            </div>
+          </div>
+
+          {/* Findings table */}
+          <div className="flex-1">
+            <div className="flex px-5 py-3" style={{ borderBottom: `1px solid ${T.border}`, background: T.ivory }}>
+              <span className="flex-1" style={{ ...styles.mono, fontSize: "9px", color: T.slate, letterSpacing: "0.1em", textTransform: "uppercase" }}>Field</span>
+              <span className="w-52" style={{ ...styles.mono, fontSize: "9px", color: T.slate, letterSpacing: "0.1em", textTransform: "uppercase" }}>Extracted value</span>
+              <span className="w-28" style={{ ...styles.mono, fontSize: "9px", color: T.slate, letterSpacing: "0.1em", textTransform: "uppercase" }}>Rule ref.</span>
+              <span className="w-20 text-right" style={{ ...styles.mono, fontSize: "9px", color: T.slate, letterSpacing: "0.1em", textTransform: "uppercase" }}>Status</span>
+            </div>
+            {findings.map((f, i) => (
+              <div key={i} className="flex items-center px-5 py-3 hover:bg-[#F7F5F0] transition-colors" style={{ borderBottom: `1px solid ${T.border}` }}>
+                <span className="flex-1" style={{ ...styles.sans, fontSize: "13px", color: T.charcoal }}>{f.field}</span>
+                <span className="w-52" style={{ ...styles.sans, fontSize: "12px", color: T.slate }}>{f.value}</span>
+                <span className="w-28" style={{ ...styles.mono, fontSize: "9px", color: T.slate }}>{f.rule}</span>
+                <span className="w-20 text-right">
+                  {f.status === "pass"   && <span style={{ ...styles.mono, fontSize: "9px", color: "#166534", letterSpacing: "0.08em" }}>✓ PASS</span>}
+                  {f.status === "fail"   && <span style={{ ...styles.mono, fontSize: "9px", color: T.vermilion, letterSpacing: "0.08em" }}>✗ FAIL</span>}
+                  {f.status === "review" && <span style={{ ...styles.mono, fontSize: "9px", color: "#92400E", letterSpacing: "0.08em" }}>⚠ REVIEW</span>}
                 </span>
               </div>
-              <div className="space-y-2.5">
-                {SCANNED_PRODUCTS.map((p, idx) => (
-                  <div
-                    key={idx}
-                    className="flex justify-between items-center p-4 bg-white border border-[#E4E6EC] rounded-xl transition-all duration-200 group cursor-default hover:shadow-md"
-                    style={{}}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = C.navy; e.currentTarget.style.background = "#F5F6F8"; }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = "#E4E6EC"; e.currentTarget.style.background = "white"; }}
-                  >
-                    <div>
-                      <div className="font-bold text-sm transition-colors duration-200" style={{ color: C.navy }}
-                        onMouseEnter={e => e.currentTarget.style.color = C.amber}
-                        onMouseLeave={e => e.currentTarget.style.color = C.navy}
-                      >{p.name}</div>
-                      <div className="text-[11px] font-mono text-slate-400 mt-0.5">{p.brand} · {p.date}</div>
-                    </div>
-                    <div>
-                      {p.status === "COMPLIANT" && <span className="text-[10px] font-bold px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full tracking-widest">✓ Pass</span>}
-                      {p.status === "VIOLATION" && <span className="text-[10px] font-bold px-3 py-1 bg-red-50 text-red-700 border border-red-200 rounded-full tracking-widest">✗ Fail</span>}
-                      {p.status === "REVIEW" && <span className="text-[10px] font-bold px-3 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-full tracking-widest">⚠ Review</span>}
-                    </div>
-                  </div>
-                ))}
+            ))}
+            {/* Summary row */}
+            <div className="flex items-center justify-between px-5 py-4" style={{ background: T.sage }}>
+              <span style={{ ...styles.sans, fontSize: "13px", color: T.green, fontWeight: 600 }}>Inspection result</span>
+              <div className="flex items-center gap-6">
+                <span style={{ ...styles.mono, fontSize: "9px", color: T.slate }}>6 verified</span>
+                <span style={{ ...styles.mono, fontSize: "9px", color: "#92400E" }}>1 review</span>
+                <span style={{ ...styles.mono, fontSize: "9px", color: T.vermilion }}>1 fail</span>
+                <span style={{ ...styles.sans, fontSize: "12px", fontWeight: 700, color: T.vermilion, border: `1px solid ${T.vermilion}`, padding: "2px 10px", letterSpacing: "0.06em" }}>
+                  NON-COMPLIANT
+                </span>
               </div>
             </div>
           </div>
@@ -486,39 +524,180 @@ function DashboardPreview({ onLoginClick }) {
   );
 }
 
-// ─── Rules ────────────────────────────────────────────────────────────────────
-const RULES_DATA = [
-  { rule: "Rule 6(1)", title: "Mandatory Declarations", desc: "Every package must bear commodity name, net quantity, MRP, date of manufacture, and manufacturer address." },
-  { rule: "Rule 6(2)", title: "Minimum Font Height", desc: "Declarations must meet Schedule II font size thresholds based on net quantity of the package." },
-  { rule: "Rule 6(10)", title: "E-Commerce Compliance", desc: "Digital listings must display all mandatory declarations without requiring any scrolling by the buyer." },
-];
+// ─── Section 04: Rules ────────────────────────────────────────────────────────
+function RulesSection() {
+  const rules = [
+    { ref: "Rule 6(1)",  title: "Mandatory declarations", desc: "Every package must declare commodity name, net quantity, unit sale price, date of manufacture or packing, name and address of manufacturer, and country of origin." },
+    { ref: "Rule 6(2)",  title: "Minimum font size requirements", desc: "Declarations must be printed in font sizes not less than those specified in Schedule II, based on net quantity of the package. Violations are measured against stated minimum dimensions." },
+    { ref: "Rule 6(10)", title: "E-commerce display requirements", desc: "Where any packaged commodity is sold through electronic means, the mandatory declarations must be displayed to the buyer before they complete a purchase. No scrolling required." },
+  ];
 
-function RuleValidationSection() {
   return (
-    <section id="rules" className="py-24 px-4 sm:px-6 lg:px-10" style={{ background: C.sand }}>
-      <div className="max-w-7xl mx-auto flex flex-col items-center">
-        <div className="inline-block px-3 py-1 bg-white border border-[#E4E6EC] text-xs font-bold uppercase tracking-widest mb-6 rounded-full" style={{ color: C.navy }}>
-          Statutory Framework
-        </div>
-        <h2 className="text-4xl md:text-5xl font-serif font-black mb-5 text-center" style={{ color: C.navy }}>
-          Strict Adherence to <span style={{ color: C.amber }}>LMPC 2011</span>.
-        </h2>
-        <p className="text-center text-slate-500 max-w-2xl font-medium mb-16 text-sm leading-relaxed">
-          No vague estimations. We digitize the statutory rulebook and evaluate packaging solely on established legal metrics.
-        </p>
+    <section id="rules" className="py-20 px-6 lg:px-10" style={{ background: T.ivory, borderBottom: `1px solid ${T.border}` }}>
+      <div className="mx-auto" style={{ maxWidth: 1200 }}>
+        <SectionLabel number="04" text="Regulatory framework" />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
-          {RULES_DATA.map((r, i) => (
+        <div className="flex flex-col lg:flex-row gap-16 mb-14">
+          <h2 className="lg:w-1/3" style={{ ...styles.serif, fontSize: "clamp(1.65rem, 3vw, 2.4rem)", color: T.charcoal, lineHeight: 1.2, fontWeight: 400 }}>
+            Built around the rulebook.
+          </h2>
+          <p className="lg:w-1/2" style={{ ...styles.sans, fontSize: "14px", color: T.slate, lineHeight: 1.7 }}>
+            Every check performed by LabelLens is directly derived from the Legal Metrology (Packaged Commodities) Rules, 2011. Rules are translated into machine-checkable conditions — not approximations.
+          </p>
+        </div>
+
+        {/* Rule rows */}
+        <div style={{ border: `1px solid ${T.border}` }}>
+          {rules.map((r, i) => (
             <div
               key={i}
-              className="bg-white p-8 border-t-4 shadow-sm group cursor-default transition-all duration-300 hover:-translate-y-1 hover:shadow-xl rounded-b-2xl"
-              style={{ borderColor: C.navy }}
+              className="flex flex-col sm:flex-row gap-0 hover:bg-[#F0EEE9] transition-colors"
+              style={{ borderBottom: i < rules.length - 1 ? `1px solid ${T.border}` : "none" }}
             >
-              <div className="font-mono font-bold text-xs tracking-widest uppercase mb-4" style={{ color: C.amber }}>{r.rule}</div>
-              <h3 className="text-lg font-serif font-bold mb-3 group-hover:text-[#E05A00] transition-colors duration-300" style={{ color: C.navy }}>{r.title}</h3>
-              <p className="text-slate-500 text-sm leading-relaxed">{r.desc}</p>
+              <div className="sm:w-36 px-6 py-5 flex-shrink-0" style={{ borderRight: `1px solid ${T.border}`, background: "#F8F7F3" }}>
+                <span style={{ ...styles.mono, fontSize: "10px", color: T.green, letterSpacing: "0.1em", fontWeight: 600 }}>{r.ref}</span>
+              </div>
+              <div className="sm:w-60 px-6 py-5 flex-shrink-0" style={{ borderRight: `1px solid ${T.border}` }}>
+                <span style={{ ...styles.sans, fontSize: "13px", color: T.charcoal, fontWeight: 600 }}>{r.title}</span>
+              </div>
+              <div className="flex-1 px-6 py-5">
+                <p style={{ ...styles.sans, fontSize: "13px", color: T.slate, lineHeight: 1.65 }}>{r.desc}</p>
+              </div>
             </div>
           ))}
+        </div>
+
+        <p className="mt-5" style={{ ...styles.mono, fontSize: "10px", color: T.slate, letterSpacing: "0.06em" }}>
+          Source: Legal Metrology (Packaged Commodities) Rules, 2011 · Ministry of Consumer Affairs, India
+        </p>
+      </div>
+    </section>
+  );
+}
+
+// ─── Section 05: Data ─────────────────────────────────────────────────────────
+function DataSection() {
+  const feed = [
+    { name: "Maggi 2-Minute Noodles 70g",    date: "18 Sep 2026", result: "fail" },
+    { name: "Amul Butter 100g",              date: "18 Sep 2026", result: "pass" },
+    { name: "Haldiram's Aloo Bhujia 200g",  date: "18 Sep 2026", result: "review" },
+    { name: "Tropicana Orange Juice 1L",     date: "17 Sep 2026", result: "pass" },
+    { name: "Parle-G Biscuits 100g",         date: "17 Sep 2026", result: "pass" },
+  ];
+
+  return (
+    <section id="product" className="py-20 px-6 lg:px-10" style={{ background: T.green, borderBottom: `1px solid #0f2a23` }}>
+      <div className="mx-auto" style={{ maxWidth: 1200 }}>
+        <div className="flex items-center gap-3 mb-12">
+          <span style={{ ...styles.mono, color: T.sageDark, fontSize: "10px", letterSpacing: "0.15em" }}>05 /</span>
+          <span className="w-8 h-px" style={{ background: "#234F45" }} />
+          <span style={{ ...styles.mono, color: T.sageDark, fontSize: "10px", letterSpacing: "0.15em", textTransform: "uppercase" }}>Inspection data</span>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-16 mb-14">
+          <h2 style={{ ...styles.serif, fontSize: "clamp(1.65rem, 3.2vw, 2.5rem)", color: T.ivory, lineHeight: 1.15, fontWeight: 400 }}>
+            Every scan leaves an auditable trail.
+          </h2>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-0" style={{ border: `1px solid #234F45` }}>
+          {/* Stats */}
+          <div className="flex flex-row lg:flex-col lg:w-64" style={{ borderRight: `1px solid #234F45` }}>
+            {[
+              { v: "1,247", l: "Total scans", c: T.ivory },
+              { v: "183",   l: "Issues flagged", c: T.vermilion },
+              { v: "92%",   l: "Declarations verified", c: T.sage },
+            ].map(({ v, l, c }, i) => (
+              <div key={l} className="flex-1 p-6" style={{ borderBottom: i < 2 ? `1px solid #234F45` : "none" }}>
+                <div style={{ ...styles.serif, fontSize: "2.2rem", color: c, lineHeight: 1, fontWeight: 400 }}>{v}</div>
+                <div style={{ ...styles.mono, fontSize: "9px", color: T.sageDark, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: "6px" }}>{l}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Activity feed */}
+          <div className="flex-1">
+            <div className="flex px-5 py-3" style={{ borderBottom: `1px solid #234F45`, background: "#0f2a23" }}>
+              <span className="flex-1" style={{ ...styles.mono, fontSize: "9px", color: T.sageDark, letterSpacing: "0.1em", textTransform: "uppercase" }}>Product</span>
+              <span className="w-28" style={{ ...styles.mono, fontSize: "9px", color: T.sageDark, letterSpacing: "0.1em", textTransform: "uppercase" }}>Date</span>
+              <span className="w-20 text-right" style={{ ...styles.mono, fontSize: "9px", color: T.sageDark, letterSpacing: "0.1em", textTransform: "uppercase" }}>Result</span>
+            </div>
+            {feed.map((f, i) => (
+              <div key={i} className="flex items-center px-5 py-3.5 hover:bg-[#0f2a23] transition-colors" style={{ borderBottom: `1px solid #234F45` }}>
+                <span className="flex-1" style={{ ...styles.sans, fontSize: "13px", color: T.ivory }}>{f.name}</span>
+                <span className="w-28" style={{ ...styles.mono, fontSize: "10px", color: T.sageDark }}>{f.date}</span>
+                <span className="w-20 text-right">
+                  {f.result === "pass"   && <span style={{ ...styles.mono, fontSize: "9px", color: "#4CAF50", letterSpacing: "0.08em" }}>PASS</span>}
+                  {f.result === "fail"   && <span style={{ ...styles.mono, fontSize: "9px", color: T.vermilion, letterSpacing: "0.08em" }}>FAIL</span>}
+                  {f.result === "review" && <span style={{ ...styles.mono, fontSize: "9px", color: "#F59E0B", letterSpacing: "0.08em" }}>REVIEW</span>}
+                </span>
+              </div>
+            ))}
+            <div className="px-5 py-3 flex items-center justify-between" style={{ background: "#0f2a23" }}>
+              <span style={{ ...styles.mono, fontSize: "9px", color: T.sageDark }}>Showing 5 of 1,247 entries</span>
+              <span style={{ ...styles.mono, fontSize: "9px", color: T.sageDark }}>Updated continuously</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Section 06: Evidence ─────────────────────────────────────────────────────
+function EvidenceSection() {
+  const chain = [
+    { label: "Source image",  desc: "Original label photograph", icon: Camera },
+    { label: "OCR output",    desc: "Raw machine-read text",    icon: Eye },
+    { label: "Rule check",    desc: "Against LMPC 2011 clause", icon: Scale },
+    { label: "Finding",       desc: "Pass / Review / Fail",     icon: FileBadge2 },
+    { label: "Report",        desc: "SHA-256 sealed document",  icon: FileText },
+  ];
+
+  return (
+    <section id="product" className="py-20 px-6 lg:px-10" style={{ background: T.ivory, borderBottom: `1px solid ${T.border}` }}>
+      <div className="mx-auto" style={{ maxWidth: 1200 }}>
+        <SectionLabel number="06" text="Evidence chain" />
+
+        <div className="flex flex-col lg:flex-row gap-16">
+          <div className="lg:w-1/3">
+            <h2 style={{ ...styles.serif, fontSize: "clamp(1.65rem, 3vw, 2.4rem)", color: T.charcoal, lineHeight: 1.2, fontWeight: 400, marginBottom: "16px" }}>
+              Every finding should be explainable.
+            </h2>
+            <p style={{ ...styles.sans, fontSize: "14px", color: T.slate, lineHeight: 1.65 }}>
+              Compliance determinations must be traceable back to a source. LabelLens preserves the full chain from image to report — explainable to inspectors, defensible in review.
+            </p>
+          </div>
+
+          <div className="lg:w-2/3">
+            <div className="flex flex-col sm:flex-row gap-0">
+              {chain.map((c, i) => {
+                const Icon = c.icon;
+                return (
+                  <div key={i} className="flex-1 flex flex-col" style={{ borderRight: i < chain.length - 1 ? `1px solid ${T.border}` : "none" }}>
+                    <div className="p-5" style={{ borderBottom: `1px solid ${T.border}`, background: "#F8F7F3" }}>
+                      <Icon size={14} color={T.slate} />
+                    </div>
+                    <div className="p-5 flex-1">
+                      <div style={{ ...styles.sans, fontSize: "12px", fontWeight: 600, color: T.charcoal, marginBottom: "4px" }}>{c.label}</div>
+                      <div style={{ ...styles.sans, fontSize: "11px", color: T.slate, lineHeight: 1.5 }}>{c.desc}</div>
+                    </div>
+                    {i < chain.length - 1 && (
+                      <div className="sm:hidden px-5 py-2 flex items-center" style={{ borderTop: `1px solid ${T.border}` }}>
+                        <div className="w-4 h-px mr-2" style={{ background: T.border }} />
+                        <span style={{ ...styles.mono, fontSize: "9px", color: T.border }}>→</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-1 p-5" style={{ background: T.sage, border: `1px solid ${T.sageDark}` }}>
+              <p style={{ ...styles.mono, fontSize: "10px", color: T.green, letterSpacing: "0.06em" }}>
+                All evidence is preserved in the inspection record. Reports are cryptographically sealed (SHA-256) and timestamped.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -528,38 +707,75 @@ function RuleValidationSection() {
 // ─── Final CTA ────────────────────────────────────────────────────────────────
 function FinalCTA({ onLoginClick }) {
   return (
-    <section className="py-24 px-4 sm:px-6 lg:px-10 relative overflow-hidden" style={{ background: C.navy }}>
-      <div className="absolute inset-0 opacity-[0.04]" style={{
-        backgroundImage: `repeating-linear-gradient(45deg, ${C.textLight} 0, ${C.textLight} 1px, transparent 0, transparent 50%)`,
-        backgroundSize: "20px 20px",
-      }} />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-48 rounded-full blur-[80px] opacity-20 pointer-events-none" style={{ background: C.amber }} />
+    <section className="py-24 px-6 lg:px-10" style={{ background: "#F0EEE9", borderBottom: `1px solid ${T.border}` }}>
+      <div className="mx-auto" style={{ maxWidth: 1200 }}>
+        <div className="flex flex-col lg:flex-row gap-16 items-start">
+          <div className="lg:w-1/2">
+            <Rule className="mb-8 w-16" />
+            <h2 style={{ ...styles.serif, fontSize: "clamp(2rem, 4vw, 3rem)", color: T.charcoal, lineHeight: 1.1, fontWeight: 400, marginBottom: "20px" }}>
+              Make every label checkable.
+            </h2>
+            <p style={{ ...styles.sans, fontSize: "15px", color: T.slate, lineHeight: 1.65, marginBottom: "36px", maxWidth: 420 }}>
+              Scan a packaged commodity and turn its printed declarations into a structured compliance record — verified against legal requirements.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={onLoginClick}
+                className="transition-all duration-200 hover:bg-[#0f2a23]"
+                style={{
+                  ...styles.sans,
+                  background: T.green,
+                  color: "#fff",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  padding: "12px 26px",
+                  border: "none",
+                  cursor: "pointer",
+                  letterSpacing: "0.01em",
+                }}
+              >
+                Run a scan
+              </button>
+              <a
+                href="#how-it-works"
+                className="transition-all duration-200 hover:bg-white"
+                style={{
+                  ...styles.sans,
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  color: T.charcoal,
+                  border: `1px solid ${T.border}`,
+                  padding: "12px 26px",
+                  textDecoration: "none",
+                  display: "inline-block",
+                }}
+              >
+                View methodology
+              </a>
+            </div>
+          </div>
 
-      <div className="max-w-4xl mx-auto text-center relative z-10">
-        <Scale size={44} className="mx-auto mb-8" style={{ color: C.amber }} />
-        <h2 className="text-4xl sm:text-5xl font-serif font-black text-white tracking-tight mb-5">
-          The New Standard in <br /> Legal Metrology.
-        </h2>
-        <p className="text-sm max-w-xl mx-auto font-medium mb-12" style={{ color: C.textLight }}>
-          Purpose-built for DoCA officials and citizen reporters. Start your first scan in under 60 seconds.
-        </p>
-        <div className="flex flex-col sm:flex-row justify-center gap-5">
-          <button
-            onClick={onLoginClick}
-            className="px-10 py-4 rounded-full text-white font-bold text-sm uppercase tracking-widest transition-all duration-300 hover:scale-105 hover:shadow-2xl"
-            style={{ background: C.amber }}
-          >
-            Authenticate Portal
-          </button>
-          <a
-            href="#how-it-works"
-            className="px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest border transition-all duration-300 hover:scale-105"
-            style={{ borderColor: `${C.textLight}55`, color: C.textLight }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = "white"; e.currentTarget.style.color = "white"; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = `${C.textLight}55`; e.currentTarget.style.color = C.textLight; }}
-          >
-            View Workflow
-          </a>
+          {/* Right: metadata block */}
+          <div className="lg:w-1/2 w-full" style={{ border: `1px solid ${T.border}`, background: "#fff" }}>
+            <div className="px-6 py-4" style={{ borderBottom: `1px solid ${T.border}`, background: T.ivory }}>
+              <span style={{ ...styles.mono, fontSize: "9px", color: T.slate, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+                Platform specifications
+              </span>
+            </div>
+            {[
+              ["Regulatory framework",    "Legal Metrology (PC) Rules, 2011"],
+              ["Governing authority",     "Min. of Consumer Affairs, DoCA"],
+              ["Mandatory fields checked","8 / 8"],
+              ["Inspection method",       "Computer vision + OCR"],
+              ["Report format",           "Structured record, SHA-256 sealed"],
+              ["Platform type",           "Web-based · No app required"],
+            ].map(([k, v], i, arr) => (
+              <div key={k} className="flex items-center px-6 py-3.5" style={{ borderBottom: i < arr.length - 1 ? `1px solid ${T.border}` : "none" }}>
+                <span className="flex-1" style={{ ...styles.sans, fontSize: "12px", color: T.slate }}>{k}</span>
+                <span style={{ ...styles.mono, fontSize: "11px", color: T.charcoal }}>{v}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -567,20 +783,55 @@ function FinalCTA({ onLoginClick }) {
 }
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
-function LandingFooter() {
+function Footer() {
   return (
-    <footer className="py-10 px-4 sm:px-6 lg:px-10" style={{ background: C.navyDark, color: C.textLight }}>
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
-        <div className="flex items-center gap-3">
-          <LogoMark size={30} color={C.amber} />
-          <span className="text-lg font-serif font-bold text-white tracking-wide">LabelLens</span>
+    <footer className="px-6 lg:px-10" style={{ background: T.charcoal, borderTop: `1px solid #2E3540` }}>
+      <div className="mx-auto py-12" style={{ maxWidth: 1200 }}>
+        <div className="flex flex-col lg:flex-row gap-10 justify-between">
+          <div>
+            <div style={{ ...styles.mono, fontSize: "14px", fontWeight: 700, color: "#F7F5F0", letterSpacing: "0.08em", marginBottom: "4px" }}>
+              LABEL<span style={{ color: T.sage }}>LENS</span>
+            </div>
+            <div style={{ ...styles.sans, fontSize: "12px", color: "#59636E", marginBottom: "16px" }}>
+              Legal Metrology Compliance Platform
+            </div>
+            <p style={{ ...styles.mono, fontSize: "9px", color: "#3A4550", letterSpacing: "0.06em", maxWidth: 260, lineHeight: 1.6 }}>
+              Built for transparent, evidence-based inspection.
+            </p>
+          </div>
+
+          <div className="flex gap-16">
+            <div>
+              <div style={{ ...styles.mono, fontSize: "9px", color: "#59636E", letterSpacing: "0.12em", marginBottom: "12px", textTransform: "uppercase" }}>Platform</div>
+              {["Product", "Methodology", "Rules", "Reports"].map((l) => (
+                <a key={l} href="#" className="block mb-2" style={{ ...styles.sans, fontSize: "13px", color: "#59636E" }}
+                  onMouseEnter={e => e.target.style.color = "#F7F5F0"}
+                  onMouseLeave={e => e.target.style.color = "#59636E"}>
+                  {l}
+                </a>
+              ))}
+            </div>
+            <div>
+              <div style={{ ...styles.mono, fontSize: "9px", color: "#59636E", letterSpacing: "0.12em", marginBottom: "12px", textTransform: "uppercase" }}>Info</div>
+              {["SIH 2026", "DoCA", "LMPC 2011"].map((l) => (
+                <a key={l} href="#" className="block mb-2" style={{ ...styles.sans, fontSize: "13px", color: "#59636E" }}
+                  onMouseEnter={e => e.target.style.color = "#F7F5F0"}
+                  onMouseLeave={e => e.target.style.color = "#59636E"}>
+                  {l}
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
-        <div className="text-[10px] font-mono tracking-widest uppercase text-center leading-relaxed">
-          SIH 2026 Initiative <span style={{ color: C.amber }}>|</span> Ministry of Consumer Affairs <span style={{ color: C.amber }}>|</span> DoCA
-        </div>
-        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
-          <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: C.amber }} />
-          Systems Online
+
+        <div className="mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4" style={{ borderTop: `1px solid #2E3540` }}>
+          <span style={{ ...styles.mono, fontSize: "9px", color: "#3A4550", letterSpacing: "0.08em" }}>
+            SIH 2026 · Ministry of Consumer Affairs · DoCA · India
+          </span>
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#4CAF50" }} />
+            <span style={{ ...styles.mono, fontSize: "9px", color: "#3A4550", letterSpacing: "0.08em" }}>Systems operational</span>
+          </div>
         </div>
       </div>
     </footer>
@@ -593,15 +844,15 @@ export default function LandingPage({ onLoginSuccess }) {
 
   if (showLogin) {
     return (
-      <div className="relative font-sans h-screen w-full" style={{ background: C.navy }}>
+      <div className="relative font-sans h-screen w-full" style={{ background: T.charcoal }}>
         <button
           onClick={() => setShowLogin(false)}
-          className="absolute top-6 left-6 z-50 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-transparent border text-xs font-bold uppercase tracking-widest transition-all"
-          style={{ color: C.textLight, borderColor: C.textLight }}
-          onMouseEnter={e => { e.currentTarget.style.color = "white"; e.currentTarget.style.borderColor = "white"; }}
-          onMouseLeave={e => { e.currentTarget.style.color = C.textLight; e.currentTarget.style.borderColor = C.textLight; }}
+          className="absolute top-5 left-5 z-50 flex items-center gap-2 transition-all"
+          style={{ ...styles.mono, fontSize: "10px", color: T.sageDark, letterSpacing: "0.1em", border: `1px solid #2E3540`, padding: "6px 14px", background: "none", cursor: "pointer" }}
+          onMouseEnter={e => e.currentTarget.style.borderColor = "#59636E"}
+          onMouseLeave={e => e.currentTarget.style.borderColor = "#2E3540"}
         >
-          ← Return to Portal
+          ← Return to portal
         </button>
         <Login
           onLogin={(credentials) =>
@@ -617,16 +868,19 @@ export default function LandingPage({ onLoginSuccess }) {
   }
 
   return (
-    <div className="w-full font-sans overflow-x-hidden" style={{ background: C.sand, selectionBackground: C.amber }}>
-      <LandingNav onLoginClick={() => setShowLogin(true)} />
-      <HeroSection onLoginClick={() => setShowLogin(true)} />
-      <PartnerStrip />
-      <FeaturesSection />
-      <WorkflowSection />
-      <DashboardPreview onLoginClick={() => setShowLogin(true)} />
-      <RuleValidationSection />
-      <FinalCTA onLoginClick={() => setShowLogin(true)} />
-      <LandingFooter />
+    <div className="w-full overflow-x-hidden" style={{ background: T.ivory, ...styles.sans }}>
+      <Nav        onLoginClick={() => setShowLogin(true)} />
+      <div style={{ paddingTop: "64px" }}>
+        <Hero       onLoginClick={() => setShowLogin(true)} />
+        <ProblemSection />
+        <WorkflowSection />
+        <InspectionResultSection />
+        <RulesSection />
+        <DataSection />
+        <EvidenceSection />
+        <FinalCTA   onLoginClick={() => setShowLogin(true)} />
+        <Footer />
+      </div>
     </div>
   );
 }

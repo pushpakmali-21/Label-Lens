@@ -61,6 +61,7 @@ class ScanResponse(BaseModel):
     evidence_seal: EvidenceSeal
     # Top-level convenience field so clients don't have to dig into the seal.
     rule_version: str
+    gemini_observations: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
