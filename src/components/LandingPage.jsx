@@ -60,7 +60,7 @@ function LandingNav({ onLoginClick }) {
           </button>
           <button
             onClick={onLoginClick}
-            className={`inline-flex items-center gap-2 px-6 py-3 ${THEME.accent} ${THEME.accentHover} text-white text-sm font-bold tracking-wide uppercase shadow-lg shadow-[#C44900]/30 transition-all`}
+            className={`inline-flex items-center gap-2 px-6 py-3 rounded-full ${THEME.accent} ${THEME.accentHover} text-white text-sm font-bold tracking-wide uppercase shadow-lg shadow-[#C44900]/30 transition-transform duration-300 hover:scale-105 hover:shadow-[#C44900]/50`}
           >
             <Scan size={16} />
             <span>Initiate Scan</span>
@@ -98,7 +98,8 @@ function HeroSection({ onLoginClick }) {
 
         {/* Left Content */}
         <div className="flex-1 text-left">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-[#E8E6DF] text-[#112F25] text-xs font-bold uppercase tracking-widest shadow-sm mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-[#E8E6DF] text-[#112F25] text-xs font-bold uppercase tracking-widest shadow-sm mb-6 rounded-full">
+            <span className="w-2 h-2 bg-[#C44900] rounded-full animate-pulse" />
             <Shield size={14} className="text-[#C44900]" />
             Official LMPC Rules 2011 Standard
           </div>
@@ -116,11 +117,11 @@ function HeroSection({ onLoginClick }) {
           <div className="flex flex-col sm:flex-row items-center gap-5">
             <button
               onClick={onLoginClick}
-              className={`inline-flex items-center justify-center gap-3 px-8 py-4 ${THEME.accent} ${THEME.accentHover} text-white font-bold text-sm uppercase tracking-wider rounded-none shadow-xl transition-all w-full sm:w-auto`}
+              className={`inline-flex items-center justify-center gap-3 px-8 py-4 ${THEME.accent} ${THEME.accentHover} text-white font-bold text-sm uppercase tracking-wider rounded-full shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl w-full sm:w-auto`}
             >
               <Scan size={18} /> Ensure Compliance Now
             </button>
-            <a href="#how-it-works" className="inline-flex items-center gap-2 px-8 py-4 bg-transparent border-2 border-[#112F25] text-[#112F25] hover:bg-[#112F25] hover:text-white font-bold text-sm uppercase tracking-wider transition-all w-full sm:w-auto justify-center">
+            <a href="#how-it-works" className="inline-flex items-center gap-2 px-8 py-4 bg-transparent border-2 border-[#112F25] text-[#112F25] hover:bg-[#112F25] hover:text-white font-bold text-sm uppercase tracking-wider rounded-full transition-transform duration-300 hover:scale-105 hover:shadow-2xl w-full sm:w-auto justify-center">
               Watch Demo
             </a>
           </div>
@@ -168,20 +169,29 @@ function HeroSection({ onLoginClick }) {
 // ─── Partner Logos / Authorities ────────────────────────────────────────────
 function PartnerStrip() {
   return (
-    <div className="bg-[#112F25] py-8 border-y border-[#184234]">
+    <div className="bg-gradient-to-r from-[#0A1E14] via-[#112F25] to-[#0A1E14] py-10 border-y border-[#184234] relative overflow-hidden">
+      {/* Subtle animated shimmer line */}
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#C44900]/60 to-transparent" />
+      <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#C44900]/30 to-transparent" />
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
-        <p className="text-center text-[#7DA192] text-xs font-bold uppercase tracking-[0.2em] mb-6">Recognized by Leading Consumer Authorities</p>
-        <div className="flex flex-wrap justify-center gap-12 lg:gap-24 items-center opacity-80">
-          <div className="flex items-center gap-3 text-white">
-            <Globe size={28} className="text-[#C44900]" />
+        <p className="text-center text-[#7DA192] text-xs font-bold uppercase tracking-[0.25em] mb-8">Recognized by Leading Consumer Authorities</p>
+        <div className="flex flex-wrap justify-center gap-12 lg:gap-24 items-center">
+          <div className="group flex items-center gap-3 text-white opacity-70 hover:opacity-100 transition-all duration-300 hover:-translate-y-0.5">
+            <div className="w-10 h-10 flex items-center justify-center rounded-full border border-[#C44900]/40 group-hover:border-[#C44900] group-hover:bg-[#C44900]/10 transition-all duration-300">
+              <Globe size={22} className="text-[#C44900]" />
+            </div>
             <span className="font-serif font-bold text-lg tracking-wide leading-none">DoCA<br /><span className="text-[10px] font-sans uppercase tracking-widest text-[#7DA192]">Consumer Affairs</span></span>
           </div>
-          <div className="flex items-center gap-3 text-white">
-            <Scale size={28} className="text-[#C44900]" />
+          <div className="group flex items-center gap-3 text-white opacity-70 hover:opacity-100 transition-all duration-300 hover:-translate-y-0.5">
+            <div className="w-10 h-10 flex items-center justify-center rounded-full border border-[#C44900]/40 group-hover:border-[#C44900] group-hover:bg-[#C44900]/10 transition-all duration-300">
+              <Scale size={22} className="text-[#C44900]" />
+            </div>
             <span className="font-serif font-bold text-lg tracking-wide leading-none">LMPC<br /><span className="text-[10px] font-sans uppercase tracking-widest text-[#7DA192]">Legal Metrology</span></span>
           </div>
-          <div className="flex items-center gap-3 text-white">
-            <Building2 size={28} className="text-[#C44900]" />
+          <div className="group flex items-center gap-3 text-white opacity-70 hover:opacity-100 transition-all duration-300 hover:-translate-y-0.5">
+            <div className="w-10 h-10 flex items-center justify-center rounded-full border border-[#C44900]/40 group-hover:border-[#C44900] group-hover:bg-[#C44900]/10 transition-all duration-300">
+              <Building2 size={22} className="text-[#C44900]" />
+            </div>
             <span className="font-serif font-bold text-lg tracking-wide leading-none">SIH 2026<br /><span className="text-[10px] font-sans uppercase tracking-widest text-[#7DA192]">Innovator</span></span>
           </div>
         </div>
@@ -232,11 +242,11 @@ function FeaturesSection() {
 
         <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-8">
           {FEATURES.map((f, i) => (
-            <div key={i} className="p-8 border border-[#E8E6DF] bg-[#F7F6F2] hover:bg-white transition-colors group">
-              <div className="w-12 h-12 flex items-center justify-center bg-[#112F25] text-white mb-6 group-hover:bg-[#C44900] transition-colors">
+            <div key={i} className="p-8 border border-[#E8E6DF] bg-[#F7F6F2] hover:bg-white hover:shadow-2xl transition-all duration-300 transform group hover:-translate-y-1 rounded-2xl">
+              <div className="w-12 h-12 flex items-center justify-center bg-[#112F25] text-white mb-6 group-hover:bg-[#C44900] transition-all duration-500 transform group-hover:rotate-12 group-hover:scale-110 group-hover:rounded-2xl rounded-sm">
                 <f.icon size={24} />
               </div>
-              <h3 className="text-xl font-serif font-bold text-[#112F25] mb-3">{f.title}</h3>
+              <h3 className="text-xl font-serif font-bold text-[#112F25] mb-3 group-hover:text-[#C44900] transition-colors duration-300">{f.title}</h3>
               <p className="text-sm text-slate-600 leading-relaxed font-medium">{f.desc}</p>
             </div>
           ))}
@@ -294,12 +304,12 @@ function DashboardPreview({ onLoginClick }) {
               Gain unparalleled oversight over systemic compliance metrics. Track violations, review pending audits, and dissect regional compliance trends in real-time.
             </p>
             <div className="grid grid-cols-2 gap-4 mb-8">
-              <div className="p-4 bg-[#F7F6F2] border-l-4 border-[#112F25]">
-                <div className="text-3xl font-black text-[#112F25] font-serif">1,247</div>
+              <div className="p-4 bg-[#F7F6F2] border-l-4 border-[#112F25] hover:bg-white hover:shadow-lg transition-all duration-300 group rounded-r-lg cursor-default">
+                <div className="text-3xl font-black text-[#112F25] font-serif group-hover:scale-105 transition-transform duration-300 inline-block">1,247</div>
                 <div className="text-xs font-bold uppercase tracking-widest text-slate-500 mt-1">Total Scans</div>
               </div>
-              <div className="p-4 bg-[#F7F6F2] border-l-4 border-[#C44900]">
-                <div className="text-3xl font-black text-[#C44900] font-serif">183</div>
+              <div className="p-4 bg-[#FFF5F0] border-l-4 border-[#C44900] hover:bg-white hover:shadow-lg transition-all duration-300 group rounded-r-lg cursor-default">
+                <div className="text-3xl font-black text-[#C44900] font-serif group-hover:scale-105 transition-transform duration-300 inline-block">183</div>
                 <div className="text-xs font-bold uppercase tracking-widest text-[#C44900] mt-1">Violations</div>
               </div>
             </div>
@@ -323,15 +333,15 @@ function DashboardPreview({ onLoginClick }) {
 
               <div className="space-y-3">
                 {SCANNED_PRODUCTS.map((p, idx) => (
-                  <div key={idx} className="flex justify-between items-center p-4 bg-white border border-[#E8E6DF] hover:border-[#112F25] transition-colors">
+                  <div key={idx} className="flex justify-between items-center p-4 bg-white border border-[#E8E6DF] hover:border-[#112F25] hover:bg-[#F7F6F2] hover:shadow-md transition-all duration-200 group cursor-default">
                     <div>
-                      <div className="font-bold text-[#112F25] text-sm">{p.name}</div>
+                      <div className="font-bold text-[#112F25] text-sm group-hover:text-[#C44900] transition-colors duration-200">{p.name}</div>
                       <div className="text-xs font-mono text-slate-500 mt-1">{p.brand} · {p.date}</div>
                     </div>
                     <div>
-                      {p.status === "COMPLIANT" && <span className="text-[10px] font-bold px-2 py-1 bg-green-100 text-green-800 uppercase tracking-widest border border-green-200">Pass</span>}
-                      {p.status === "VIOLATION" && <span className="text-[10px] font-bold px-2 py-1 bg-red-100 text-red-800 uppercase tracking-widest border border-red-200">Fail</span>}
-                      {p.status === "REVIEW" && <span className="text-[10px] font-bold px-2 py-1 bg-amber-100 text-amber-800 uppercase tracking-widest border border-amber-200">Review</span>}
+                      {p.status === "COMPLIANT" && <span className="text-[10px] font-bold px-3 py-1 bg-green-100 text-green-800 uppercase tracking-widest border border-green-200 rounded-full">✓ Pass</span>}
+                      {p.status === "VIOLATION" && <span className="text-[10px] font-bold px-3 py-1 bg-red-100 text-red-800 uppercase tracking-widest border border-red-200 rounded-full">✗ Fail</span>}
+                      {p.status === "REVIEW" && <span className="text-[10px] font-bold px-3 py-1 bg-amber-100 text-amber-800 uppercase tracking-widest border border-amber-200 rounded-full">⚠ Review</span>}
                     </div>
                   </div>
                 ))}
@@ -392,7 +402,7 @@ function FinalCTA({ onLoginClick }) {
         <div className="flex flex-col sm:flex-row justify-center gap-6 mt-12">
           <button
             onClick={onLoginClick}
-            className={`px-10 py-5 ${THEME.accent} ${THEME.accentHover} text-white font-bold text-sm uppercase tracking-widest transition-all`}
+            className={`px-10 py-5 rounded-full ${THEME.accent} ${THEME.accentHover} text-white font-bold text-sm uppercase tracking-widest transition-transform duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#C44900]/40`}
           >
             Authenticate Portal
           </button>
