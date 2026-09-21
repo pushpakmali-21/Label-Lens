@@ -63,9 +63,9 @@ const FIELD_LABELS = {
   batch_lot_number:          "Batch / Lot Number",
 };
 
-// ─── GeminiScanPanel ────────────────────────────────────────────────────────
+// ─── ComplianceScanPanel ────────────────────────────────────────────────────
 
-function GeminiScanPanel() {
+function ComplianceScanPanel() {
   const [phase, setPhase] = useState("idle"); // idle | loading | done | error
   const [preview, setPreview] = useState(null);
   const [result, setResult] = useState(null);
@@ -114,7 +114,7 @@ function GeminiScanPanel() {
       setResult(data);
       setPhase("done");
     } catch (err) {
-      console.error("Gemini scan failed:", err);
+      console.error("Compliance scan failed:", err);
       setErrorMsg(err.message || "Scan failed. Make sure the backend is running.");
       setPhase("error");
     }
@@ -156,8 +156,8 @@ function GeminiScanPanel() {
           <Zap size={16} className="text-brass" />
         </div>
         <div>
-          <div className="text-sm font-semibold text-text-1">Live Gemini Compliance Scanner</div>
-          <div className="text-xs text-text-3 font-mono">LMPC Rule 6 · Powered by Gemini 2.0 Flash Vision</div>
+          <div className="text-sm font-semibold text-text-1">Live AI Compliance Scanner</div>
+          <div className="text-xs text-text-3 font-mono">LMPC 2011 · Full rule-set inspection</div>
         </div>
         {phase !== "idle" && (
           <button
@@ -189,8 +189,8 @@ function GeminiScanPanel() {
                 {phase === "loading" && (
                   <div className="absolute inset-0 bg-ink/70 backdrop-blur-sm flex flex-col items-center justify-center gap-3">
                     <Loader2 size={32} className="text-brass animate-spin" />
-                    <div className="text-sm text-brass font-mono animate-pulse">Gemini is reading the label…</div>
-                    <div className="text-xs text-text-3 font-mono">Checking 14 LMPC Rule 6 fields</div>
+                    <div className="text-sm text-brass font-mono animate-pulse">Reading the label…</div>
+                    <div className="text-xs text-text-3 font-mono">Checking the applicable LMPC rules</div>
                   </div>
                 )}
               </>
@@ -213,9 +213,9 @@ function GeminiScanPanel() {
 
           <input ref={fileRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
 
-          {/* Gemini fields legend */}
+          {/* Inspection fields legend */}
           <div className="text-[11px] font-mono text-text-3 bg-panel border border-panel-line rounded-lg p-3 space-y-1 leading-relaxed">
-            <div className="text-text-2 font-semibold mb-1.5">Fields Gemini checks:</div>
+            <div className="text-text-2 font-semibold mb-1.5">Fields checked:</div>
             {["Product name · Net quantity · MRP", "Mfg. name & address · Country of origin", "Mfg. date · Best before · Batch no.", "Consumer care · FSSAI license", "Ingredients · Nutritional info"].map(t => (
               <div key={t} className="flex items-center gap-1.5"><span className="text-brass">›</span> {t}</div>
             ))}
@@ -227,7 +227,7 @@ function GeminiScanPanel() {
           {phase === "idle" && (
             <div className="m-auto text-center text-text-3 max-w-xs py-8">
               <Upload size={36} className="mx-auto mb-3 opacity-40 text-brass" />
-              <p className="text-sm text-text-2">Upload a product label to run a live LMPC compliance check with Gemini Vision.</p>
+              <p className="text-sm text-text-2">Upload a product label to run a live LMPC compliance check.</p>
               <p className="text-xs text-text-3 mt-2 font-mono">No mock data — real AI extraction.</p>
             </div>
           )}
@@ -235,9 +235,9 @@ function GeminiScanPanel() {
           {phase === "loading" && (
             <div className="m-auto text-center py-8 space-y-3">
               <Loader2 size={36} className="text-brass animate-spin mx-auto" />
-              <div className="text-sm font-mono text-brass animate-pulse">Gemini Vision is reading the label…</div>
+              <div className="text-sm font-mono text-brass animate-pulse">The inspection service is reading the label…</div>
               <div className="space-y-1 text-xs font-mono text-text-3">
-                {["Sending image to Gemini 2.0 Flash…", "Extracting 14 mandatory LMPC fields…", "Running LMPC Rule 6 validator…", "Generating evidence seal (SHA-256)…"].map((l, i) => (
+                {["Reading the label image…", "Extracting mandatory LMPC declarations…", "Running the full LMPC rule set…", "Generating evidence seal (SHA-256)…"].map((l, i) => (
                   <div key={i} className="flex items-center justify-center gap-2 animate-fadeIn" style={{ animationDelay: `${i * 400}ms` }}>
                     <span className="text-brass">›</span> {l}
                   </div>
@@ -330,14 +330,14 @@ function GeminiScanPanel() {
                 </div>
               </div>
 
-              {/* Gemini Observations + OCR toggle */}
+              {/* Inspector observations */}
               {result.fields && (() => {
                 // Try to find gemini_observations from backend (may not be in fields array)
                 const obs = result?.gemini_observations;
                 return obs ? (
                   <div className="p-3 bg-brass/10 border border-brass/30 rounded-lg text-xs leading-relaxed">
                     <div className="font-semibold text-brass mb-1 flex items-center gap-1.5">
-                      <Info size={12} /> Gemini Observations
+                      <Info size={12} /> Inspector Observations
                     </div>
                     <p className="text-text-2">{obs}</p>
                   </div>
@@ -394,23 +394,23 @@ export default function VisionInspector() {
 
   return (
     <div className="space-y-8">
-      {/* ── Section 1: Live Gemini Scanner ── */}
+      {/* ── Section 1: Live compliance scanner ── */}
       <section>
         <div className="border-b border-panel-line pb-4 mb-5">
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-brass/10 border border-brass/30 text-brass text-xs font-mono mb-2">
             <Zap size={14} />
-            <span>Live AI Compliance Check · Gemini 2.0 Flash Vision</span>
+            <span>Live AI Compliance Check · Full LMPC Rule Set</span>
           </div>
           <h1 className="font-serif text-2xl sm:text-3xl font-normal text-text-1">
             LMPC Rule 6 Compliance Scanner
           </h1>
           <p className="text-xs sm:text-sm text-text-2 mt-1 max-w-3xl leading-relaxed">
-            Upload any product label photo. Gemini Vision will extract all 14 mandatory fields
+            Upload any product label photo. The inspection service will extract the mandatory fields
             under the <strong>Legal Metrology (Packaged Commodities) Rules, 2011</strong> and
             instantly generate a structured compliance report.
           </p>
         </div>
-        <GeminiScanPanel />
+        <ComplianceScanPanel />
       </section>
 
       {/* ── Section 2: Coin Calibration Demo ── */}

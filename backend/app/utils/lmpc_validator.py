@@ -262,6 +262,29 @@ def validate_package_data(
     if effective_ocr_text:
         violations.extend(detect_prohibited_expressions(effective_ocr_text))
 
+    # Gemini (or another vision extractor) may provide a rule-by-rule review.
+    # Treat it as evidence for the same verdict, while keeping the statutory
+    # validator as the owner of severity and response formatting.
+    for check in extracted_data.get("gemini_rule_checks", []) or []:
+        if not isinstance(check, dict):
+            continue
+        status = str(check.get("status", "")).lower()
+        if status not in {"fail", "review"}:
+            continue
+        rule = str(check.get("rule") or "LMPC rule review")
+        finding = str(check.get("finding") or "The declaration could not be verified from the image.").strip()
+        evidence = str(check.get("evidence") or "").strip()
+        if evidence:
+            finding = f"{finding} Evidence: {evidence}"
+        severity = "critical" if status == "fail" else "medium"
+        if not any(v.get("rule") == rule and v.get("plain") == finding for v in violations):
+            violations.append({
+                "field": "rule_assessment",
+                "plain": finding,
+                "rule": rule,
+                "severity": severity,
+            })
+
     # ── 2. Manufacturer name & address — Rule 6(1)(a) ─────────────────────────
     mfg_val = data.manufacturer
     # Fall back to 0.0 if confidence coercion failed (unparseable string → None)

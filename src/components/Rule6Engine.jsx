@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { SCENARIOS, MODE_ORDER, VERDICT_META } from "../data/scenarios";
 import ConfidenceBar from "./ConfidenceBar";
+import { scanImage } from "../utils/api";
 
 const STATUS_META = {
   ok: { Icon: Check, color: "#5AAE83" },
@@ -157,10 +158,13 @@ export default function Rule6Engine({ mode = "qr", setMode, capturedFrame, onGen
   const [runId, setRunId] = useState(0);
   const [liveScenario, setLiveScenario] = useState(null);
   const [scanError, setScanError] = useState(null);
+  const [uploadedFrame, setUploadedFrame] = useState(null);
+  const fileInputRef = useRef(null);
   const timeoutRef = useRef(null);
   const autoRunFrameRef = useRef(null);
 
   const scenario = liveScenario || SCENARIOS[mode];
+  const activeFrame = uploadedFrame || capturedFrame;
 
   useEffect(() => {
     setPhase("idle");
@@ -177,21 +181,16 @@ export default function Rule6Engine({ mode = "qr", setMode, capturedFrame, onGen
     setScanError(null);
     setRunId((id) => id + 1);
 
-    if (capturedFrame) {
+    if (activeFrame) {
       try {
-        const response = await fetch("/api/v1/scan/image", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ image_base64: capturedFrame }),
-        });
-        if (!response.ok) throw new Error(`The scan service returned ${response.status}.`);
-        const result = await response.json();
+        const result = await scanImage(activeFrame);
         setLiveScenario({
           ...SCENARIOS[mode],
           verdict: result.verdict,
           verdictNote: result.verdictNote,
           fields: result.fields,
           violations: result.violations,
+          rule_checks: result.rule_checks || [],
         });
         setPhase("done");
       } catch (error) {
@@ -206,10 +205,24 @@ export default function Rule6Engine({ mode = "qr", setMode, capturedFrame, onGen
   };
 
   useEffect(() => {
-    if (!capturedFrame || autoRunFrameRef.current === capturedFrame) return;
-    autoRunFrameRef.current = capturedFrame;
+    if (!activeFrame || autoRunFrameRef.current === activeFrame) return;
+    autoRunFrameRef.current = activeFrame;
     handleRun();
-  }, [capturedFrame]);
+  }, [activeFrame]);
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setLiveScenario(null);
+      setUploadedFrame(String(reader.result).split(",")[1] || null);
+      setPhase("idle");
+      setScanError(null);
+    };
+    reader.readAsDataURL(file);
+    event.target.value = "";
+  };
 
   const avgConfidence = useMemo(() => {
     const sum = scenario.fields.reduce((a, f) => a + f.confidence, 0);
@@ -259,6 +272,14 @@ export default function Rule6Engine({ mode = "qr", setMode, capturedFrame, onGen
             <span className="text-xs font-mono text-text-3">
               Active Scenario: <strong className="text-text-1">{scenario.tabTitle}</strong>
             </span>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="border border-panel-line bg-panel-raised hover:bg-panel-line text-text-1 text-xs px-3 py-2 rounded-lg"
+            >
+              Upload label image
+            </button>
+            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
           </div>
         </div>
       </section>
@@ -304,7 +325,7 @@ export default function Rule6Engine({ mode = "qr", setMode, capturedFrame, onGen
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Visual Evidence & Execution */}
         <div className="lg:col-span-5 space-y-3">
-          <EvidencePanel scenario={scenario} phase={phase} imageBase64={capturedFrame} />
+          <EvidencePanel scenario={scenario} phase={phase} imageBase64={activeFrame} />
 
           <div className="flex items-center justify-between gap-3 pt-1">
             <button
@@ -459,6 +480,30 @@ export default function Rule6Engine({ mode = "qr", setMode, capturedFrame, onGen
                     <div className="text-text-1 leading-relaxed">
                       <strong className="text-brass">LabelLens Rule 6 Intelligence: </strong>
                       {scenario.callout.rule6}
+                    </div>
+                  </div>
+                )}
+
+                {/* Legal verdict note */}
+                {scenario.rule_checks?.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="text-xs font-semibold text-text-2 font-mono uppercase tracking-wider">
+                      LMPC rule coverage ({scenario.rule_checks.length} checks)
+                    </div>
+                    <div className="max-h-[220px] overflow-y-auto space-y-1.5 pr-1 scrollbar-thin">
+                      {scenario.rule_checks.map((check, i) => {
+                        const status = String(check.status || "review").toLowerCase();
+                        const color = status === "pass" ? "#5AAE83" : status === "fail" ? "#D06A5A" : "#DA9E4E";
+                        return (
+                          <div key={`${check.rule}-${i}`} className="flex items-start gap-2 text-xs bg-panel-darker/60 border border-panel-line/60 rounded px-2.5 py-2">
+                            <span className="font-mono uppercase text-[10px] font-bold" style={{ color }}>{status}</span>
+                            <div className="min-w-0">
+                              <div className="font-mono text-text-1">{check.rule}</div>
+                              <div className="text-text-2 mt-0.5">{check.finding}</div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}

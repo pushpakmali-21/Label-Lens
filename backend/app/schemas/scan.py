@@ -5,7 +5,7 @@ Request / response Pydantic models for /scan/image and /scan/qr endpoints.
 """
 
 from typing import List, Optional, Literal, Dict, Any
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from uuid import UUID
 from datetime import datetime
 
@@ -62,6 +62,9 @@ class ScanResponse(BaseModel):
     # Top-level convenience field so clients don't have to dig into the seal.
     rule_version: str
     gemini_observations: Optional[str] = None
+    # Full rule-by-rule assessment from the vision extractor. Empty for QR
+    # payloads that do not carry an image assessment.
+    rule_checks: List[Dict[str, Any]] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True)
 

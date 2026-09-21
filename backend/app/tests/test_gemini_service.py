@@ -18,7 +18,8 @@ def test_normalise_gemini_fields_maps_prompt_contract_to_validator_contract():
     assert fields["manufacturer"] == "Acme Foods Pvt Ltd Pune, Maharashtra 411001"
     assert fields["net_weight_str"] == "0.5 kg"
     assert fields["net_weight_g"] == 500.0
-    assert fields["consumer_care"] == {"name": "Consumer care: 1800-000-000"}
+    assert fields["consumer_care"]["name"] == "Consumer care: 1800-000-000"
+    assert fields["consumer_care"]["telephone"] == "1800-000-000"
 
 
 def test_gemini_request_uses_bytes_json_mode_and_normalises_response(monkeypatch):

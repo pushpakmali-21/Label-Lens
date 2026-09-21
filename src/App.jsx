@@ -6,7 +6,6 @@ import HomePage from "./components/HomePage";
 import LandingPage from "./components/LandingPage";
 import LoginModal from "./components/LoginModal";
 import UserProfileModal from "./components/UserProfileModal";
-import VisionInspector from "./components/VisionInspector";
 import RuleEngineSandbox from "./components/RuleEngineSandbox";
 import NoticeGenerator from "./components/NoticeGenerator";
 import HeatmapMonitor from "./components/HeatmapMonitor";
@@ -140,7 +139,13 @@ export default function App() {
           )}
 
           {activeTab === "vision" && (
-            <VisionInspector />
+            <Rule6Engine
+              mode={rule6Mode}
+              setMode={setRule6Mode}
+              capturedFrame={capturedFrame}
+              onGenerateNotice={handleGenerateNotice}
+              onOpenScanner={() => setIsScannerOpen(true)}
+            />
           )}
 
           {activeTab === "rule6" && (

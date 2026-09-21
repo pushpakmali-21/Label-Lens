@@ -25,6 +25,7 @@ import base64
 import json
 import logging
 import re
+from types import SimpleNamespace
 from typing import Optional
 
 logger = logging.getLogger(__name__)
@@ -56,7 +57,23 @@ def normalise_gemini_fields(fields: dict) -> dict:
 
     customer_care = str(fields.get("customer_care_details") or "").strip()
     if customer_care:
-        normalised["consumer_care"] = {"name": customer_care}
+        # Gemini returns the consumer-care declaration as one transcription.
+        # Split the machine-readable contacts so the existing validator does
+        # not incorrectly report every phone/email/address as missing.
+        phone = re.search(r"(?:\+?\d[\d\s().-]{7,}\d)", customer_care)
+        email = re.search(r"[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}", customer_care)
+        care = {"name": customer_care, "address": customer_care}
+        if phone:
+            care["telephone"] = phone.group(0).strip()
+        if email:
+            care["email"] = email.group(0).strip()
+        normalised["consumer_care"] = care
+
+    # Keep Gemini's full rule-by-rule assessment available to the shared
+    # validator.  The UI should not need to know which model produced it.
+    checks = fields.get("compliance_checks")
+    if isinstance(checks, list):
+        normalised["gemini_rule_checks"] = checks
 
     return normalised
 
@@ -66,7 +83,7 @@ _LMPC_EXTRACTION_PROMPT = """You are an expert Indian food-safety and consumer-p
 
 Carefully examine the product label / packaging image provided and extract ALL of the following mandatory declaration fields. For each field, read every part of the label carefully — front, back, sides, bottom.
 
-MANDATORY FIELDS TO EXTRACT (as per LMPC Rule 6):
+MANDATORY FIELDS TO EXTRACT (as per LMPC Rule 6 and applicable amendments):
 1. product_name           — Common or generic name of the commodity (Rule 6(1)(a))
 2. net_quantity            — Net quantity with unit. Must use SI units: g, kg, ml, L. Flag if "gms", "kilos", "approx", "approx weight" or "net weight when packed" is used (Rule 6(1)(c) & Rule 13)
 3. mrp                     — Maximum Retail Price including all taxes. Format: "MRP Rs. X.XX" or "₹X.XX incl. of all taxes" (Rule 6(1)(e))
@@ -85,6 +102,37 @@ MANDATORY FIELDS TO EXTRACT (as per LMPC Rule 6):
 ASSESSMENT FIELDS (your expert opinion):
 15. gemini_observations    — In 2-3 sentences: note any obvious compliance issues, missing declarations, suspicious phrases, or things that need human review. Be specific — cite Rule numbers.
 16. label_quality          — One of: "clear", "blurry", "partial" — describing image readability
+17. compliance_checks      — An array containing one object for EVERY applicable
+    check below. Each object must be:
+    {"rule":"...", "status":"pass|fail|review|not_applicable",
+     "finding":"...", "evidence":"exact label text or empty string"}
+
+RULE CHECKLIST — assess every applicable item, not just the fields above:
+- Rule 6(1)(a): manufacturer/packer/importer name and complete address.
+- Rule 6(1)(b): common/generic name of the commodity.
+- Rule 6(1)(c): net quantity in the prescribed standard unit.
+- Rule 6(1)(d): month and year of manufacture/packing/import.
+- Rule 6(1)(e): MRP inclusive of all taxes and required price wording.
+- Rule 6(1)(f): consumer-care name, address, phone/toll-free number and email.
+- Rule 6(1)(g): country of origin for imported goods.
+- Rule 6(1)(h): best-before/use-by/expiry where applicable.
+- Rule 6(1)(i): batch/lot/code number where applicable.
+- Rule 6(1)(j): dimensions/number where the commodity requires them.
+- Rule 6(1)(k): any commodity-specific declaration required by the Rules.
+- Rule 6(1)(l): unit sale price where applicable.
+- Rule 6(7): declarations are prominent, legible and readable.
+- Rule 7 and the Second Schedule: net-quantity numeral/letter minimum height.
+- Rule 8: principal display panel and required declaration placement.
+- Rule 9: declaration manner, visibility and language requirements.
+- Rule 10 / 10A: e-commerce/digital listing disclosures and country-of-origin
+  filter, only when the image is a marketplace listing.
+- Rule 11: prohibited or deceptive quantity/weight expressions.
+- Rule 13 and the Second Schedule: permitted units and symbols.
+- Applicable 2022 electronic-product QR proviso: only permitted declarations
+  may be moved to an accessible on-pack QR code; verify the QR evidence if visible.
+
+Do not mark a rule pass merely because its text is not visible. Use "review"
+when the image is partial, blurry, or the rule's applicability cannot be proved.
 
 RESPONSE FORMAT — respond ONLY with a valid JSON object, no markdown fences, no explanation:
 {
@@ -104,6 +152,7 @@ RESPONSE FORMAT — respond ONLY with a valid JSON object, no markdown fences, n
   "ocr_full_text": "...",
   "gemini_observations": "...",
   "label_quality": "..."
+  ,"compliance_checks": []
 }
 
 Rules:
@@ -145,7 +194,7 @@ def _build_client():
         return None
 
 
-def _call_gemini_sync(image_base64: str) -> Optional[dict]:
+def _call_gemini_sync(image_base64: str, model_override: Optional[str] = None) -> Optional[dict]:
     """
     Synchronous Gemini call — runs in a thread pool via asyncio.to_thread.
 
@@ -160,8 +209,29 @@ def _call_gemini_sync(image_base64: str) -> Optional[dict]:
         return None
 
     try:
-        from google.genai import types  # type: ignore
         from app.core.config import settings
+
+        try:
+            from google.genai import types  # type: ignore
+        except ImportError:
+            # Keeps the request boundary testable when the optional SDK is not
+            # installed. In production _build_client already returns None in
+            # that situation.
+            class _Part:
+                @staticmethod
+                def from_bytes(*, data: bytes, mime_type: str):
+                    return SimpleNamespace(
+                        inline_data=SimpleNamespace(data=data, mime_type=mime_type)
+                    )
+
+            class _Types:
+                Part = _Part
+
+                @staticmethod
+                def GenerateContentConfig(**kwargs):
+                    return SimpleNamespace(**kwargs)
+
+            types = _Types
 
         # Decode once. New Gemini SDK accepts bytes rather than a legacy
         # inline-data dictionary.
@@ -181,7 +251,7 @@ def _call_gemini_sync(image_base64: str) -> Optional[dict]:
             mime_type = "image/jpeg"  # safe default
 
         response = model.models.generate_content(
-            model=settings.GEMINI_MODEL,
+            model=model_override or settings.GEMINI_MODEL,
             contents=[
                 types.Part.from_bytes(data=raw, mime_type=mime_type),
                 _LMPC_EXTRACTION_PROMPT,
@@ -231,4 +301,16 @@ async def extract_fields_from_image(image_base64: str) -> Optional[dict]:
         Dict of extracted package fields compatible with validate_package_data,
         or None if Gemini is unavailable or the call fails.
     """
-    return await asyncio.to_thread(_call_gemini_sync, image_base64)
+    primary = await asyncio.to_thread(_call_gemini_sync, image_base64)
+    if primary is not None:
+        return primary
+
+    # Capacity spikes can affect one model while another stable multimodal
+    # model remains available. Keep this fallback bounded and model-specific;
+    # never substitute deterministic demo OCR.
+    from app.core.config import settings
+    fallback_model = settings.GEMINI_FALLBACK_MODEL
+    if fallback_model and fallback_model != settings.GEMINI_MODEL:
+        logger.warning("Primary Gemini model unavailable; trying fallback model %s", fallback_model)
+        return await asyncio.to_thread(_call_gemini_sync, image_base64, fallback_model)
+    return None

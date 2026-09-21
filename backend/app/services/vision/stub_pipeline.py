@@ -30,6 +30,8 @@ A 6-tuple:
 from __future__ import annotations
 
 import logging
+import base64
+import binascii
 from typing import Optional
 from sqlalchemy.orm import Session
 
@@ -81,6 +83,22 @@ async def process_scan_stub(
     if "," in image_base64:
         clean_b64 = image_base64.split(",", 1)[1]
 
+    # Preserve the pipeline's precise invalid-image diagnostic before trying
+    # the external extractor. This is an input error, not provider downtime.
+    try:
+        base64.b64decode(clean_b64, validate=True)
+    except (binascii.Error, ValueError):
+        result = (pipeline or _DEFAULT_PIPELINE).run(clean_b64)
+        extracted_data = result.extracted_fields.to_dict()
+        return (
+            extracted_data,
+            result.fields,
+            result.violations,
+            result.verdict,
+            result.verdict_note,
+            RULE_ENGINE_VERSION,
+        )
+
     gemini_fields = await extract_fields_from_image(clean_b64)
 
     if gemini_fields is not None:
@@ -91,20 +109,24 @@ async def process_scan_stub(
         )
         return gemini_fields, fields, violations, verdict, verdictNote, rule_version
 
-    # ── Fallback: Sprint 2 stub pipeline (no Gemini key yet) ─────────────────
-    logger.warning(
-        "Gemini unavailable — falling back to stub pipeline. "
-        "Add GEMINI_API_KEY to backend/.env and restart."
+    # Do not return deterministic demo OCR here: that made every unrelated
+    # package look identical and could create a misleading compliance result.
+    # A missing/failed provider is an explicit manual-review failure instead.
+    logger.error(
+        "Gemini unavailable; refusing to substitute deterministic demo data. "
+        "Set GEMINI_API_KEY and verify the configured model."
     )
-    active_pipeline = pipeline or _DEFAULT_PIPELINE
-    result = active_pipeline.run(clean_b64)
-
-    extracted_data = result.extracted_fields.to_dict()
-    return (
-        extracted_data,
-        result.fields,
-        result.violations,
-        result.verdict,
-        result.verdict_note,
-        RULE_ENGINE_VERSION,
+    extracted_data = {
+        "ocr_full_text": "",
+        "scan_error": "Vision extraction service unavailable",
+    }
+    fields, violations, verdict, verdict_note, rule_version = validate_package_data(
+        extracted_data, db=db
     )
+    violations.insert(0, {
+        "field": "scan_service",
+        "plain": "The label could not be scanned because the vision extraction service is unavailable. Manual review required.",
+        "rule": "Internal",
+        "severity": "critical",
+    })
+    return extracted_data, fields, violations, "fail", "Scan service unavailable. Manual review required.", rule_version

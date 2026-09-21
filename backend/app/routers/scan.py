@@ -73,6 +73,7 @@ async def scan_image(request: ScanImageRequest, db: Session = Depends(get_db)):
         evidence_seal=seal,  # type: ignore[arg-type]
         rule_version=rule_version,
         gemini_observations=extracted_data.get("gemini_observations"),
+        rule_checks=extracted_data.get("gemini_rule_checks", []),
     )
 
 
@@ -128,6 +129,7 @@ async def scan_qr(request: ScanQRRequest, db: Session = Depends(get_db)):
             }],
             evidence_seal=seal,  # type: ignore[arg-type]
             rule_version=RULE_ENGINE_VERSION,
+            rule_checks=[],
         )
 
     # Run parsed fields through the LMPC validator
@@ -163,4 +165,5 @@ async def scan_qr(request: ScanQRRequest, db: Session = Depends(get_db)):
         evidence_seal=seal,  # type: ignore[arg-type]
         rule_version=rule_version,
         gemini_observations=extracted_data.get("gemini_observations"),
+        rule_checks=extracted_data.get("gemini_rule_checks", []),
     )
