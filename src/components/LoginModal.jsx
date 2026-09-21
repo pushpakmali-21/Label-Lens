@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { X, KeyRound, ShieldCheck, User, Building2 } from "lucide-react";
+import LogoMark from "./LogoMark";
 
 export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
   const [email, setEmail] = useState("");
@@ -55,13 +56,16 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
         </button>
 
         {/* Modal Header */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 font-sans">
-            Log in
-          </h2>
-          <p className="text-sm text-slate-500 mt-1">
-            Continue to <span className="font-semibold text-slate-800">LabelLens</span>
-          </p>
+        <div className="mb-6 flex items-center gap-3">
+          <LogoMark size={32} />
+          <div>
+            <h2 className="text-xl font-bold tracking-tight text-slate-900 font-sans leading-tight">
+              Log in
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Continue to <span className="font-semibold text-slate-800">LabelLens</span>
+            </p>
+          </div>
         </div>
 
         {/* Role Segmented Selector */}
@@ -69,11 +73,10 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
           <button
             type="button"
             onClick={() => setSelectedRole("official")}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-lg transition-all ${
-              selectedRole === "official"
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-lg transition-all ${selectedRole === "official"
                 ? "bg-white text-slate-900 shadow-sm border border-slate-200/60"
                 : "text-slate-600 hover:text-slate-900"
-            }`}
+              }`}
           >
             <Building2 size={14} className={selectedRole === "official" ? "text-blue-600" : ""} />
             <span>Enforcement Official</span>
@@ -81,11 +84,10 @@ export default function LoginModal({ isOpen, onClose, onLoginSuccess }) {
           <button
             type="button"
             onClick={() => setSelectedRole("citizen")}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-lg transition-all ${
-              selectedRole === "citizen"
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-lg transition-all ${selectedRole === "citizen"
                 ? "bg-white text-slate-900 shadow-sm border border-slate-200/60"
                 : "text-slate-600 hover:text-slate-900"
-            }`}
+              }`}
           >
             <User size={14} className={selectedRole === "citizen" ? "text-blue-600" : ""} />
             <span>Citizen / Consumer</span>

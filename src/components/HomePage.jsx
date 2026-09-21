@@ -47,57 +47,62 @@ export default function HomePage({ onStartOfficial, onStartCitizen, onOpenScanne
   };
 
   return (
-    <div className="w-full space-y-12 pb-16 font-sans text-black animate-fadeIn">
+    <div className="w-full space-y-10 pb-16 font-sans text-[#20252B] animate-fadeIn">
 
-      {/* Brutalist Header Area */}
-      <header className="border-b-4 border-black pb-8">
-        <h1 className="text-4xl md:text-5xl font-black tracking-tight uppercase mb-4">Command Center</h1>
-        <p className="text-xl font-medium max-w-2xl">
-          Real-time Legal Metrology indexing, scanning, and violation generation.
+      {/* Editorial Section Header */}
+      <header className="border-b border-[#D8D7D2] pb-6">
+        <div className="flex items-center gap-3 mb-3">
+          <span className="font-mono text-[10px] text-[#59636E] letter-spacing-[0.15em]">01 /</span>
+          <span className="w-8 h-px bg-[#D8D7D2]" />
+          <span className="font-mono text-[10px] text-[#59636E] letter-spacing-[0.15em] uppercase">Command Center</span>
+        </div>
+        <h1 className="font-serif text-3xl sm:text-4xl text-[#20252B] font-normal tracking-tight mb-2">
+          Inspection &amp; Regulatory Command Center
+        </h1>
+        <p className="text-sm text-[#59636E] max-w-2xl leading-relaxed">
+          Real-time Legal Metrology indexing, mandatory declaration extraction, and automated statutory notice generation.
         </p>
       </header>
 
       {/* Main Intake & Stats Section */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* Left: Drag & Drop Zone (Flat Brutalist design) */}
-        <div className="lg:col-span-2 bg-[#F3F4F6] border-4 border-black shadow-[8px_8px_0_0_#000] p-8 flex flex-col justify-center relative overflow-hidden transition-all hover:-translate-y-1 hover:translate-x-1 hover:shadow-[12px_12px_0_0_#000]">
-
-          <div className="flex justify-between items-start mb-8 z-10">
+        {/* Left: Drag & Drop Zone */}
+        <div className="lg:col-span-2 bg-[#F8F7F3] border border-[#D8D7D2] p-6 sm:p-8 flex flex-col justify-center relative">
+          <div className="flex justify-between items-start mb-6 z-10">
             <div>
-              <h2 className="text-2xl font-black uppercase mb-1 text-black">Data Intake</h2>
-              <p className="text-sm font-semibold">Feed images/PDFs into the automated AI engine.</p>
+              <div className="font-mono text-[10px] text-[#183D35] uppercase tracking-widest mb-1 font-semibold">Stage 01 • Ingestion</div>
+              <h2 className="font-serif text-xl sm:text-2xl font-normal text-[#20252B]">Label &amp; Packaging Ingestion</h2>
             </div>
-            <div className="px-3 py-1 bg-black text-white text-xs font-bold uppercase tracking-widest border-2 border-black">
+            <span className="font-mono text-[9px] text-[#59636E] bg-white border border-[#D8D7D2] px-2.5 py-1 tracking-wider uppercase">
               SHA-256 Vault
-            </div>
+            </span>
           </div>
 
           <div
-            className={`relative z-10 border-4 border-dashed rounded-none p-12 flex flex-col items-center justify-center text-center transition-colors ${dragActive ? "border-[#FF4500] bg-white" : "border-black bg-white hover:bg-[#FAF9F6]"
+            className={`relative z-10 border border-dashed p-8 sm:p-10 flex flex-col items-center justify-center text-center transition-colors ${dragActive ? "border-[#183D35] bg-white" : "border-[#D8D7D2] bg-white hover:bg-[#F7F5F0]"
               }`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
             onDrop={handleDrop}
           >
-            <FolderOpen size={48} className="mb-4 text-black" strokeWidth={1.5} />
-            <h3 className="text-xl font-black uppercase mb-1">Drag Assets Here</h3>
-            <p className="text-sm font-semibold text-slate-500 mb-8">Strictly JPEG, PNG, or PDF formats.</p>
+            <FolderOpen size={36} className="mb-3 text-[#183D35]" strokeWidth={1.5} />
+            <h3 className="font-serif text-lg text-[#20252B] mb-1">Drag packaging assets here</h3>
+            <p className="text-xs text-[#59636E] mb-6 font-mono">Strictly JPEG, PNG, WEBP or PDF formats</p>
 
-            <div className="flex items-center justify-center gap-4 w-full sm:w-auto">
-              {/* Primary Action Button defaults to a strong high-contrast color */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
               <button
                 onClick={onOpenScanner}
-                className="w-full sm:w-auto bg-[#FF4500] hover:bg-[#E03E00] text-white border-2 border-black font-black uppercase tracking-wide text-sm px-8 py-4 shadow-[4px_4px_0_0_#000] active:shadow-none active:translate-y-1 active:translate-x-1 transition-all flex items-center justify-center gap-3"
+                className="w-full sm:w-auto bg-[#183D35] hover:bg-[#0f2a23] text-white font-sans text-xs font-semibold px-6 py-2.5 transition-all flex items-center justify-center gap-2 border-none cursor-pointer"
               >
-                <Scan size={18} strokeWidth={2.5} />
-                Live Scan
+                <Scan size={15} />
+                Live Camera Scan
               </button>
 
-              <label className="w-full sm:w-auto cursor-pointer bg-white hover:bg-slate-100 text-black border-2 border-black font-black uppercase tracking-wide text-sm px-8 py-4 shadow-[4px_4px_0_0_#000] active:shadow-none active:translate-y-1 active:translate-x-1 transition-all flex items-center justify-center gap-3">
-                <FolderOpen size={18} strokeWidth={2.5} />
-                Browse
+              <label className="w-full sm:w-auto cursor-pointer bg-white hover:bg-[#F0EEE9] text-[#20252B] border border-[#D8D7D2] font-sans text-xs font-medium px-6 py-2.5 transition-all flex items-center justify-center gap-2">
+                <FolderOpen size={15} />
+                Browse File
                 <input
                   type="file"
                   accept="image/*,.pdf"
@@ -113,148 +118,151 @@ export default function HomePage({ onStartOfficial, onStartCitizen, onOpenScanne
           </div>
         </div>
 
-        {/* Right: Quick Stats */}
-        <div className="bg-white border-4 border-black shadow-[8px_8px_0_0_#000] p-6 flex flex-col">
-          <h2 className="text-lg font-black uppercase tracking-wide mb-6">Global Metrics</h2>
+        {/* Right: Global Metrics */}
+        <div className="bg-white border border-[#D8D7D2] p-6 flex flex-col justify-between">
+          <div className="border-b border-[#D8D7D2] pb-3 mb-4">
+            <span className="font-mono text-[10px] text-[#59636E] uppercase tracking-wider block">Global Analytics</span>
+            <h2 className="font-serif text-xl text-[#20252B] font-normal">Audit Metrics</h2>
+          </div>
 
-          <div className="flex-1 flex flex-col justify-between space-y-4">
-            <div className="bg-[#FAF9F6] border-2 border-black p-4">
-              <div className="text-xs font-bold uppercase tracking-widest text-[#FF4500] mb-1">Total Audits</div>
-              <div className="text-4xl font-black">1,248</div>
+          <div className="space-y-4">
+            <div className="p-4 bg-[#F8F7F3] border border-[#D8D7D2]">
+              <div className="font-mono text-[9px] uppercase tracking-widest text-[#59636E]">Total Package Audits</div>
+              <div className="font-serif text-3xl text-[#20252B] mt-1 font-normal">1,248</div>
             </div>
 
-            <div className="bg-[#FAF9F6] border-2 border-black p-4">
-              <div className="text-xs font-bold uppercase tracking-widest text-emerald-600 mb-1">Compliant</div>
-              <div className="text-4xl font-black">892</div>
+            <div className="p-4 bg-[#F8F7F3] border border-[#D8D7D2]">
+              <div className="font-mono text-[9px] uppercase tracking-widest text-[#166534]">Rule 6 Compliant</div>
+              <div className="font-serif text-3xl text-[#166534] mt-1 font-normal">892</div>
             </div>
 
-            <div className="bg-[#FAF9F6] border-2 border-black p-4 flex-1">
-              <div className="text-xs font-bold uppercase tracking-widest text-black mb-1">Pending</div>
-              <div className="text-4xl font-black flex items-center gap-3">
-                142
-                <TrendingUp size={24} className="text-[#FF4500]" />
+            <div className="p-4 bg-[#F8F7F3] border border-[#D8D7D2]">
+              <div className="font-mono text-[9px] uppercase tracking-widest text-[#C9572C]">Contraventions Flagged</div>
+              <div className="font-serif text-3xl text-[#C9572C] mt-1 font-normal flex items-center justify-between">
+                <span>356</span>
+                <TrendingUp size={20} className="text-[#C9572C]" />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Services Grid (Role-Based) */}
+      {/* Services Grid (Core Modules) */}
       <section>
-        <h2 className="text-2xl font-black uppercase tracking-tight mb-6 flex items-center gap-3">
-          <span className="bg-black text-white px-2 py-1">Systems</span> Core Modules
-        </h2>
+        <div className="flex items-center gap-3 mb-5">
+          <span className="font-mono text-[10px] text-[#59636E] letter-spacing-[0.15em]">02 /</span>
+          <span className="w-8 h-px bg-[#D8D7D2]" />
+          <span className="font-mono text-[10px] text-[#59636E] letter-spacing-[0.15em] uppercase">Systems</span>
+        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div
             onClick={onStartOfficial}
-            className="cursor-pointer bg-white border-2 border-black p-6 shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] hover:-translate-y-1 transition-all flex items-start gap-4"
+            className="cursor-pointer bg-white border border-[#D8D7D2] p-5 hover:bg-[#F8F7F3] transition-all flex items-start gap-4"
           >
-            <div className="w-12 h-12 flex-shrink-0 bg-black text-white flex items-center justify-center">
-              <Eye size={24} />
+            <div className="w-10 h-10 flex-shrink-0 bg-[#183D35] text-white flex items-center justify-center">
+              <Eye size={20} />
             </div>
             <div>
-              <h3 className="font-black text-lg uppercase mb-1">Enforcement Suite</h3>
-              <p className="text-sm font-semibold text-slate-600">Full OCR & Rule extraction panel.</p>
+              <h3 className="font-sans font-semibold text-sm text-[#20252B] mb-0.5">Enforcement Suite</h3>
+              <p className="text-xs text-[#59636E]">Full OCR &amp; mandatory Rule 6 extraction panel.</p>
             </div>
           </div>
 
           <div
-            className="cursor-pointer bg-white border-2 border-black p-6 shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] hover:-translate-y-1 transition-all flex items-start gap-4"
+            className="cursor-pointer bg-white border border-[#D8D7D2] p-5 hover:bg-[#F8F7F3] transition-all flex items-start gap-4"
           >
-            <div className="w-12 h-12 flex-shrink-0 bg-black text-white flex items-center justify-center">
-              <FileText size={24} />
+            <div className="w-10 h-10 flex-shrink-0 bg-[#20252B] text-white flex items-center justify-center">
+              <FileText size={20} />
             </div>
             <div>
-              <h3 className="font-black text-lg uppercase mb-1">Notice Generator</h3>
-              <p className="text-sm font-semibold text-slate-600">Draft legal citations instantly.</p>
+              <h3 className="font-sans font-semibold text-sm text-[#20252B] mb-0.5">Notice Generator</h3>
+              <p className="text-xs text-[#59636E]">Draft Section 39 legal citations instantly.</p>
             </div>
           </div>
 
           {userRole !== "official" ? (
             <div
               onClick={onStartCitizen}
-              className="cursor-pointer bg-[#FF4500] text-white border-2 border-black p-6 shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] hover:-translate-y-1 transition-all flex items-start gap-4"
+              className="cursor-pointer bg-[#183D35] text-white border border-[#183D35] p-5 hover:bg-[#0f2a23] transition-all flex items-start gap-4"
             >
-              <div className="w-12 h-12 flex-shrink-0 bg-white text-black flex items-center justify-center">
-                <AlertCircle size={24} />
+              <div className="w-10 h-10 flex-shrink-0 bg-white text-[#183D35] flex items-center justify-center">
+                <AlertCircle size={20} />
               </div>
               <div>
-                <h3 className="font-black text-lg uppercase mb-1">Citizen Portal</h3>
-                <p className="text-sm font-semibold text-white/80">Launch public reporting tool.</p>
+                <h3 className="font-sans font-semibold text-sm text-white mb-0.5">Citizen Portal</h3>
+                <p className="text-xs text-white/80">Launch public violation reporting tool.</p>
               </div>
             </div>
           ) : (
             <div
-              className="cursor-pointer bg-[#FAF9F6] border-2 border-black p-6 shadow-[4px_4px_0_0_#000] hover:shadow-[6px_6px_0_0_#000] hover:-translate-y-1 transition-all flex items-start gap-4"
+              className="cursor-pointer bg-white border border-[#D8D7D2] p-5 hover:bg-[#F8F7F3] transition-all flex items-start gap-4"
             >
-              <div className="w-12 h-12 flex-shrink-0 bg-black text-[#FF4500] flex items-center justify-center">
-                <AlertCircle size={24} />
+              <div className="w-10 h-10 flex-shrink-0 bg-[#F0EEE9] text-[#C9572C] flex items-center justify-center border border-[#D8D7D2]">
+                <AlertCircle size={20} />
               </div>
               <div>
-                <h3 className="font-black text-lg uppercase mb-1">Active Alerts</h3>
-                <p className="text-sm font-semibold text-slate-600">Investigate flagged operations.</p>
+                <h3 className="font-sans font-semibold text-sm text-[#20252B] mb-0.5">Active Alerts</h3>
+                <p className="text-xs text-[#59636E]">Investigate flagged marketplace operations.</p>
               </div>
             </div>
           )}
         </div>
       </section>
 
-      {/* Enriched Recent Activity */}
-      <section className="bg-white border-4 border-black p-6 sm:p-8 shadow-[8px_8px_0_0_#000]">
-
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 border-b-2 border-black pb-4">
+      {/* Recent Activity Ledger */}
+      <section className="bg-white border border-[#D8D7D2] p-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 border-b border-[#D8D7D2] pb-4">
           <div>
-            <h2 className="text-3xl font-black uppercase tracking-tight">Inspection Ledger</h2>
-            <p className="text-sm font-semibold mt-1">Authorized access log overview.</p>
+            <div className="flex items-center gap-3 mb-2">
+              <span className="font-mono text-[10px] text-[#59636E] letter-spacing-[0.15em]">03 /</span>
+              <span className="w-8 h-px bg-[#D8D7D2]" />
+              <span className="font-mono text-[10px] text-[#59636E] letter-spacing-[0.15em] uppercase">Audit Ledger</span>
+            </div>
+            <h2 className="font-serif text-2xl text-[#20252B] font-normal">Inspection Ledger</h2>
           </div>
-          <div className="mt-4 sm:mt-0 relative group">
+          <div className="mt-4 sm:mt-0 relative">
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="appearance-none bg-[#FAF9F6] border-2 border-black font-black uppercase text-xs py-3 pl-4 pr-10 focus:outline-none focus:ring-0 rounded-none cursor-pointer"
+              className="bg-[#F8F7F3] border border-[#D8D7D2] font-mono text-xs py-2 pl-3 pr-8 focus:outline-none cursor-pointer text-[#20252B]"
             >
               <option value="All">All Records</option>
               <option value="Non-Compliant">Violations</option>
               <option value="Reviewing">In Review</option>
               <option value="Pass">Pass</option>
             </select>
-            <Filter size={16} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="divide-y divide-[#D8D7D2] border border-[#D8D7D2]">
           {recentActivity.map((activity) => (
-            <div key={activity.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border-2 border-black bg-white hover:bg-[#FAF9F6] transition-colors gap-4">
-              <div className="flex items-center gap-5">
-                <div className="w-16 h-16 border-2 border-black overflow-hidden flex-shrink-0 bg-slate-100">
-                  <img src={activity.thumbnail} alt={activity.title} className="w-full h-full object-cover grayscale" />
+            <div key={activity.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white hover:bg-[#F8F7F3] transition-colors gap-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 border border-[#D8D7D2] overflow-hidden flex-shrink-0 bg-[#F0EEE9]">
+                  <img src={activity.thumbnail} alt={activity.title} className="w-full h-full object-cover" />
                 </div>
                 <div>
-                  <div className="font-black text-lg text-black uppercase">{activity.title}</div>
-                  <div className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1 flex items-center gap-3">
-                    <span className="flex items-center gap-1 text-[#FF4500]"><Clock size={12} strokeWidth={3} /> {activity.time}</span>
-                    <span>LMA-{activity.id}892</span>
+                  <div className="font-sans font-medium text-sm text-[#20252B]">{activity.title}</div>
+                  <div className="text-[11px] font-mono text-[#59636E] mt-0.5 flex items-center gap-3">
+                    <span className="flex items-center gap-1 text-[#C9572C]"><Clock size={11} /> {activity.time}</span>
+                    <span>Ref: LMA-{activity.id}892</span>
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-6 justify-between sm:justify-end w-full sm:w-auto">
-                <div className={`text-xs font-black uppercase px-3 py-1.5 border-2 border-black ${activity.status.includes('Violation') ? 'bg-black text-white' :
-                    activity.status === 'Reviewing' ? 'bg-[#FF4500] text-white' :
-                      activity.status === 'Sent' ? 'bg-slate-200 text-black' :
-                        'bg-white text-black'
+              <div className="flex items-center gap-4 justify-between sm:justify-end w-full sm:w-auto">
+                <span className={`font-mono text-[9px] uppercase px-2.5 py-1 letter-spacing-[0.08em] border ${activity.status.includes('Violation') ? 'bg-[#FFF7ED] text-[#C9572C] border-[#FED7AA]' :
+                    activity.status === 'Reviewing' ? 'bg-[#FFFBEB] text-[#92400E] border-[#FDE68A]' :
+                      'bg-[#F0FDF4] text-[#166534] border-[#BBF7D0]'
                   }`}>
                   {activity.status}
-                </div>
-                <div className="flex items-center gap-2 border-l-2 border-black pl-5">
-                  <button className="p-2 border-2 border-transparent hover:border-black transition-colors" title="Download">
-                    <Download size={18} strokeWidth={2.5} />
+                </span>
+                <div className="flex items-center gap-2 pl-4 border-l border-[#D8D7D2]">
+                  <button className="p-1.5 text-[#59636E] hover:text-[#20252B]" title="Download">
+                    <Download size={15} />
                   </button>
-                  <button className="p-2 border-2 border-transparent hover:border-black transition-colors" title="Edit">
-                    <Edit2 size={18} strokeWidth={2.5} />
-                  </button>
-                  <button className="p-2 border-2 border-transparent hover:border-black transition-colors" title="View">
-                    <ArrowRight size={18} strokeWidth={2.5} />
+                  <button className="p-1.5 text-[#59636E] hover:text-[#20252B]" title="View">
+                    <ArrowRight size={15} />
                   </button>
                 </div>
               </div>

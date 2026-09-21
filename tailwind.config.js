@@ -7,54 +7,62 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#F8FAFC",
+        ivory: "#F7F5F0",
+        charcoal: "#20252B",
+        slate: "#59636E",
+        ink: "#F7F5F0",
         panel: {
-          DEFAULT: "rgba(255, 255, 255, 0.92)",
-          raised: "#FFFFFF",
-          line: "rgba(226, 232, 240, 0.9)",
-          darker: "#F1F5F9",
+          DEFAULT: "#FFFFFF",
+          raised: "#F8F7F3",
+          line: "#D8D7D2",
+          darker: "#F0EEE9",
+          charcoal: "#20252B",
         },
         paper: {
           DEFAULT: "#FFFFFF",
-          ink: "#0F172A",
+          ink: "#20252B",
         },
         brass: {
-          DEFAULT: "#1D4ED8", // Executive Sapphire Blue
-          strong: "#1E40AF",
+          DEFAULT: "#183D35", // Precision Deep Green
+          strong: "#0F2A23",
           ink: "#FFFFFF",
-          glow: "rgba(29, 78, 216, 0.25)",
+          glow: "rgba(24, 61, 53, 0.25)",
         },
         citizen: {
-          primary: "#0284C7", // Trustworthy Civic Cerulean
-          secondary: "#0369A1",
-          glow: "rgba(2, 132, 199, 0.2)",
+          primary: "#183D35",
+          secondary: "#234F45",
+          glow: "rgba(24, 61, 53, 0.2)",
         },
         text: {
-          1: "#0F172A", // Slate 900
-          2: "#334155", // Slate 700
-          3: "#64748B", // Slate 500
+          1: "#20252B", // Charcoal Slate
+          2: "#59636E", // Muted Slate
+          3: "#8C96A0", // Light Slate
         },
         status: {
-          pass: "#059669",
-          'pass-bg': "rgba(5, 150, 105, 0.1)",
-          fail: "#DC2626",
-          'fail-bg': "rgba(220, 38, 38, 0.1)",
-          review: "#D97706",
-          'review-bg': "rgba(217, 119, 6, 0.1)",
-        }
+          pass: "#166534",
+          'pass-bg': "#F0FDF4",
+          fail: "#C9572C",
+          'fail-bg': "#FFF7ED",
+          review: "#92400E",
+          'review-bg': "#FFFBEB",
+        },
+        amber: "#C9572C",
+        vermilion: "#C9572C",
+        sage: "#DCE5DD",
+        sageDark: "#B3C5B5",
       },
       fontFamily: {
-        brand: ["'Plus Jakarta Sans'", "'Montserrat'", "sans-serif"],
-        serif: ["'Cinzel'", "serif"],
-        sans: ["'Inter'", "sans-serif"],
-        display: ["'Plus Jakarta Sans'", "'Montserrat'", "sans-serif"],
-        mono: ["'JetBrains Mono'", "monospace"],
+        brand: ["'IBM Plex Sans'", "system-ui", "sans-serif"],
+        serif: ["'Instrument Serif'", "'IBM Plex Serif'", "Georgia", "serif"],
+        sans: ["'IBM Plex Sans'", "system-ui", "sans-serif"],
+        display: ["'Instrument Serif'", "'IBM Plex Serif'", "Georgia", "serif"],
+        mono: ["'IBM Plex Mono'", "'Courier New'", "monospace"],
       },
       boxShadow: {
-        'brass-glow': '0 4px 14px -1px rgba(29, 78, 216, 0.3)',
-        'pass-glow': '0 4px 14px -1px rgba(5, 150, 105, 0.25)',
-        'fail-glow': '0 4px 14px -1px rgba(220, 38, 38, 0.25)',
-        'glass': '0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04)',
+        'brass-glow': '0 4px 14px -1px rgba(24, 61, 53, 0.3)',
+        'pass-glow': '0 4px 14px -1px rgba(22, 101, 52, 0.25)',
+        'fail-glow': '0 4px 14px -1px rgba(201, 87, 44, 0.25)',
+        'glass': '0 4px 20px -2px rgba(32, 37, 43, 0.06), 0 2px 6px -1px rgba(32, 37, 43, 0.04)',
       },
       backdropBlur: {
         'glass': '20px',

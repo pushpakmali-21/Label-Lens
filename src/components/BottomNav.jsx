@@ -22,7 +22,7 @@ export default function BottomNav({ activeTab, setActiveTab, onOpenScanner, user
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 bg-panel-darker/95 backdrop-blur-xl border-t border-panel-line pb-safe shadow-2xl transition-all"
+      className="fixed bottom-0 left-0 right-0 z-50 bg-[#F7F5F0]/95 backdrop-blur-md border-t border-[#D8D7D2] pb-safe shadow-lg transition-all"
       aria-label="Primary navigation"
     >
       <div className="max-w-3xl mx-auto px-4 py-1.5 flex items-center justify-around relative">
@@ -35,35 +35,35 @@ export default function BottomNav({ activeTab, setActiveTab, onOpenScanner, user
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-lg transition-all duration-200 min-w-[58px] active:scale-95 ${isActive
-                ? "text-brass"
-                : "text-text-2 hover:text-text-1"
+              className={`flex flex-col items-center justify-center py-1.5 px-3 transition-all duration-200 min-w-[58px] active:scale-95 ${isActive
+                ? "text-[#183D35]"
+                : "text-[#59636E] hover:text-[#20252B]"
                 }`}
             >
               <div className="relative">
-                <Icon size={19} className={isActive ? "text-brass stroke-[2.2]" : "stroke-[1.8]"} />
+                <Icon size={19} className={isActive ? "text-[#183D35] stroke-[2.2]" : "stroke-[1.8]"} />
                 {isActive && (
-                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-brass" />
+                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#183D35]" />
                 )}
               </div>
-              <span className={`text-[10px] font-sans mt-1 ${isActive ? "font-semibold text-brass" : "font-normal"}`}>
+              <span className={`text-[10px] font-sans mt-1 ${isActive ? "font-semibold text-[#183D35]" : "font-normal"}`}>
                 {item.label}
               </span>
             </button>
           );
         })}
 
-        {/* Center Prominent Brass Scan Action Button */}
+        {/* Center Prominent Deep Green Scan Action Button */}
         <div className="flex flex-col items-center -mt-5">
           <button
             onClick={onOpenScanner}
-            className="w-13 h-13 rounded-full bg-brass hover:bg-brass-strong active:scale-90 transition-transform duration-150 flex items-center justify-center border-2 border-ink shadow-brass-glow animate-pulseGlow p-3 text-brass-ink"
+            className="w-13 h-13 rounded-full bg-[#183D35] hover:bg-[#0f2a23] active:scale-90 transition-transform duration-150 flex items-center justify-center border-2 border-[#20252B] shadow-md p-3 text-white"
             title="Scan Product"
             aria-label="Scan Product"
           >
             <Scan size={22} className="stroke-[2.5]" />
           </button>
-          <span className="text-[10px] font-mono font-bold text-brass mt-0.5 tracking-tight">
+          <span className="text-[10px] font-mono font-bold text-[#183D35] mt-0.5 tracking-tight">
             Scan
           </span>
         </div>
@@ -77,18 +77,18 @@ export default function BottomNav({ activeTab, setActiveTab, onOpenScanner, user
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-lg transition-all duration-200 min-w-[58px] active:scale-95 ${isActive
-                ? "text-brass"
-                : "text-text-2 hover:text-text-1"
+              className={`flex flex-col items-center justify-center py-1.5 px-3 transition-all duration-200 min-w-[58px] active:scale-95 ${isActive
+                ? "text-[#183D35]"
+                : "text-[#59636E] hover:text-[#20252B]"
                 }`}
             >
               <div className="relative">
-                <Icon size={19} className={isActive ? "text-brass stroke-[2.2]" : "stroke-[1.8]"} />
+                <Icon size={19} className={isActive ? "text-[#183D35] stroke-[2.2]" : "stroke-[1.8]"} />
                 {isActive && (
-                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-brass" />
+                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#183D35]" />
                 )}
               </div>
-              <span className={`text-[10px] font-sans mt-1 ${isActive ? "font-semibold text-brass" : "font-normal"}`}>
+              <span className={`text-[10px] font-sans mt-1 ${isActive ? "font-semibold text-[#183D35]" : "font-normal"}`}>
                 {item.label}
               </span>
             </button>

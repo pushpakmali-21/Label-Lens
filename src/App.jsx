@@ -93,7 +93,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-ink text-text-1 flex font-sans selection:bg-blue-600/15 selection:text-blue-900 bg-grid-mesh relative">
+    <div className="min-h-screen bg-[#F7F5F0] text-[#20252B] flex font-sans selection:bg-[#183D35]/20 selection:text-[#183D35] bg-grid-mesh relative">
       {/* Sidebar for Desktop */}
       <Sidebar
         activeTab={activeTab}
@@ -174,21 +174,21 @@ export default function App() {
         </main>
 
         {/* Global Regulatory Footer */}
-        <footer className="border-t border-panel-line bg-panel-darker py-5 sm:py-6 text-xs text-text-3 mt-8 sm:mt-12 mb-20 md:mb-0 no-print">
+        <footer className="border-t border-[#D8D7D2] bg-[#F8F7F3] py-5 sm:py-6 text-xs text-[#59636E] mt-8 sm:mt-12 mb-20 md:mb-0 no-print font-sans">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="max-w-2xl text-center sm:text-left leading-relaxed">
               <p>
-                Rule citations reference the <strong>Legal Metrology (Packaged Commodities) Rules, 2011</strong>, as amended by the Second Amendment Rules, 2022 (electronics QR proviso) and e-commerce digital disclosure amendments (Rule 6(10) &amp; Rule 6(10A)).
+                Rule citations reference the <strong className="text-[#20252B]">Legal Metrology (Packaged Commodities) Rules, 2011</strong>, as amended by the Second Amendment Rules, 2022 (electronics QR proviso) and e-commerce digital disclosure amendments (Rule 6(10) &amp; Rule 6(10A)).
               </p>
-              <p className="mt-1 text-[11px] font-mono text-text-2">
+              <p className="mt-1 text-[11px] font-mono text-[#59636E]">
                 Department of Consumer Affairs (DoCA) • Ministry of Consumer Affairs, Food &amp; Public Distribution • SIH 2026 Problem Statement 26034
               </p>
             </div>
 
             <div className="flex flex-col sm:items-end gap-1 text-[11px] font-mono text-center sm:text-right flex-none">
-              <span className="text-brass font-semibold">LabelLens Compliance Verification System</span>
-              <span>Tamper-Proof Chain-of-Custody (SHA-256)</span>
-              <span className="text-status-pass">● All Core Services Operational</span>
+              <span className="text-[#183D35] font-semibold">LabelLens Compliance Verification System</span>
+              <span className="text-[#59636E]">Tamper-Proof Chain-of-Custody (SHA-256)</span>
+              <span className="text-[#166534]">● All Core Services Operational</span>
             </div>
           </div>
         </footer>

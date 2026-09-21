@@ -6,57 +6,56 @@
 
 @layer base {
   :root {
-    --ink: #FAF9F6;
-    /* Off-white paper background */
+    --ink: #F7F5F0;
+    /* Ivory canvas background */
     --panel: #FFFFFF;
-    --panel-raised: #FFFFFF;
-    --panel-line: #000000;
-    /* Hard black borders */
+    --panel-raised: #F8F7F3;
+    --panel-line: #D8D7D2;
+    /* Clean precision border */
     --paper: #FFFFFF;
-    --paper-ink: #000000;
-    --brass: #000000;
-    /* Solid Black as primary action */
-    --brass-strong: #171717;
-    /* Very dark gray for hover */
+    --paper-ink: #20252B;
+    --brass: #183D35;
+    /* Precision Deep Green */
+    --brass-strong: #0F2A23;
     --brass-ink: #FFFFFF;
-    --text-1: #000000;
-    --text-2: #333333;
-    --text-3: #666666;
-    --pass: #059669;
-    --fail: #DC2626;
-    --review: #D97706;
+    --text-1: #20252B;
+    --text-2: #59636E;
+    --text-3: #8C96A0;
+    --pass: #166534;
+    --fail: #C9572C;
+    --review: #92400E;
   }
 
   body {
     background-color: var(--ink);
     color: var(--text-1);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
     -webkit-tap-highlight-color: transparent;
     overflow-x: hidden;
   }
 }
 
-/* Utilitarian Pattern Backdrop */
+/* Precision Grid Pattern Backdrop */
 .bg-grid-mesh {
-  background-color: #FAF9F6;
+  background-color: #F7F5F0;
   background-image:
-    linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
   background-size: 32px 32px;
   position: relative;
   background-attachment: fixed;
   z-index: 0;
 }
 
-/* Flat utilitarian panels instead of glassmorphism */
+/* Clean editorial precision panels */
 .glass-panel {
-  @apply bg-panel border-2 border-black shadow-[4px_4px_0_0_#000000] rounded-none;
+  @apply bg-panel border border-[#D8D7D2] rounded-none;
   position: relative;
   z-index: 10;
 }
 
 .glass-panel-raised {
-  @apply bg-panel-raised border-2 border-black shadow-[4px_4px_0_0_#000000] rounded-none hover:-translate-y-1 hover:translate-x-1 hover:shadow-[6px_6px_0_0_#000000];
+  @apply bg-panel-raised border border-[#D8D7D2] rounded-none hover:bg-white;
   position: relative;
   z-index: 10;
   transition: all 0.2s ease;
@@ -100,4 +99,191 @@ button:active {
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
+}
+
+/* Inspection motion: restrained, informational, never decorative. */
+.inspection-section {
+  scroll-margin-top: 64px;
+}
+
+.inspection-console {
+  position: relative;
+}
+
+.ocr-scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #183D35;
+  box-shadow: 0 2px 0 rgba(24, 61, 53, 0.14);
+  animation: ocr-sweep 4.8s linear infinite;
+  pointer-events: none;
+}
+
+.ocr-box {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ocr-box-in 600ms cubic-bezier(.2, .8, .2, 1) forwards;
+}
+
+.ocr-box-1 {
+  animation-delay: 220ms;
+}
+
+.ocr-box-2 {
+  animation-delay: 500ms;
+}
+
+.ocr-box-3 {
+  animation-delay: 920ms;
+}
+
+.ocr-box-4 {
+  animation-delay: 1240ms;
+}
+
+.detected-label,
+.measurement-cursor {
+  position: absolute;
+  z-index: 2;
+  padding: 3px 5px;
+  background: #F7F5F0;
+  border: 1px solid #D8D7D2;
+  color: #59636E;
+  font-family: 'IBM Plex Mono', 'Courier New', monospace;
+  font-size: 8px;
+  letter-spacing: .05em;
+  pointer-events: none;
+}
+
+.detected-label-a {
+  top: 10%;
+  right: 9%;
+  animation: annotation-settle 5s ease-in-out infinite;
+}
+
+.detected-label-b {
+  top: 45%;
+  right: 7%;
+  animation: annotation-settle 5s 1.2s ease-in-out infinite;
+}
+
+.measurement-cursor {
+  bottom: 9px;
+  left: 16px;
+  border-color: #C9572C;
+  color: #9A3412;
+  animation: measurement-nudge 3.6s ease-in-out infinite;
+}
+
+.detected-field {
+  animation: field-arrive 280ms ease-out both;
+}
+
+.finding-row {
+  opacity: 0;
+  transform: translateX(-7px);
+  transition: opacity 340ms ease-out, transform 340ms ease-out, background-color 200ms ease;
+}
+
+.finding-row-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.moving-rule-ref {
+  display: inline-block;
+  transition: transform 180ms ease, color 180ms ease;
+}
+
+.moving-rule-ref:hover {
+  color: #C9572C !important;
+  transform: translateX(5px) rotate(-1deg);
+}
+
+@keyframes ocr-sweep {
+
+  0%,
+  8% {
+    top: 6%;
+    opacity: 0;
+  }
+
+  12%,
+  88% {
+    opacity: .9;
+  }
+
+  92%,
+  100% {
+    top: 93%;
+    opacity: 0;
+  }
+}
+
+@keyframes ocr-box-in {
+  from {
+    opacity: 0;
+    transform: scale(.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes field-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes annotation-settle {
+
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  48% {
+    transform: translate(2px, -1px) rotate(-.35deg);
+  }
+}
+
+@keyframes measurement-nudge {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(9px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .ocr-scan-line,
+  .ocr-box,
+  .detected-label,
+  .measurement-cursor,
+  .detected-field {
+    animation: none;
+  }
+
+  .ocr-box,
+  .finding-row {
+    opacity: 1;
+    transform: none;
+  }
 }

@@ -9,23 +9,23 @@ import Login from "./Login";
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const T = {
-  ivory:      "#F7F5F0",
-  charcoal:   "#20252B",
-  slate:      "#59636E",
-  green:      "#183D35",
+  ivory: "#F7F5F0",
+  charcoal: "#20252B",
+  slate: "#59636E",
+  green: "#183D35",
   greenLight: "#234F45",
-  vermilion:  "#C9572C",
-  sage:       "#DCE5DD",
-  sageDark:   "#B3C5B5",
-  border:     "#D8D7D2",
+  vermilion: "#C9572C",
+  sage: "#DCE5DD",
+  sageDark: "#B3C5B5",
+  border: "#D8D7D2",
   borderDark: "#BFC0BC",
-  amber:      "#C9572C",
+  amber: "#C9572C",
 };
 
 const styles = {
-  serif:  { fontFamily: "'Instrument Serif', 'IBM Plex Serif', Georgia, serif" },
-  sans:   { fontFamily: "'IBM Plex Sans', system-ui, sans-serif" },
-  mono:   { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" },
+  serif: { fontFamily: "'Instrument Serif', 'IBM Plex Serif', Georgia, serif" },
+  sans: { fontFamily: "'IBM Plex Sans', system-ui, sans-serif" },
+  mono: { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" },
 };
 
 // ─── Reusable pieces ──────────────────────────────────────────────────────────
@@ -45,6 +45,26 @@ function SectionLabel({ number, text }) {
 
 function Rule({ style, className }) {
   return <div className={`${className || ""} h-px`} style={{ background: T.border, ...style }} />;
+}
+
+function useInView(options = { threshold: 0.18 }) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node || visible) return undefined;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setVisible(true);
+        observer.disconnect();
+      }
+    }, options);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [options, visible]);
+
+  return [ref, visible];
 }
 
 // ─── Navigation ───────────────────────────────────────────────────────────────
@@ -70,15 +90,7 @@ function Nav({ onLoginClick }) {
       <div className="mx-auto px-6 lg:px-10 h-16 flex items-center justify-between" style={{ maxWidth: 1200 }}>
         {/* Logo */}
         <div className="flex items-center gap-2.5">
-          {/* Measurement mark — crosshairs + scale tick */}
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <rect x="1" y="1" width="22" height="22" rx="1" stroke={T.green} strokeWidth="1.5" />
-            <line x1="12" y1="5" x2="12" y2="9" stroke={T.green} strokeWidth="1.5" strokeLinecap="round" />
-            <line x1="12" y1="15" x2="12" y2="19" stroke={T.green} strokeWidth="1.5" strokeLinecap="round" />
-            <line x1="5" y1="12" x2="9" y2="12" stroke={T.green} strokeWidth="1.5" strokeLinecap="round" />
-            <line x1="15" y1="12" x2="19" y2="12" stroke={T.green} strokeWidth="1.5" strokeLinecap="round" />
-            <circle cx="12" cy="12" r="2" fill={T.vermilion} />
-          </svg>
+          <LogoMark size={26} primaryColor={T.green} secondaryColor={T.vermilion} />
           <div style={{ lineHeight: 1 }}>
             <div style={{ ...styles.mono, fontSize: "15px", fontWeight: 700, color: T.charcoal, letterSpacing: "0.08em" }}>
               LABEL<span style={{ color: T.green }}>LENS</span>
@@ -143,7 +155,7 @@ function Nav({ onLoginClick }) {
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 function Hero({ onLoginClick }) {
   return (
-    <section className="pt-24 pb-0" style={{ background: T.ivory, borderBottom: `1px solid ${T.border}` }}>
+    <section className="inspection-section pt-24 pb-0" style={{ background: T.ivory, borderBottom: `1px solid ${T.border}` }}>
       <div className="mx-auto px-6 lg:px-10" style={{ maxWidth: 1200 }}>
         <div className="flex flex-col lg:flex-row gap-0 items-stretch">
 
@@ -217,19 +229,38 @@ function Hero({ onLoginClick }) {
 
 // Inspection workstation visual (right side of hero)
 function InspectionWorkstation() {
+  const [detectedFields, setDetectedFields] = useState(0);
+  const [scanSeconds, setScanSeconds] = useState(0);
   const fields = [
-    { label: "MRP",              value: "₹70",                status: "verified" },
-    { label: "Net quantity",     value: "70 g",               status: "verified" },
-    { label: "Manufacturer",     value: "Nestlé India Ltd.",   status: "verified" },
-    { label: "Consumer helpline",value: "1800-xxx-xxxx",       status: "missing"  },
-    { label: "Date of packing",  value: "AUG 2026",           status: "verified" },
-    { label: "Country of origin",value: "India",              status: "verified" },
-    { label: "FSSAI license",    value: "—",                  status: "review"   },
-    { label: "Veg / Non-veg",    value: "VEG",                status: "verified" },
+    { label: "MRP", value: "₹70", status: "verified" },
+    { label: "Net quantity", value: "70 g", status: "verified" },
+    { label: "Manufacturer", value: "Nestlé India Ltd.", status: "verified" },
+    { label: "Consumer helpline", value: "1800-xxx-xxxx", status: "missing" },
+    { label: "Date of packing", value: "AUG 2026", status: "verified" },
+    { label: "Country of origin", value: "India", status: "verified" },
+    { label: "FSSAI license", value: "—", status: "review" },
+    { label: "Veg / Non-veg", value: "VEG", status: "verified" },
   ];
 
+  useEffect(() => {
+    const detectionTimer = window.setInterval(() => {
+      setDetectedFields((count) => {
+        if (count >= fields.length) {
+          window.clearInterval(detectionTimer);
+          return count;
+        }
+        return count + 1;
+      });
+    }, 380);
+    const clockTimer = window.setInterval(() => setScanSeconds((seconds) => seconds + 1), 1000);
+    return () => {
+      window.clearInterval(detectionTimer);
+      window.clearInterval(clockTimer);
+    };
+  }, [fields.length]);
+
   return (
-    <div className="h-full min-h-[520px] flex flex-col" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+    <div className="h-full min-h-[520px] flex flex-col inspection-console" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
       {/* Toolbar strip */}
       <div className="flex items-center justify-between px-4 py-2.5" style={{ borderBottom: `1px solid ${T.border}`, background: T.ivory }}>
         <span style={{ ...styles.mono, fontSize: "9px", color: T.slate, letterSpacing: "0.12em", textTransform: "uppercase" }}>
@@ -237,7 +268,7 @@ function InspectionWorkstation() {
         </span>
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full" style={{ background: "#4CAF50" }} />
-          <span style={{ ...styles.mono, fontSize: "9px", color: T.slate }}>active</span>
+          <span style={{ ...styles.mono, fontSize: "9px", color: T.slate }}>live · {String(scanSeconds).padStart(2, "0")}s</span>
         </div>
       </div>
 
@@ -246,34 +277,38 @@ function InspectionWorkstation() {
         <img
           src="/images/hero_scan.png"
           alt="Packaged product scan"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
           style={{ opacity: 0.85, filter: "contrast(1.05)" }}
           onError={(e) => { e.target.style.display = "none"; }}
         />
+        <div className="ocr-scan-line" aria-hidden="true" />
         {/* OCR annotation boxes */}
-        <svg className="absolute inset-0 w-full h-full">
-          <rect x="18%" y="18%" width="30%" height="12%" rx="0" fill="none" stroke="#4CAF50" strokeWidth="1.5" strokeDasharray="3,2" />
-          <rect x="55%" y="24%" width="25%" height="9%" rx="0" fill="none" stroke="#4CAF50" strokeWidth="1.5" strokeDasharray="3,2" />
-          <rect x="18%" y="55%" width="45%" height="10%" rx="0" fill="none" stroke={T.vermilion} strokeWidth="1.5" strokeDasharray="3,2" />
-          <rect x="18%" y="70%" width="35%" height="9%" rx="0" fill="none" stroke="#F59E0B" strokeWidth="1.5" strokeDasharray="3,2" />
+        <svg className="absolute inset-0 w-full h-full ocr-overlay" aria-hidden="true">
+          <rect className="ocr-box ocr-box-1" x="18%" y="18%" width="30%" height="12%" rx="0" fill="none" stroke="#4CAF50" strokeWidth="1.5" strokeDasharray="3,2" />
+          <rect className="ocr-box ocr-box-2" x="55%" y="24%" width="25%" height="9%" rx="0" fill="none" stroke="#4CAF50" strokeWidth="1.5" strokeDasharray="3,2" />
+          <rect className="ocr-box ocr-box-3" x="18%" y="55%" width="45%" height="10%" rx="0" fill="none" stroke={T.vermilion} strokeWidth="1.5" strokeDasharray="3,2" />
+          <rect className="ocr-box ocr-box-4" x="18%" y="70%" width="35%" height="9%" rx="0" fill="none" stroke="#F59E0B" strokeWidth="1.5" strokeDasharray="3,2" />
           {/* Leader lines */}
           <line x1="48%" y1="24%" x2="60%" y2="15%" stroke={T.border} strokeWidth="1" />
           <line x1="63%" y1="24%" x2="85%" y2="12%" stroke={T.border} strokeWidth="1" />
         </svg>
+        <span className="detected-label detected-label-a">MRP · 98.7%</span>
+        <span className="detected-label detected-label-b">NET QTY · 99.1%</span>
+        <span className="measurement-cursor">↔ 3.2 mm</span>
         {/* Floating annotation */}
         <div
           className="absolute bottom-3 right-3 flex items-center gap-2 px-2.5 py-1.5"
           style={{ background: T.charcoal, border: `1px solid ${T.border}` }}
         >
-          <span style={{ ...styles.mono, fontSize: "9px", color: "#fff", letterSpacing: "0.06em" }}>6 / 8 declarations verified</span>
+          <span style={{ ...styles.mono, fontSize: "9px", color: "#fff", letterSpacing: "0.06em" }}>{Math.min(detectedFields, 6)} / 8 declarations verified</span>
           <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#4CAF50" }} />
         </div>
       </div>
 
       {/* Field list */}
       <div className="flex-1 overflow-auto divide-y" style={{ divideColor: T.border }}>
-        {fields.map((f) => (
-          <div key={f.label} className="flex items-center justify-between px-4 py-2" style={{ borderBottom: `1px solid ${T.border}` }}>
+        {fields.slice(0, detectedFields).map((f, index) => (
+          <div key={f.label} className="flex items-center justify-between px-4 py-2 detected-field" style={{ borderBottom: `1px solid ${T.border}`, animationDelay: `${index * 45}ms` }}>
             <div>
               <div style={{ ...styles.mono, fontSize: "9px", color: T.slate, letterSpacing: "0.1em", textTransform: "uppercase" }}>{f.label}</div>
               <div style={{ ...styles.sans, fontSize: "12px", color: T.charcoal, fontWeight: 500, marginTop: "1px" }}>{f.value}</div>
@@ -288,9 +323,9 @@ function InspectionWorkstation() {
 
 function StatusBadge({ status }) {
   const map = {
-    verified: { label: "Verified",  color: "#166534", bg: "#F0FDF4", border: "#BBF7D0" },
-    missing:  { label: "Not found", color: "#9A3412", bg: "#FFF7ED", border: "#FED7AA" },
-    review:   { label: "Review",    color: "#92400E", bg: "#FFFBEB", border: "#FDE68A" },
+    verified: { label: "Verified", color: "#166534", bg: "#F0FDF4", border: "#BBF7D0" },
+    missing: { label: "Not found", color: "#9A3412", bg: "#FFF7ED", border: "#FED7AA" },
+    review: { label: "Review", color: "#92400E", bg: "#FFFBEB", border: "#FDE68A" },
   };
   const s = map[status] || map.review;
   return (
@@ -303,7 +338,7 @@ function StatusBadge({ status }) {
 // ─── Section 01: The problem ──────────────────────────────────────────────────
 function ProblemSection() {
   return (
-    <section id="product" className="py-20 px-6 lg:px-10" style={{ background: T.ivory, borderBottom: `1px solid ${T.border}` }}>
+    <section id="product" className="inspection-section py-20 px-6 lg:px-10" style={{ background: T.ivory, borderBottom: `1px solid ${T.border}` }}>
       <div className="mx-auto" style={{ maxWidth: 1200 }}>
         <SectionLabel number="01" text="The challenge" />
 
@@ -361,15 +396,15 @@ function ProblemSection() {
 // ─── Section 02: Workflow ─────────────────────────────────────────────────────
 function WorkflowSection() {
   const steps = [
-    { num: "01", title: "Capture",  sub: "Camera or upload",       icon: Camera,    note: "JPEG / PNG / HEIC" },
-    { num: "02", title: "Detect",   sub: "Label region isolated",  icon: Eye,       note: "Object segmentation" },
-    { num: "03", title: "Extract",  sub: "OCR reads declarations", icon: ScanLine,  note: "8 mandatory fields" },
-    { num: "04", title: "Validate", sub: "Rules are checked",      icon: Scale,     note: "LMPC 2011 Rules 6(1)–(10)" },
-    { num: "05", title: "Report",   sub: "Evidence-backed result", icon: FileBadge2,note: "SHA-256 sealed" },
+    { num: "01", title: "Capture", sub: "Camera or upload", icon: Camera, note: "JPEG / PNG / HEIC" },
+    { num: "02", title: "Detect", sub: "Label region isolated", icon: Eye, note: "Object segmentation" },
+    { num: "03", title: "Extract", sub: "OCR reads declarations", icon: ScanLine, note: "8 mandatory fields" },
+    { num: "04", title: "Validate", sub: "Rules are checked", icon: Scale, note: "LMPC 2011 Rules 6(1)–(10)" },
+    { num: "05", title: "Report", sub: "Evidence-backed result", icon: FileBadge2, note: "SHA-256 sealed" },
   ];
 
   return (
-    <section id="how-it-works" className="py-20 px-6 lg:px-10" style={{ background: T.charcoal, borderBottom: `1px solid #2E3540` }}>
+    <section id="how-it-works" className="inspection-section py-20 px-6 lg:px-10" style={{ background: T.charcoal, borderBottom: `1px solid #2E3540` }}>
       <div className="mx-auto" style={{ maxWidth: 1200 }}>
         <div className="flex items-center gap-3 mb-2">
           <span style={{ ...styles.mono, color: "#59636E", fontSize: "10px", letterSpacing: "0.15em" }}>02 /</span>
@@ -417,7 +452,7 @@ function WorkflowSection() {
         {/* Stat strip */}
         <div className="mt-1 grid grid-cols-3" style={{ border: `1px solid #2E3540`, borderTop: "none" }}>
           {[
-            { v: "<2s",   l: "End-to-end" },
+            { v: "<2s", l: "End-to-end" },
             { v: "99.4%", l: "OCR accuracy" },
             { v: "8 / 8", l: "Fields checked" },
           ].map(({ v, l }, i) => (
@@ -434,19 +469,20 @@ function WorkflowSection() {
 
 // ─── Section 03: Inspection result ───────────────────────────────────────────
 function InspectionResultSection() {
+  const [sectionRef, isVisible] = useInView();
   const findings = [
-    { field: "MRP",              value: "₹70",              status: "pass",   rule: "Rule 6(1)(d)" },
-    { field: "Net quantity",     value: "70 g",             status: "pass",   rule: "Rule 6(1)(b)" },
-    { field: "Manufacturer",     value: "Nestlé India Ltd.",status: "pass",   rule: "Rule 6(1)(e)" },
-    { field: "Consumer helpline",value: "Not found on label",status: "review",rule: "Rule 6(1)(h)" },
-    { field: "Date of packing",  value: "AUG 2026",        status: "pass",   rule: "Rule 6(1)(f)" },
-    { field: "Country of origin",value: "India",           status: "pass",   rule: "Rule 6(1)(g)" },
-    { field: "FSSAI Lic. No.",   value: "Not legible",     status: "fail",   rule: "Rule 6(1)(j)" },
-    { field: "Veg / Non-veg",    value: "Green dot present",status: "pass",  rule: "FSS Rules" },
+    { field: "MRP", value: "₹70", status: "pass", rule: "Rule 6(1)(d)" },
+    { field: "Net quantity", value: "70 g", status: "pass", rule: "Rule 6(1)(b)" },
+    { field: "Manufacturer", value: "Nestlé India Ltd.", status: "pass", rule: "Rule 6(1)(e)" },
+    { field: "Consumer helpline", value: "Not found on label", status: "review", rule: "Rule 6(1)(h)" },
+    { field: "Date of packing", value: "AUG 2026", status: "pass", rule: "Rule 6(1)(f)" },
+    { field: "Country of origin", value: "India", status: "pass", rule: "Rule 6(1)(g)" },
+    { field: "FSSAI Lic. No.", value: "Not legible", status: "fail", rule: "Rule 6(1)(j)" },
+    { field: "Veg / Non-veg", value: "Green dot present", status: "pass", rule: "FSS Rules" },
   ];
 
   return (
-    <section id="reports" className="py-20 px-6 lg:px-10" style={{ background: "#F0EEE9", borderBottom: `1px solid ${T.border}` }}>
+    <section ref={sectionRef} id="reports" className="inspection-section py-20 px-6 lg:px-10" style={{ background: "#F0EEE9", borderBottom: `1px solid ${T.border}` }}>
       <div className="mx-auto" style={{ maxWidth: 1200 }}>
         <SectionLabel number="03" text="Inspection result" />
 
@@ -468,6 +504,10 @@ function InspectionResultSection() {
               <img src="/images/hero_scan.png" alt="product" className="w-full h-full object-cover" style={{ opacity: 0.8 }}
                 onError={(e) => e.target.style.display = "none"} />
               {/* Number markers */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true">
+                <line x1="21%" y1="25%" x2="75%" y2="15%" stroke={T.borderDark} strokeWidth="1" strokeDasharray="3 3" />
+                <line x1="65%" y1="36%" x2="88%" y2="44%" stroke={T.borderDark} strokeWidth="1" strokeDasharray="3 3" />
+              </svg>
               {[[20, 25], [65, 36], [20, 62], [20, 76]].map(([x, y], i) => (
                 <div key={i} className="absolute flex items-center justify-center" style={{
                   left: `${x}%`, top: `${y}%`, width: 18, height: 18,
@@ -481,7 +521,7 @@ function InspectionResultSection() {
             <div className="p-4 space-y-2">
               <div style={{ ...styles.mono, fontSize: "9px", color: T.slate, letterSpacing: "0.1em", textTransform: "uppercase" }}>Product</div>
               <div style={{ ...styles.sans, fontSize: "13px", color: T.charcoal, fontWeight: 500, lineHeight: 1.4 }}>Maggi 2-Minute Noodles, 70g</div>
-              <div style={{ ...styles.mono, fontSize: "9px", color: T.slate }}>Scanned 18 Sep 2026 · REF-2026-0918-001</div>
+              <div style={{ ...styles.mono, fontSize: "9px", color: T.slate }}>Scanned 18 Sep 2026 · 10:42:18 IST · REF-2026-0918-001</div>
             </div>
           </div>
 
@@ -494,13 +534,13 @@ function InspectionResultSection() {
               <span className="w-20 text-right" style={{ ...styles.mono, fontSize: "9px", color: T.slate, letterSpacing: "0.1em", textTransform: "uppercase" }}>Status</span>
             </div>
             {findings.map((f, i) => (
-              <div key={i} className="flex items-center px-5 py-3 hover:bg-[#F7F5F0] transition-colors" style={{ borderBottom: `1px solid ${T.border}` }}>
+              <div key={i} className={`flex items-center px-5 py-3 hover:bg-[#F7F5F0] transition-colors finding-row ${isVisible ? "finding-row-visible" : ""}`} style={{ borderBottom: `1px solid ${T.border}`, transitionDelay: `${i * 90}ms` }}>
                 <span className="flex-1" style={{ ...styles.sans, fontSize: "13px", color: T.charcoal }}>{f.field}</span>
                 <span className="w-52" style={{ ...styles.sans, fontSize: "12px", color: T.slate }}>{f.value}</span>
                 <span className="w-28" style={{ ...styles.mono, fontSize: "9px", color: T.slate }}>{f.rule}</span>
                 <span className="w-20 text-right">
-                  {f.status === "pass"   && <span style={{ ...styles.mono, fontSize: "9px", color: "#166534", letterSpacing: "0.08em" }}>✓ PASS</span>}
-                  {f.status === "fail"   && <span style={{ ...styles.mono, fontSize: "9px", color: T.vermilion, letterSpacing: "0.08em" }}>✗ FAIL</span>}
+                  {f.status === "pass" && <span style={{ ...styles.mono, fontSize: "9px", color: "#166534", letterSpacing: "0.08em" }}>✓ PASS</span>}
+                  {f.status === "fail" && <span style={{ ...styles.mono, fontSize: "9px", color: T.vermilion, letterSpacing: "0.08em" }}>✗ FAIL</span>}
                   {f.status === "review" && <span style={{ ...styles.mono, fontSize: "9px", color: "#92400E", letterSpacing: "0.08em" }}>⚠ REVIEW</span>}
                 </span>
               </div>
@@ -527,13 +567,13 @@ function InspectionResultSection() {
 // ─── Section 04: Rules ────────────────────────────────────────────────────────
 function RulesSection() {
   const rules = [
-    { ref: "Rule 6(1)",  title: "Mandatory declarations", desc: "Every package must declare commodity name, net quantity, unit sale price, date of manufacture or packing, name and address of manufacturer, and country of origin." },
-    { ref: "Rule 6(2)",  title: "Minimum font size requirements", desc: "Declarations must be printed in font sizes not less than those specified in Schedule II, based on net quantity of the package. Violations are measured against stated minimum dimensions." },
+    { ref: "Rule 6(1)", title: "Mandatory declarations", desc: "Every package must declare commodity name, net quantity, unit sale price, date of manufacture or packing, name and address of manufacturer, and country of origin." },
+    { ref: "Rule 6(2)", title: "Minimum font size requirements", desc: "Declarations must be printed in font sizes not less than those specified in Schedule II, based on net quantity of the package. Violations are measured against stated minimum dimensions." },
     { ref: "Rule 6(10)", title: "E-commerce display requirements", desc: "Where any packaged commodity is sold through electronic means, the mandatory declarations must be displayed to the buyer before they complete a purchase. No scrolling required." },
   ];
 
   return (
-    <section id="rules" className="py-20 px-6 lg:px-10" style={{ background: T.ivory, borderBottom: `1px solid ${T.border}` }}>
+    <section id="rules" className="inspection-section py-20 px-6 lg:px-10" style={{ background: T.ivory, borderBottom: `1px solid ${T.border}` }}>
       <div className="mx-auto" style={{ maxWidth: 1200 }}>
         <SectionLabel number="04" text="Regulatory framework" />
 
@@ -555,7 +595,7 @@ function RulesSection() {
               style={{ borderBottom: i < rules.length - 1 ? `1px solid ${T.border}` : "none" }}
             >
               <div className="sm:w-36 px-6 py-5 flex-shrink-0" style={{ borderRight: `1px solid ${T.border}`, background: "#F8F7F3" }}>
-                <span style={{ ...styles.mono, fontSize: "10px", color: T.green, letterSpacing: "0.1em", fontWeight: 600 }}>{r.ref}</span>
+                <span className="moving-rule-ref" style={{ ...styles.mono, fontSize: "10px", color: T.green, letterSpacing: "0.1em", fontWeight: 600 }}>{r.ref}</span>
               </div>
               <div className="sm:w-60 px-6 py-5 flex-shrink-0" style={{ borderRight: `1px solid ${T.border}` }}>
                 <span style={{ ...styles.sans, fontSize: "13px", color: T.charcoal, fontWeight: 600 }}>{r.title}</span>
@@ -578,15 +618,15 @@ function RulesSection() {
 // ─── Section 05: Data ─────────────────────────────────────────────────────────
 function DataSection() {
   const feed = [
-    { name: "Maggi 2-Minute Noodles 70g",    date: "18 Sep 2026", result: "fail" },
-    { name: "Amul Butter 100g",              date: "18 Sep 2026", result: "pass" },
-    { name: "Haldiram's Aloo Bhujia 200g",  date: "18 Sep 2026", result: "review" },
-    { name: "Tropicana Orange Juice 1L",     date: "17 Sep 2026", result: "pass" },
-    { name: "Parle-G Biscuits 100g",         date: "17 Sep 2026", result: "pass" },
+    { name: "Maggi 2-Minute Noodles 70g", date: "18 Sep 2026", result: "fail" },
+    { name: "Amul Butter 100g", date: "18 Sep 2026", result: "pass" },
+    { name: "Haldiram's Aloo Bhujia 200g", date: "18 Sep 2026", result: "review" },
+    { name: "Tropicana Orange Juice 1L", date: "17 Sep 2026", result: "pass" },
+    { name: "Parle-G Biscuits 100g", date: "17 Sep 2026", result: "pass" },
   ];
 
   return (
-    <section id="product" className="py-20 px-6 lg:px-10" style={{ background: T.green, borderBottom: `1px solid #0f2a23` }}>
+    <section id="product" className="inspection-section py-20 px-6 lg:px-10" style={{ background: T.green, borderBottom: `1px solid #0f2a23` }}>
       <div className="mx-auto" style={{ maxWidth: 1200 }}>
         <div className="flex items-center gap-3 mb-12">
           <span style={{ ...styles.mono, color: T.sageDark, fontSize: "10px", letterSpacing: "0.15em" }}>05 /</span>
@@ -605,8 +645,8 @@ function DataSection() {
           <div className="flex flex-row lg:flex-col lg:w-64" style={{ borderRight: `1px solid #234F45` }}>
             {[
               { v: "1,247", l: "Total scans", c: T.ivory },
-              { v: "183",   l: "Issues flagged", c: T.vermilion },
-              { v: "92%",   l: "Declarations verified", c: T.sage },
+              { v: "183", l: "Issues flagged", c: T.vermilion },
+              { v: "92%", l: "Declarations verified", c: T.sage },
             ].map(({ v, l, c }, i) => (
               <div key={l} className="flex-1 p-6" style={{ borderBottom: i < 2 ? `1px solid #234F45` : "none" }}>
                 <div style={{ ...styles.serif, fontSize: "2.2rem", color: c, lineHeight: 1, fontWeight: 400 }}>{v}</div>
@@ -627,8 +667,8 @@ function DataSection() {
                 <span className="flex-1" style={{ ...styles.sans, fontSize: "13px", color: T.ivory }}>{f.name}</span>
                 <span className="w-28" style={{ ...styles.mono, fontSize: "10px", color: T.sageDark }}>{f.date}</span>
                 <span className="w-20 text-right">
-                  {f.result === "pass"   && <span style={{ ...styles.mono, fontSize: "9px", color: "#4CAF50", letterSpacing: "0.08em" }}>PASS</span>}
-                  {f.result === "fail"   && <span style={{ ...styles.mono, fontSize: "9px", color: T.vermilion, letterSpacing: "0.08em" }}>FAIL</span>}
+                  {f.result === "pass" && <span style={{ ...styles.mono, fontSize: "9px", color: "#4CAF50", letterSpacing: "0.08em" }}>PASS</span>}
+                  {f.result === "fail" && <span style={{ ...styles.mono, fontSize: "9px", color: T.vermilion, letterSpacing: "0.08em" }}>FAIL</span>}
                   {f.result === "review" && <span style={{ ...styles.mono, fontSize: "9px", color: "#F59E0B", letterSpacing: "0.08em" }}>REVIEW</span>}
                 </span>
               </div>
@@ -647,15 +687,15 @@ function DataSection() {
 // ─── Section 06: Evidence ─────────────────────────────────────────────────────
 function EvidenceSection() {
   const chain = [
-    { label: "Source image",  desc: "Original label photograph", icon: Camera },
-    { label: "OCR output",    desc: "Raw machine-read text",    icon: Eye },
-    { label: "Rule check",    desc: "Against LMPC 2011 clause", icon: Scale },
-    { label: "Finding",       desc: "Pass / Review / Fail",     icon: FileBadge2 },
-    { label: "Report",        desc: "SHA-256 sealed document",  icon: FileText },
+    { label: "Source image", desc: "Original label photograph", icon: Camera },
+    { label: "OCR output", desc: "Raw machine-read text", icon: Eye },
+    { label: "Rule check", desc: "Against LMPC 2011 clause", icon: Scale },
+    { label: "Finding", desc: "Pass / Review / Fail", icon: FileBadge2 },
+    { label: "Report", desc: "SHA-256 sealed document", icon: FileText },
   ];
 
   return (
-    <section id="product" className="py-20 px-6 lg:px-10" style={{ background: T.ivory, borderBottom: `1px solid ${T.border}` }}>
+    <section id="product" className="inspection-section py-20 px-6 lg:px-10" style={{ background: T.ivory, borderBottom: `1px solid ${T.border}` }}>
       <div className="mx-auto" style={{ maxWidth: 1200 }}>
         <SectionLabel number="06" text="Evidence chain" />
 
@@ -707,7 +747,7 @@ function EvidenceSection() {
 // ─── Final CTA ────────────────────────────────────────────────────────────────
 function FinalCTA({ onLoginClick }) {
   return (
-    <section className="py-24 px-6 lg:px-10" style={{ background: "#F0EEE9", borderBottom: `1px solid ${T.border}` }}>
+    <section className="inspection-section py-24 px-6 lg:px-10" style={{ background: "#F0EEE9", borderBottom: `1px solid ${T.border}` }}>
       <div className="mx-auto" style={{ maxWidth: 1200 }}>
         <div className="flex flex-col lg:flex-row gap-16 items-start">
           <div className="lg:w-1/2">
@@ -763,12 +803,12 @@ function FinalCTA({ onLoginClick }) {
               </span>
             </div>
             {[
-              ["Regulatory framework",    "Legal Metrology (PC) Rules, 2011"],
-              ["Governing authority",     "Min. of Consumer Affairs, DoCA"],
-              ["Mandatory fields checked","8 / 8"],
-              ["Inspection method",       "Computer vision + OCR"],
-              ["Report format",           "Structured record, SHA-256 sealed"],
-              ["Platform type",           "Web-based · No app required"],
+              ["Regulatory framework", "Legal Metrology (PC) Rules, 2011"],
+              ["Governing authority", "Min. of Consumer Affairs, DoCA"],
+              ["Mandatory fields checked", "8 / 8"],
+              ["Inspection method", "Computer vision + OCR"],
+              ["Report format", "Structured record, SHA-256 sealed"],
+              ["Platform type", "Web-based · No app required"],
             ].map(([k, v], i, arr) => (
               <div key={k} className="flex items-center px-6 py-3.5" style={{ borderBottom: i < arr.length - 1 ? `1px solid ${T.border}` : "none" }}>
                 <span className="flex-1" style={{ ...styles.sans, fontSize: "12px", color: T.slate }}>{k}</span>
@@ -869,16 +909,16 @@ export default function LandingPage({ onLoginSuccess }) {
 
   return (
     <div className="w-full overflow-x-hidden" style={{ background: T.ivory, ...styles.sans }}>
-      <Nav        onLoginClick={() => setShowLogin(true)} />
+      <Nav onLoginClick={() => setShowLogin(true)} />
       <div style={{ paddingTop: "64px" }}>
-        <Hero       onLoginClick={() => setShowLogin(true)} />
+        <Hero onLoginClick={() => setShowLogin(true)} />
         <ProblemSection />
         <WorkflowSection />
         <InspectionResultSection />
         <RulesSection />
         <DataSection />
         <EvidenceSection />
-        <FinalCTA   onLoginClick={() => setShowLogin(true)} />
+        <FinalCTA onLoginClick={() => setShowLogin(true)} />
         <Footer />
       </div>
     </div>

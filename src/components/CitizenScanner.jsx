@@ -6,16 +6,16 @@ export default function CitizenScanner({ onReportSubmitted }) {
   return (
     <div className="w-full mx-auto font-sans animate-fadeIn pb-20">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-        <div className="flex items-center gap-2 text-xs text-text-3 bg-panel-darker inline-flex px-3 py-1.5 rounded-md border border-panel-line">
-          <MapPin size={14} className="text-citizen-primary" />
+        <div className="flex items-center gap-2 text-xs text-[#59636E] bg-[#F8F7F3] inline-flex px-3 py-1.5 border border-[#D8D7D2] font-mono">
+          <MapPin size={14} className="text-[#183D35]" />
           <span>Location: Maharashtra (Auto-detected)</span>
         </div>
       </div>
 
       <VisionInspector />
 
-      <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm text-center mt-6">
-        <p className="text-sm font-medium text-slate-700 mb-3">Help enforce Legal Metrology standards and protect fellow consumers.</p>
+      <div className="bg-white p-5 border border-[#D8D7D2] text-center mt-6">
+        <p className="text-xs font-sans text-[#59636E] mb-3">Help enforce Legal Metrology standards and protect fellow consumers.</p>
         <button
           onClick={() => {
             if (onReportSubmitted) {
@@ -33,10 +33,10 @@ export default function CitizenScanner({ onReportSubmitted }) {
               });
             }
           }}
-          className="w-full max-w-sm mx-auto bg-slate-900 hover:bg-slate-800 active:scale-98 text-white font-semibold text-sm py-3 px-6 rounded-xl shadow-sm transition-all duration-200 flex items-center justify-center gap-2"
+          className="w-full max-w-sm mx-auto bg-[#183D35] hover:bg-[#0f2a23] text-white font-semibold text-xs py-3 px-6 transition-all flex items-center justify-center gap-2 cursor-pointer uppercase font-mono tracking-wider border-none"
         >
-          <AlertTriangle size={17} className="text-amber-400" />
-          <span className="tracking-wide">Report Violation to Authority</span>
+          <AlertTriangle size={15} className="text-[#C9572C]" />
+          <span>Report Violation to Authority</span>
         </button>
       </div>
     </div>
