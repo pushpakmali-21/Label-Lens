@@ -84,7 +84,7 @@ export default function App() {
   const handleSelectScenarioAndScan = (mode, frameB64 = null) => {
     if (mode) setRule6Mode(mode);
     if (frameB64) setCapturedFrame(frameB64);
-    setActiveTab(userRole === "citizen" ? "citizen" : "rule6");
+    setActiveTab(userRole === "citizen" ? "citizen" : "vision");
   };
 
   if (!isLoggedIn) {

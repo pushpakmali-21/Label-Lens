@@ -8,7 +8,7 @@
  * we call the backend directly for simplicity.
  */
 
-const BASE_URL = "http://localhost:8000/api/v1";
+const BASE_URL = "/api/v1";
 
 /**
  * Convert a File or Blob to a raw base64 string (no data-URI prefix).

@@ -1,41 +1,63 @@
 import React, { useState, useEffect } from "react";
-import { FileText, Printer, ShieldCheck, Hash, MapPin, Calendar, Building, AlertTriangle, ArrowLeft } from "lucide-react";
+import { FileText, Printer, ShieldCheck, AlertTriangle, ArrowLeft, CheckCircle2, XCircle, User, Phone, Mail, MapPin } from "lucide-react";
 import { generateEvidenceSeal } from "../utils/evidenceSealer";
+
+// ── Scan result data from the Prohibited Expressions + Consumer Care audit ─────
+const SCAN_VIOLATIONS = [
+  {
+    section: "Rule 11(1)",
+    nature: 'Use of prohibited expression "net weight when packed" on label',
+    evidence: 'OCR extracted text: "Net weight when packed: 500 gms approx" — manufacturer cannot hedge against transit desiccation; net weight must hold true at point of sale',
+    severity: "Substantive Violation",
+  },
+  {
+    section: "Rule 11(1)",
+    nature: 'Use of prohibited approximate qualifier "approx" in net quantity declaration',
+    evidence: 'OCR extracted text: "500 gms approx" — abbreviated approximate qualification is impermissible under the Second Schedule',
+    severity: "Substantive Violation",
+  },
+  {
+    section: "Rule 13 r/w Second Schedule",
+    nature: 'Use of non-standard, impermissible unit symbol "gms" in net quantity declaration',
+    evidence: 'OCR extracted text: "500 gms" — permissible standard SI symbol is "g" (gram). "gms" is not a recognised unit symbol under the Second Schedule',
+    severity: "Substantive Violation",
+  },
+  {
+    section: "Rule 6(1)(f)",
+    nature: "Omission of mandatory Consumer Redressal Email from consumer care declaration",
+    evidence: "Consumer care panel is 75% complete. Officer name, telephone (1800-111-2233), and postal address are present but the mandatory consumer grievance email address field is absent",
+    severity: "Substantive Violation",
+  },
+];
+
+const CONSUMER_CARE_DATA = {
+  score: 75,
+  officer: "Customer Redressal Officer",
+  telephone: "1800-111-2233",
+  email: null, // Missing — primary violation
+  address: "Plot 24, Industrial Area, Sector 5, Gurugram, Haryana",
+};
 
 export default function NoticeGenerator({ scenarioForNotice, onBackToScan }) {
   const [sealData, setSealData] = useState(null);
   const [caseNumber] = useState(`DOCA/LM/2026/SCN-${Math.floor(10000 + Math.random() * 90000)}`);
 
-  // Notice details based on active scenario or default
-  const [noticeDetails, setNoticeDetails] = useState({
+  const [noticeDetails] = useState({
     respondent: scenarioForNotice?.brand || "Freshline Beverages Pvt. Ltd.",
     respondentAddress: "Plot 18, MIDC Bhosari, Pune, Maharashtra - 411026",
-    product: scenarioForNotice?.product || "Cold-Pressed Orange Juice, 500 ml",
-    platform: scenarioForNotice?.id === "ecommerce" ? "QuickCommerce Platform Listing (App ID: 48213)" : "Physical Retail Shelf (Sector 18 POS)",
+    product: scenarioForNotice?.product || "Packaged Food Product (Net Qty: 500 g)",
+    platform: scenarioForNotice?.id === "ecommerce"
+      ? "QuickCommerce Platform Listing (App ID: 48213)"
+      : "Physical Retail Shelf (Sector 18 POS)",
     mrp: scenarioForNotice?.mrp || "₹120.00",
-    violations: [
-      {
-        section: "Rule 6(10) r/w Rule 6(1)(d)",
-        nature: "Total omission of Month & Year of Manufacture / Best Before Date on digital listing",
-        evidence: "Screenshot OCR confirms field absent from digital product carousel",
-        severity: "Substantive Violation",
-      },
-      {
-        section: "Rule 6(10) r/w Rule 6(1)(f)",
-        nature: "Omission of mandatory Consumer Grievance redressal telephone & email",
-        evidence: "No contact details provided prior to sale checkout",
-        severity: "Substantive Violation",
-      },
-    ],
+    violations: SCAN_VIOLATIONS,
   });
 
   useEffect(() => {
     generateEvidenceSeal({ caseNumber, noticeDetails }).then(setSealData);
   }, [caseNumber, noticeDetails]);
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const handlePrint = () => window.print();
 
   return (
     <div className="space-y-6">
@@ -50,7 +72,7 @@ export default function NoticeGenerator({ scenarioForNotice, onBackToScan }) {
             Statutory Show-Cause Notice Generator
           </h1>
           <p className="text-xs sm:text-sm text-text-2 mt-1 leading-relaxed">
-            Instantly compiles Courtroom-grade legal notices with embedded OCR evidence and SHA-256 cryptographic chain-of-custody seal.
+            Instantly compiles courtroom-grade legal notices with embedded OCR evidence and SHA-256 cryptographic chain-of-custody seal.
           </p>
         </div>
 
@@ -64,7 +86,6 @@ export default function NoticeGenerator({ scenarioForNotice, onBackToScan }) {
               <span>Back to Scanner</span>
             </button>
           )}
-
           <button
             onClick={handlePrint}
             className="bg-brass hover:bg-brass-strong active:scale-95 text-brass-ink font-semibold text-xs sm:text-sm px-4 py-2 rounded flex items-center gap-2 transition-all shadow-sm"
@@ -75,8 +96,9 @@ export default function NoticeGenerator({ scenarioForNotice, onBackToScan }) {
         </div>
       </div>
 
-      {/* Printable Legal Notice Document Container */}
+      {/* Printable Legal Notice Document */}
       <div className="max-w-4xl mx-auto bg-[#FFFFFF] text-[#111827] rounded shadow-2xl p-5 sm:p-10 md:p-12 font-serif border border-gray-200 print:shadow-none print:border-none print:p-0">
+
         {/* Government Header */}
         <div className="text-center border-b-2 border-[#111827] pb-4 mb-5 sm:mb-6">
           <div className="font-sans font-bold text-xs sm:text-sm tracking-widest uppercase text-gray-700">
@@ -111,7 +133,7 @@ export default function NoticeGenerator({ scenarioForNotice, onBackToScan }) {
             Show-Cause Notice Under Section 39
           </h2>
           <div className="font-sans text-xs text-gray-700 italic mt-0.5">
-            Read with Rule 6, Rule 11 &amp; Rule 13 of the Legal Metrology (Packaged Commodities) Rules, 2011
+            Read with Rule 6(1)(f), Rule 11(1) &amp; Rule 13 / Second Schedule of the Legal Metrology (Packaged Commodities) Rules, 2011
           </div>
         </div>
 
@@ -132,77 +154,127 @@ export default function NoticeGenerator({ scenarioForNotice, onBackToScan }) {
             <strong>Commodity / SKU:</strong> {noticeDetails.product} | <strong>MRP:</strong> {noticeDetails.mrp}
           </div>
           <p>
-            <strong>AND WHEREAS</strong>, preliminary digital image extraction and semantic review established prima facie non-compliance with statutory disclosure mandates under the Legal Metrology (Packaged Commodities) Rules, 2011 as itemized hereunder:
+            <strong>AND WHEREAS</strong>, LabelLens OCR extraction, prohibited-expression scanning (Rule 11 &amp; 13), and consumer care verification (Rule 6(1)(f)) established <strong>{noticeDetails.violations.length} prima facie contraventions</strong> under the Legal Metrology (Packaged Commodities) Rules, 2011, as itemized hereunder:
           </p>
         </div>
 
         {/* Violations Table */}
         <div className="mb-6 font-sans overflow-x-auto">
+          <div className="flex items-center gap-2 font-bold text-gray-900 mb-2 text-xs uppercase tracking-wide">
+            <AlertTriangle size={13} className="text-red-600" />
+            <span>Schedule I — Contraventions Detected ({noticeDetails.violations.length} findings)</span>
+          </div>
           <table className="w-full text-left text-xs border border-gray-300 min-w-[500px]">
             <thead className="bg-gray-100 text-gray-900 font-bold border-b border-gray-300">
               <tr>
-                <th className="p-2.5 border-r border-gray-300">Statutory Citation</th>
-                <th className="p-2.5 border-r border-gray-300">Nature of Contravention</th>
-                <th className="p-2.5 border-r border-gray-300">Evidentiary Record</th>
-                <th className="p-2.5">Classification</th>
+                <th className="p-2.5 border-r border-gray-300 w-[18%]">Statutory Citation</th>
+                <th className="p-2.5 border-r border-gray-300 w-[32%]">Nature of Contravention</th>
+                <th className="p-2.5 border-r border-gray-300 w-[38%]">Evidentiary Record (OCR Extract)</th>
+                <th className="p-2.5 w-[12%]">Classification</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-300 text-gray-800">
               {noticeDetails.violations.map((v, idx) => (
-                <tr key={idx}>
-                  <td className="p-2.5 border-r border-gray-300 font-mono font-semibold text-red-700">{v.section}</td>
-                  <td className="p-2.5 border-r border-gray-300">{v.nature}</td>
-                  <td className="p-2.5 border-r border-gray-300 font-mono text-[11px]">{v.evidence}</td>
-                  <td className="p-2.5 font-bold text-red-600">{v.severity}</td>
+                <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                  <td className="p-2.5 border-r border-gray-300 font-mono font-semibold text-red-700 align-top">{v.section}</td>
+                  <td className="p-2.5 border-r border-gray-300 align-top">{v.nature}</td>
+                  <td className="p-2.5 border-r border-gray-300 font-mono text-[10.5px] text-gray-700 align-top leading-relaxed">{v.evidence}</td>
+                  <td className="p-2.5 font-bold text-red-600 align-top">{v.severity}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        {/* Side-by-Side Photographic Evidence View */}
-        <div className="mb-6">
+        {/* Consumer Care Compliance Panel */}
+        <div className="mb-6 font-sans">
           <div className="flex items-center gap-2 font-bold text-gray-900 mb-3 text-xs uppercase tracking-wide border-b border-gray-200 pb-2">
-            <AlertTriangle size={14} className="text-red-600" />
-            <span>Exhibit A: Photographic Evidence of Contravention</span>
+            <ShieldCheck size={14} className="text-amber-600" />
+            <span>Exhibit A — Consumer Care Declaration Audit (Rule 6(1)(f))</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Left: Raw image with bounding box */}
-            <div className="relative bg-gray-100 rounded-lg border border-gray-300 overflow-hidden aspect-video flex items-center justify-center">
-              <img src="https://images.unsplash.com/photo-1599021456807-25e0f54518cc?auto=format&fit=crop&w=600&q=80" alt="Product Evidence" className="w-full h-full object-cover" />
-              {/* Simulated red bounding box for violation */}
-              <div className="absolute top-1/4 left-1/4 w-1/3 h-1/5 border-2 border-red-500 bg-red-500/20 rounded shadow-[0_0_15px_rgba(239,68,68,0.5)]">
-                <div className="absolute -top-6 left-0 bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow">
-                  VIOLATION: Omission
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
+            {/* Score bar */}
+            <div className="bg-amber-50 border-b border-gray-200 p-3 flex items-center justify-between">
+              <div className="text-sm font-bold text-gray-900">Compliance Score: {CONSUMER_CARE_DATA.score}%</div>
+              <div className="flex-1 mx-4 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-amber-500"
+                  style={{ width: `${CONSUMER_CARE_DATA.score}%` }}
+                />
+              </div>
+              <div className="text-[10px] font-mono text-amber-700 font-bold uppercase">Incomplete</div>
+            </div>
+            {/* Fields grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-gray-200">
+              <div className="p-3 space-y-2.5">
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 size={13} className="text-green-600 mt-0.5 flex-none" />
+                  <div>
+                    <div className="text-[10px] font-bold text-gray-500 uppercase tracking-wide flex items-center gap-1"><User size={9} /> Redressal Officer</div>
+                    <div className="text-xs text-gray-800 font-medium">{CONSUMER_CARE_DATA.officer}</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 size={13} className="text-green-600 mt-0.5 flex-none" />
+                  <div>
+                    <div className="text-[10px] font-bold text-gray-500 uppercase tracking-wide flex items-center gap-1"><Phone size={9} /> Toll-Free Helpline</div>
+                    <div className="text-xs font-mono text-gray-800">{CONSUMER_CARE_DATA.telephone}</div>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            {/* Right: Statutory Citation and Metadata */}
-            <div className="flex flex-col justify-center space-y-3 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-              <div className="space-y-1">
-                <div className="text-[10px] font-bold text-red-600 uppercase tracking-wider">Statutory Citation</div>
-                <div className="text-sm font-bold text-gray-900">Rule 6(10) r/w Rule 6(1)(d)</div>
-                <p className="text-xs text-gray-600 mt-1 leading-relaxed">
-                  "Every package shall bear thereon or on label securely affixed thereto, a definite, plain and conspicuous declaration as to the month and year in which the commodity is manufactured or pre-packed or imported."
-                </p>
-              </div>
-              
-              <div className="pt-3 border-t border-gray-200 space-y-1.5">
-                <div className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">EXIF Metadata extraction</div>
-                <div className="grid grid-cols-2 gap-2 text-[10px] font-mono text-gray-700">
-                  <div><span className="text-gray-500">Capture Device:</span> Apple iPhone 14 Pro</div>
-                  <div><span className="text-gray-500">Lens Aperture:</span> f/1.78</div>
-                  <div><span className="text-gray-500">Date/Time Orig:</span> 2026:09:17 14:32:45</div>
-                  <div><span className="text-gray-500">Color Space:</span> sRGB</div>
-                  <div className="col-span-2"><span className="text-gray-500">GPS Location:</span> {sealData?.gpsCoordinates.latitude || "18.5204 N"}, {sealData?.gpsCoordinates.longitude || "73.8567 E"}</div>
+              <div className="p-3 space-y-2.5">
+                <div className="flex items-start gap-2">
+                  <XCircle size={13} className="text-red-600 mt-0.5 flex-none" />
+                  <div>
+                    <div className="text-[10px] font-bold text-red-600 uppercase tracking-wide flex items-center gap-1"><Mail size={9} /> Grievance Email</div>
+                    <div className="text-xs text-red-600 font-semibold italic">ABSENT — Mandatory field missing</div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 size={13} className="text-green-600 mt-0.5 flex-none" />
+                  <div>
+                    <div className="text-[10px] font-bold text-gray-500 uppercase tracking-wide flex items-center gap-1"><MapPin size={9} /> Postal Address</div>
+                    <div className="text-xs text-gray-800">{CONSUMER_CARE_DATA.address}</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Penalty & 15-Day Directive */}
+        {/* Exhibit B — OCR Evidence of Prohibited Expressions */}
+        <div className="mb-6 font-sans">
+          <div className="flex items-center gap-2 font-bold text-gray-900 mb-3 text-xs uppercase tracking-wide border-b border-gray-200 pb-2">
+            <AlertTriangle size={14} className="text-red-600" />
+            <span>Exhibit B — Prohibited Expressions Detected in OCR Extract (Rule 11 &amp; 13)</span>
+          </div>
+          <div className="bg-gray-900 rounded-lg p-4 font-mono text-xs text-gray-100 leading-relaxed relative overflow-hidden">
+            <div className="text-gray-500 mb-2 text-[10px]">// LabelLens OCR raw text extract — scanned label input</div>
+            <div>
+              Net weight when{" "}
+              <mark className="bg-red-500/80 text-white px-0.5 rounded">packed</mark>:{" "}
+              500{" "}
+              <mark className="bg-red-500/80 text-white px-0.5 rounded">gms</mark>{" "}
+              <mark className="bg-red-500/80 text-white px-0.5 rounded">approx</mark>
+              , manufactured with premium ingredients.
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {[
+                { term: '"net weight when packed"', rule: "Rule 11(1)" },
+                { term: '"approx"', rule: "Rule 11(1)" },
+                { term: '"gms"', rule: "Rule 13 / 2nd Sch." },
+              ].map((p) => (
+                <span key={p.term} className="inline-flex items-center gap-1.5 bg-red-900/60 border border-red-500/40 text-red-200 px-2 py-1 rounded text-[10px]">
+                  <span className="font-bold text-red-400">PROHIBITED:</span> {p.term}
+                  <span className="text-gray-400">•</span>
+                  <span className="text-gray-300">{p.rule}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Penalty & Directive */}
         <div className="text-xs sm:text-sm leading-relaxed space-y-3 mb-6 text-gray-800">
           <p>
             <strong>NOW THEREFORE</strong>, you are hereby called upon to <strong>SHOW CAUSE within fifteen (15) days</strong> of receipt of this notice as to why penal proceedings under <strong>Section 36(1) of the Legal Metrology Act, 2009</strong> (punishable with compounding fine up to ₹25,000 for the first offence, and subsequent fines up to ₹1,00,000 or imprisonment) should not be initiated against your establishment.
@@ -212,20 +284,19 @@ export default function NoticeGenerator({ scenarioForNotice, onBackToScan }) {
           </p>
         </div>
 
-        {/* Cryptographic Chain-of-Custody Seal (Tamper-Proof) */}
+        {/* Cryptographic Chain-of-Custody Seal */}
         <div className="border-t-2 border-dashed border-gray-300 pt-4 mt-6 font-sans text-xs">
           <div className="flex items-center gap-1.5 font-bold text-gray-800 mb-2">
             <ShieldCheck size={16} className="text-brass" />
             <span>Cryptographic Chain-of-Custody &amp; Electronic Seal (Sec 65B Indian Evidence Act)</span>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-gray-50 rounded border border-gray-200 text-[11px] font-mono text-gray-600">
             <div>
               <div><strong>SHA-256 Digest:</strong></div>
               <div className="break-all text-gray-900 font-semibold">{sealData?.sha256 || "Computing..."}</div>
             </div>
             <div>
-              <div><strong>GPS Coordinates:</strong> {sealData?.gpsCoordinates.latitude}, {sealData?.gpsCoordinates.longitude}</div>
+              <div><strong>GPS Coordinates:</strong> {sealData?.gpsCoordinates?.latitude}, {sealData?.gpsCoordinates?.longitude}</div>
               <div><strong>Network Timestamp:</strong> {sealData?.timestamp}</div>
               <div><strong>Hardware Terminal ID:</strong> {sealData?.deviceId}</div>
             </div>
@@ -240,7 +311,6 @@ export default function NoticeGenerator({ scenarioForNotice, onBackToScan }) {
               [ OFFICIAL SEAL ]
             </div>
           </div>
-
           <div className="text-right text-xs">
             <div className="font-serif italic font-bold text-base text-gray-900">Rajesh Sharma</div>
             <div className="font-semibold text-gray-800">Legal Metrology Officer (Inspector)</div>

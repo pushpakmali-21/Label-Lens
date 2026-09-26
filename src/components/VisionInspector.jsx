@@ -143,8 +143,8 @@ function ComplianceScanPanel() {
   // Also pull raw extracted fields from result for the detail table
   const rawFields = result ? Object.entries(FIELD_LABELS).map(([key, label]) => {
     // Find matching field from backend fields array
-    const match = fieldRows.find(f => f.label?.toLowerCase().includes(label.toLowerCase()) ||
-      f.field?.toLowerCase().includes(key.toLowerCase()));
+    const match = fieldRows.find(f => (f.label?.toLowerCase()?.includes(label.toLowerCase())) ||
+      (f.field?.toLowerCase()?.includes(key.toLowerCase())));
     return { key, label, value: match?.value ?? "—", status: match?.status ?? "review" };
   }) : [];
 
@@ -305,8 +305,8 @@ function ComplianceScanPanel() {
                 </div>
                 <div className="space-y-1 max-h-[260px] overflow-y-auto pr-1 scrollbar-thin">
                   {result.fields?.length > 0 ? result.fields.map((f, i) => {
-                    const statusColor = f.status === "ok" ? "#5AAE83" : f.status === "fail" ? "#D06A5A" : "#DA9E4E";
-                    const StatusIcon = f.status === "ok" ? CheckCircle2 : f.status === "fail" ? XCircle : AlertTriangle;
+                    const statusColor = f.status === "ok" ? "#5AAE83" : f.status === "fail" || f.status === "missing" ? "#D06A5A" : "#DA9E4E";
+                    const StatusIcon = f.status === "ok" ? CheckCircle2 : f.status === "fail" || f.status === "missing" ? XCircle : AlertTriangle;
                     return (
                       <div key={i} className="grid grid-cols-12 gap-2 items-start py-2 px-2.5 rounded bg-panel-darker border border-panel-line/60 text-xs">
                         <div className="col-span-1 pt-0.5">
@@ -350,7 +350,7 @@ function ComplianceScanPanel() {
                   <ShieldCheck size={12} className="text-status-pass flex-none mt-0.5" />
                   <div>
                     <span className="text-text-2 font-semibold">Evidence Seal (SHA-256): </span>
-                    <span className="break-all">{result.evidence_seal?.hash ?? JSON.stringify(result.evidence_seal).slice(0, 64) + "…"}</span>
+                    <span className="break-all">{result.evidence_seal?.sha256 ?? JSON.stringify(result.evidence_seal).slice(0, 64) + "…"}</span>
                   </div>
                 </div>
               )}

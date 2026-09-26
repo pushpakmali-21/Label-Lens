@@ -22,9 +22,10 @@ import ConfidenceBar from "./ConfidenceBar";
 import { scanImage } from "../utils/api";
 
 const STATUS_META = {
-  ok: { Icon: Check, color: "#5AAE83" },
-  review: { Icon: AlertTriangle, color: "#DA9E4E" },
-  fail: { Icon: X, color: "#D06A5A" },
+  ok:      { Icon: Check,         color: "#5AAE83" },
+  review:  { Icon: AlertTriangle, color: "#DA9E4E" },
+  fail:    { Icon: X,             color: "#D06A5A" },
+  missing: { Icon: X,             color: "#D06A5A" },
 };
 
 const QR_PATTERN = [
@@ -175,15 +176,15 @@ export default function Rule6Engine({ mode = "qr", setMode, capturedFrame, onGen
 
   useEffect(() => () => window.clearTimeout(timeoutRef.current), []);
 
-  const handleRun = async () => {
+  const runScan = async (frame) => {
     if (phase === "scanning") return;
     setPhase("scanning");
     setScanError(null);
     setRunId((id) => id + 1);
 
-    if (activeFrame) {
+    if (frame) {
       try {
-        const result = await scanImage(activeFrame);
+        const result = await scanImage(frame);
         setLiveScenario({
           ...SCENARIOS[mode],
           verdict: result.verdict,
@@ -204,10 +205,12 @@ export default function Rule6Engine({ mode = "qr", setMode, capturedFrame, onGen
     timeoutRef.current = window.setTimeout(() => setPhase("done"), 1600);
   };
 
+  const handleRun = () => runScan(activeFrame);
+
   useEffect(() => {
     if (!activeFrame || autoRunFrameRef.current === activeFrame) return;
     autoRunFrameRef.current = activeFrame;
-    handleRun();
+    runScan(activeFrame); // pass frame directly — avoids stale closure
   }, [activeFrame]);
 
   const handleImageUpload = (event) => {
@@ -225,7 +228,8 @@ export default function Rule6Engine({ mode = "qr", setMode, capturedFrame, onGen
   };
 
   const avgConfidence = useMemo(() => {
-    const sum = scenario.fields.reduce((a, f) => a + f.confidence, 0);
+    if (!scenario.fields?.length) return 0;
+    const sum = scenario.fields.reduce((a, f) => a + (f.confidence ?? 0), 0);
     return Math.round(sum / scenario.fields.length);
   }, [scenario]);
 
@@ -435,7 +439,7 @@ export default function Rule6Engine({ mode = "qr", setMode, capturedFrame, onGen
                 {/* Fields Table */}
                 <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1 scrollbar-thin">
                   {scenario.fields.map((f, i) => {
-                    const st = STATUS_META[f.status];
+                    const st = STATUS_META[f.status] ?? STATUS_META.fail;
                     return (
                       <div
                         key={f.label}

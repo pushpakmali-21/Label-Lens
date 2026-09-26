@@ -204,8 +204,8 @@ def _call_gemini_sync(image_base64: str, model_override: Optional[str] = None) -
     Returns:
         Parsed dict of extracted fields, or None on any failure.
     """
-    model = _build_client()
-    if model is None:
+    client = _build_client()
+    if client is None:
         return None
 
     try:
@@ -250,7 +250,10 @@ def _call_gemini_sync(image_base64: str, model_override: Optional[str] = None) -
         else:
             mime_type = "image/jpeg"  # safe default
 
-        response = model.models.generate_content(
+        from app.core.config import settings as _cfg
+        timeout_secs = getattr(_cfg, "GEMINI_TIMEOUT_SECONDS", 30)
+
+        response = client.models.generate_content(
             model=model_override or settings.GEMINI_MODEL,
             contents=[
                 types.Part.from_bytes(data=raw, mime_type=mime_type),
@@ -258,8 +261,9 @@ def _call_gemini_sync(image_base64: str, model_override: Optional[str] = None) -
             ],
             config=types.GenerateContentConfig(
                 temperature=0.1,
-                max_output_tokens=2048,
+                max_output_tokens=4096,
                 response_mime_type="application/json",
+                http_options={"timeout": timeout_secs * 1000},
             ),
         )
 
@@ -301,16 +305,34 @@ async def extract_fields_from_image(image_base64: str) -> Optional[dict]:
         Dict of extracted package fields compatible with validate_package_data,
         or None if Gemini is unavailable or the call fails.
     """
-    primary = await asyncio.to_thread(_call_gemini_sync, image_base64)
+    from app.core.config import settings as _cfg
+    timeout = getattr(_cfg, "GEMINI_TIMEOUT_SECONDS", 30)
+
+    try:
+        primary = await asyncio.wait_for(
+            asyncio.to_thread(_call_gemini_sync, image_base64),
+            timeout=timeout,
+        )
+    except asyncio.TimeoutError:
+        logger.error("Gemini primary model timed out after %ss", timeout)
+        primary = None
+
     if primary is not None:
         return primary
 
     # Capacity spikes can affect one model while another stable multimodal
     # model remains available. Keep this fallback bounded and model-specific;
     # never substitute deterministic demo OCR.
-    from app.core.config import settings
-    fallback_model = settings.GEMINI_FALLBACK_MODEL
-    if fallback_model and fallback_model != settings.GEMINI_MODEL:
+    fallback_model = _cfg.GEMINI_FALLBACK_MODEL
+    if fallback_model and fallback_model != _cfg.GEMINI_MODEL:
         logger.warning("Primary Gemini model unavailable; trying fallback model %s", fallback_model)
-        return await asyncio.to_thread(_call_gemini_sync, image_base64, fallback_model)
+        try:
+            return await asyncio.wait_for(
+                asyncio.to_thread(_call_gemini_sync, image_base64, fallback_model),
+                timeout=timeout,
+            )
+        except asyncio.TimeoutError:
+            logger.error("Gemini fallback model also timed out after %ss", timeout)
+            return None
     return None
+
